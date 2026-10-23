@@ -3039,6 +3039,25 @@ class RequestHandler(BaseHTTPRequestHandler):
             print(f"❌ Erro geral em inject_anki: {e_main}")
             self.send_json({"error": str(e_main)}, 500)
 
+def keep_alive_worker():
+    """Mantém o servidor na nuvem (Render) acordado enviando um ping a cada 9 minutos."""
+    cloud_url = os.environ.get("RENDER_EXTERNAL_URL", "").strip()
+    if not cloud_url and os.environ.get("PORT"):
+        cloud_url = "https://lexis-app-swxb.onrender.com"
+    if not cloud_url:
+        return
+
+    url = cloud_url.rstrip("/") + "/api/status"
+    time.sleep(60)
+    while True:
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": "LexiSync-KeepAlive/1.0"})
+            with urllib.request.urlopen(req, timeout=15.0) as res:
+                _ = res.read()
+        except Exception:
+            pass
+        time.sleep(540) # A cada 9 minutos
+
 def run_server():
     load_translations_cache()
     load_jev_cache()
@@ -3050,6 +3069,7 @@ def run_server():
     # Iniciar workers em background
     threading.Thread(target=translation_worker, daemon=True).start()
     threading.Thread(target=disk_saver_worker, daemon=True).start()
+    threading.Thread(target=keep_alive_worker, daemon=True).start()
 
     local_ip = "127.0.0.1"
     try:
