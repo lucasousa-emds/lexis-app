@@ -1,0 +1,1073 @@
+{
+  "actually": {
+    "word": "actually",
+    "cognate_type": "false_friend",
+    "cognate_confidence": 0.83,
+    "cognate_probabilities": {
+      "transparent": 0.03,
+      "false_friend": 0.89,
+      "opaque": 0.08
+    },
+    "confusion_risk": 0.66,
+    "sentence_quality": 1.05,
+    "pedagogical_hook": "usage_pattern"
+  },
+  "communication": {
+    "word": "communication",
+    "cognate_type": "transparent",
+    "cognate_confidence": 0.98,
+    "cognate_probabilities": {
+      "transparent": 0.99,
+      "false_friend": 0.0,
+      "opaque": 0.01
+    },
+    "confusion_risk": 0.36,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "latin_root"
+  },
+  "include": {
+    "word": "include",
+    "cognate_type": "transparent",
+    "cognate_confidence": 0.19,
+    "cognate_probabilities": {
+      "transparent": 0.46,
+      "false_friend": 0.1,
+      "opaque": 0.44
+    },
+    "confusion_risk": 0.49,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "latin_root"
+  },
+  "continue": {
+    "word": "continue",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.19,
+    "cognate_probabilities": {
+      "transparent": 0.39,
+      "false_friend": 0.15,
+      "opaque": 0.46
+    },
+    "confusion_risk": 0.33,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "latin_root"
+  },
+  "set": {
+    "word": "set",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.66,
+    "cognate_probabilities": {
+      "transparent": 0.14,
+      "false_friend": 0.09,
+      "opaque": 0.77
+    },
+    "confusion_risk": 0.86,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "vivid_scene"
+  },
+  "community": {
+    "word": "community",
+    "cognate_type": "transparent",
+    "cognate_confidence": 0.4,
+    "cognate_probabilities": {
+      "transparent": 0.6,
+      "false_friend": 0.04,
+      "opaque": 0.36
+    },
+    "confusion_risk": 0.49,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "latin_root"
+  },
+  "name": {
+    "word": "name",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.45,
+    "cognate_probabilities": {
+      "transparent": 0.24,
+      "false_friend": 0.13,
+      "opaque": 0.63
+    },
+    "confusion_risk": 0.23,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "vivid_scene"
+  },
+  "once": {
+    "word": "once",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.79,
+    "cognate_probabilities": {
+      "transparent": 0.01,
+      "false_friend": 0.13,
+      "opaque": 0.86
+    },
+    "confusion_risk": 0.74,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "usage_pattern"
+  },
+  "least": {
+    "word": "least",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.91,
+    "cognate_probabilities": {
+      "transparent": 0.01,
+      "false_friend": 0.05,
+      "opaque": 0.94
+    },
+    "confusion_risk": 0.52,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "usage_pattern"
+  },
+  "president": {
+    "word": "president",
+    "cognate_type": "transparent",
+    "cognate_confidence": 0.73,
+    "cognate_probabilities": {
+      "transparent": 0.82,
+      "false_friend": 0.05,
+      "opaque": 0.13
+    },
+    "confusion_risk": 0.36,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "latin_root"
+  },
+  "learn": {
+    "word": "learn",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.79,
+    "cognate_probabilities": {
+      "transparent": 0.08,
+      "false_friend": 0.06,
+      "opaque": 0.86
+    },
+    "confusion_risk": 0.21,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "vivid_scene"
+  },
+  "real": {
+    "word": "real",
+    "cognate_type": "transparent",
+    "cognate_confidence": 0.13,
+    "cognate_probabilities": {
+      "transparent": 0.42,
+      "false_friend": 0.4,
+      "opaque": 0.18
+    },
+    "confusion_risk": 0.65,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "latin_root"
+  },
+  "change": {
+    "word": "change",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.58,
+    "cognate_probabilities": {
+      "transparent": 0.19,
+      "false_friend": 0.09,
+      "opaque": 0.72
+    },
+    "confusion_risk": 0.36,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "vivid_scene"
+  },
+  "team": {
+    "word": "team",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.28,
+    "cognate_probabilities": {
+      "transparent": 0.41,
+      "false_friend": 0.07,
+      "opaque": 0.52
+    },
+    "confusion_risk": 0.29,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "vivid_scene"
+  },
+  "best": {
+    "word": "best",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.8,
+    "cognate_probabilities": {
+      "transparent": 0.04,
+      "false_friend": 0.09,
+      "opaque": 0.87
+    },
+    "confusion_risk": 0.14,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "usage_pattern"
+  },
+  "several": {
+    "word": "several",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.88,
+    "cognate_probabilities": {
+      "transparent": 0.04,
+      "false_friend": 0.04,
+      "opaque": 0.92
+    },
+    "confusion_risk": 0.42,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "vivid_scene"
+  },
+  "idea": {
+    "word": "idea",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.25,
+    "cognate_probabilities": {
+      "transparent": 0.4,
+      "false_friend": 0.1,
+      "opaque": 0.5
+    },
+    "confusion_risk": 0.27,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "vivid_scene"
+  },
+  "kid": {
+    "word": "kid",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.89,
+    "cognate_probabilities": {
+      "transparent": 0.0,
+      "false_friend": 0.07,
+      "opaque": 0.93
+    },
+    "confusion_risk": 0.62,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "vivid_scene"
+  },
+  "body": {
+    "word": "body",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.56,
+    "cognate_probabilities": {
+      "transparent": 0.2,
+      "false_friend": 0.09,
+      "opaque": 0.71
+    },
+    "confusion_risk": 0.24,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "vivid_scene"
+  },
+  "information": {
+    "word": "information",
+    "cognate_type": "transparent",
+    "cognate_confidence": 0.73,
+    "cognate_probabilities": {
+      "transparent": 0.82,
+      "false_friend": 0.06,
+      "opaque": 0.12
+    },
+    "confusion_risk": 0.59,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "latin_root"
+  },
+  "nothing": {
+    "word": "nothing",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.88,
+    "cognate_probabilities": {
+      "transparent": 0.01,
+      "false_friend": 0.07,
+      "opaque": 0.92
+    },
+    "confusion_risk": 0.44,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "vivid_scene"
+  },
+  "ago": {
+    "word": "ago",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.76,
+    "cognate_probabilities": {
+      "transparent": 0.03,
+      "false_friend": 0.13,
+      "opaque": 0.84
+    },
+    "confusion_risk": 0.89,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "usage_pattern"
+  },
+  "lead": {
+    "word": "lead",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.66,
+    "cognate_probabilities": {
+      "transparent": 0.03,
+      "false_friend": 0.2,
+      "opaque": 0.77
+    },
+    "confusion_risk": 1.31,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "vivid_scene"
+  },
+  "social": {
+    "word": "social",
+    "cognate_type": "transparent",
+    "cognate_confidence": 0.79,
+    "cognate_probabilities": {
+      "transparent": 0.86,
+      "false_friend": 0.05,
+      "opaque": 0.09
+    },
+    "confusion_risk": 0.34,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "latin_root"
+  },
+  "understand": {
+    "word": "understand",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.69,
+    "cognate_probabilities": {
+      "transparent": 0.15,
+      "false_friend": 0.06,
+      "opaque": 0.79
+    },
+    "confusion_risk": 0.29,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "latin_root"
+  },
+  "whether": {
+    "word": "whether",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.95,
+    "cognate_probabilities": {
+      "transparent": 0.0,
+      "false_friend": 0.03,
+      "opaque": 0.97
+    },
+    "confusion_risk": 1.15,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "usage_pattern"
+  },
+  "public": {
+    "word": "public",
+    "cognate_type": "transparent",
+    "cognate_confidence": 0.46,
+    "cognate_probabilities": {
+      "transparent": 0.64,
+      "false_friend": 0.11,
+      "opaque": 0.25
+    },
+    "confusion_risk": 0.5,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "latin_root"
+  },
+  "already": {
+    "word": "already",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.79,
+    "cognate_probabilities": {
+      "transparent": 0.0,
+      "false_friend": 0.14,
+      "opaque": 0.86
+    },
+    "confusion_risk": 0.95,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "usage_pattern"
+  },
+  "speak": {
+    "word": "speak",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.83,
+    "cognate_probabilities": {
+      "transparent": 0.04,
+      "false_friend": 0.07,
+      "opaque": 0.89
+    },
+    "confusion_risk": 0.16,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "vivid_scene"
+  },
+  "read": {
+    "word": "read",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.62,
+    "cognate_probabilities": {
+      "transparent": 0.06,
+      "false_friend": 0.19,
+      "opaque": 0.75
+    },
+    "confusion_risk": 0.53,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "vivid_scene"
+  },
+  "level": {
+    "word": "level",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.31,
+    "cognate_probabilities": {
+      "transparent": 0.38,
+      "false_friend": 0.08,
+      "opaque": 0.54
+    },
+    "confusion_risk": 0.52,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "vivid_scene"
+  },
+  "allow": {
+    "word": "allow",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.67,
+    "cognate_probabilities": {
+      "transparent": 0.14,
+      "false_friend": 0.08,
+      "opaque": 0.78
+    },
+    "confusion_risk": 0.34,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "vivid_scene"
+  },
+  "add": {
+    "word": "add",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.53,
+    "cognate_probabilities": {
+      "transparent": 0.2,
+      "false_friend": 0.11,
+      "opaque": 0.69
+    },
+    "confusion_risk": 0.34,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "vivid_scene"
+  },
+  "office": {
+    "word": "office",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.22,
+    "cognate_probabilities": {
+      "transparent": 0.41,
+      "false_friend": 0.11,
+      "opaque": 0.48
+    },
+    "confusion_risk": 0.46,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "vivid_scene"
+  },
+  "spend": {
+    "word": "spend",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.7,
+    "cognate_probabilities": {
+      "transparent": 0.07,
+      "false_friend": 0.13,
+      "opaque": 0.8
+    },
+    "confusion_risk": 0.58,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "vivid_scene"
+  },
+  "door": {
+    "word": "door",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.62,
+    "cognate_probabilities": {
+      "transparent": 0.15,
+      "false_friend": 0.1,
+      "opaque": 0.75
+    },
+    "confusion_risk": 0.18,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "vivid_scene"
+  },
+  "health": {
+    "word": "health",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.27,
+    "cognate_probabilities": {
+      "transparent": 0.43,
+      "false_friend": 0.06,
+      "opaque": 0.51
+    },
+    "confusion_risk": 0.27,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "latin_root"
+  },
+  "person": {
+    "word": "person",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.4,
+    "cognate_probabilities": {
+      "transparent": 0.3,
+      "false_friend": 0.1,
+      "opaque": 0.6
+    },
+    "confusion_risk": 0.2,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "latin_root"
+  },
+  "art": {
+    "word": "art",
+    "cognate_type": "transparent",
+    "cognate_confidence": 0.33,
+    "cognate_probabilities": {
+      "transparent": 0.55,
+      "false_friend": 0.11,
+      "opaque": 0.34
+    },
+    "confusion_risk": 0.43,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "vivid_scene"
+  },
+  "war": {
+    "word": "war",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.4,
+    "cognate_probabilities": {
+      "transparent": 0.29,
+      "false_friend": 0.11,
+      "opaque": 0.6
+    },
+    "confusion_risk": 0.39,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "vivid_scene"
+  },
+  "history": {
+    "word": "history",
+    "cognate_type": "transparent",
+    "cognate_confidence": 0.41,
+    "cognate_probabilities": {
+      "transparent": 0.61,
+      "false_friend": 0.06,
+      "opaque": 0.33
+    },
+    "confusion_risk": 0.29,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "latin_root"
+  },
+  "within": {
+    "word": "within",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.97,
+    "cognate_probabilities": {
+      "transparent": 0.01,
+      "false_friend": 0.01,
+      "opaque": 0.98
+    },
+    "confusion_risk": 1.05,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "usage_pattern"
+  },
+  "grow": {
+    "word": "grow",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.88,
+    "cognate_probabilities": {
+      "transparent": 0.04,
+      "false_friend": 0.04,
+      "opaque": 0.92
+    },
+    "confusion_risk": 0.36,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "vivid_scene"
+  },
+  "result": {
+    "word": "result",
+    "cognate_type": "transparent",
+    "cognate_confidence": 0.2,
+    "cognate_probabilities": {
+      "transparent": 0.47,
+      "false_friend": 0.07,
+      "opaque": 0.46
+    },
+    "confusion_risk": 0.27,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "latin_root"
+  },
+  "open": {
+    "word": "open",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.35,
+    "cognate_probabilities": {
+      "transparent": 0.27,
+      "false_friend": 0.16,
+      "opaque": 0.57
+    },
+    "confusion_risk": 0.24,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "vivid_scene"
+  },
+  "morning": {
+    "word": "morning",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.89,
+    "cognate_probabilities": {
+      "transparent": 0.03,
+      "false_friend": 0.04,
+      "opaque": 0.93
+    },
+    "confusion_risk": 0.11,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "vivid_scene"
+  },
+  "stock": {
+    "word": "stock",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.58,
+    "cognate_probabilities": {
+      "transparent": 0.1,
+      "false_friend": 0.18,
+      "opaque": 0.72
+    },
+    "confusion_risk": 1.23,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "vivid_scene"
+  },
+  "career": {
+    "word": "career",
+    "cognate_type": "transparent",
+    "cognate_confidence": 0.19,
+    "cognate_probabilities": {
+      "transparent": 0.46,
+      "false_friend": 0.11,
+      "opaque": 0.43
+    },
+    "confusion_risk": 0.53,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "latin_root"
+  },
+  "despite": {
+    "word": "despite",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.89,
+    "cognate_probabilities": {
+      "transparent": 0.01,
+      "false_friend": 0.06,
+      "opaque": 0.93
+    },
+    "confusion_risk": 1.16,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "usage_pattern"
+  },
+  "central": {
+    "word": "central",
+    "cognate_type": "transparent",
+    "cognate_confidence": 0.55,
+    "cognate_probabilities": {
+      "transparent": 0.7,
+      "false_friend": 0.07,
+      "opaque": 0.23
+    },
+    "confusion_risk": 0.28,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "latin_root"
+  },
+  "thus": {
+    "word": "thus",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.91,
+    "cognate_probabilities": {
+      "transparent": 0.02,
+      "false_friend": 0.04,
+      "opaque": 0.94
+    },
+    "confusion_risk": 0.98,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "usage_pattern"
+  },
+  "treatment": {
+    "word": "treatment",
+    "cognate_type": "transparent",
+    "cognate_confidence": 0.53,
+    "cognate_probabilities": {
+      "transparent": 0.69,
+      "false_friend": 0.05,
+      "opaque": 0.26
+    },
+    "confusion_risk": 0.67,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "latin_root"
+  },
+  "beyond": {
+    "word": "beyond",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.97,
+    "cognate_probabilities": {
+      "transparent": 0.01,
+      "false_friend": 0.01,
+      "opaque": 0.98
+    },
+    "confusion_risk": 0.91,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "vivid_scene"
+  },
+  "happy": {
+    "word": "happy",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.73,
+    "cognate_probabilities": {
+      "transparent": 0.09,
+      "false_friend": 0.09,
+      "opaque": 0.82
+    },
+    "confusion_risk": 0.15,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "vivid_scene"
+  },
+  "exactly": {
+    "word": "exactly",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.58,
+    "cognate_probabilities": {
+      "transparent": 0.12,
+      "false_friend": 0.16,
+      "opaque": 0.72
+    },
+    "confusion_risk": 0.38,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "usage_pattern"
+  },
+  "protect": {
+    "word": "protect",
+    "cognate_type": "transparent",
+    "cognate_confidence": 0.37,
+    "cognate_probabilities": {
+      "transparent": 0.58,
+      "false_friend": 0.06,
+      "opaque": 0.36
+    },
+    "confusion_risk": 0.27,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "vivid_scene"
+  },
+  "approach": {
+    "word": "approach",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.49,
+    "cognate_probabilities": {
+      "transparent": 0.29,
+      "false_friend": 0.05,
+      "opaque": 0.66
+    },
+    "confusion_risk": 0.62,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "vivid_scene"
+  },
+  "size": {
+    "word": "size",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.46,
+    "cognate_probabilities": {
+      "transparent": 0.22,
+      "false_friend": 0.14,
+      "opaque": 0.64
+    },
+    "confusion_risk": 0.22,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "vivid_scene"
+  },
+  "dog": {
+    "word": "dog",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.82,
+    "cognate_probabilities": {
+      "transparent": 0.08,
+      "false_friend": 0.04,
+      "opaque": 0.88
+    },
+    "confusion_risk": 0.17,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "vivid_scene"
+  },
+  "fund": {
+    "word": "fund",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.3,
+    "cognate_probabilities": {
+      "transparent": 0.35,
+      "false_friend": 0.12,
+      "opaque": 0.53
+    },
+    "confusion_risk": 0.74,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "latin_root"
+  },
+  "serious": {
+    "word": "serious",
+    "cognate_type": "transparent",
+    "cognate_confidence": 0.27,
+    "cognate_probabilities": {
+      "transparent": 0.51,
+      "false_friend": 0.18,
+      "opaque": 0.31
+    },
+    "confusion_risk": 0.62,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "latin_root"
+  },
+  "occur": {
+    "word": "occur",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.51,
+    "cognate_probabilities": {
+      "transparent": 0.23,
+      "false_friend": 0.1,
+      "opaque": 0.67
+    },
+    "confusion_risk": 0.65,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "vivid_scene"
+  },
+  "media": {
+    "word": "media",
+    "cognate_type": "transparent",
+    "cognate_confidence": 0.77,
+    "cognate_probabilities": {
+      "transparent": 0.85,
+      "false_friend": 0.07,
+      "opaque": 0.08
+    },
+    "confusion_risk": 0.79,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "latin_root"
+  },
+  "ready": {
+    "word": "ready",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.62,
+    "cognate_probabilities": {
+      "transparent": 0.08,
+      "false_friend": 0.17,
+      "opaque": 0.75
+    },
+    "confusion_risk": 0.33,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "vivid_scene"
+  },
+  "sign": {
+    "word": "sign",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.51,
+    "cognate_probabilities": {
+      "transparent": 0.23,
+      "false_friend": 0.1,
+      "opaque": 0.67
+    },
+    "confusion_risk": 0.7,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "vivid_scene"
+  },
+  "thought": {
+    "word": "thought",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.82,
+    "cognate_probabilities": {
+      "transparent": 0.06,
+      "false_friend": 0.06,
+      "opaque": 0.88
+    },
+    "confusion_risk": 0.4,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "vivid_scene"
+  },
+  "individual": {
+    "word": "individual",
+    "cognate_type": "transparent",
+    "cognate_confidence": 0.31,
+    "cognate_probabilities": {
+      "transparent": 0.54,
+      "false_friend": 0.06,
+      "opaque": 0.4
+    },
+    "confusion_risk": 0.52,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "latin_root"
+  },
+  "simple": {
+    "word": "simple",
+    "cognate_type": "transparent",
+    "cognate_confidence": 0.18,
+    "cognate_probabilities": {
+      "transparent": 0.45,
+      "false_friend": 0.15,
+      "opaque": 0.4
+    },
+    "confusion_risk": 0.15,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "latin_root"
+  },
+  "quality": {
+    "word": "quality",
+    "cognate_type": "transparent",
+    "cognate_confidence": 0.37,
+    "cognate_probabilities": {
+      "transparent": 0.58,
+      "false_friend": 0.12,
+      "opaque": 0.3
+    },
+    "confusion_risk": 0.54,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "latin_root"
+  },
+  "pressure": {
+    "word": "pressure",
+    "cognate_type": "transparent",
+    "cognate_confidence": 0.48,
+    "cognate_probabilities": {
+      "transparent": 0.65,
+      "false_friend": 0.1,
+      "opaque": 0.25
+    },
+    "confusion_risk": 0.78,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "vivid_scene"
+  },
+  "accept": {
+    "word": "accept",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.18,
+    "cognate_probabilities": {
+      "transparent": 0.43,
+      "false_friend": 0.12,
+      "opaque": 0.45
+    },
+    "confusion_risk": 0.46,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "latin_root"
+  },
+  "troop": {
+    "word": "troop",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.85,
+    "cognate_probabilities": {
+      "transparent": 0.03,
+      "false_friend": 0.07,
+      "opaque": 0.9
+    },
+    "confusion_risk": 0.7,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "vivid_scene"
+  },
+  "income": {
+    "word": "income",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.23,
+    "cognate_probabilities": {
+      "transparent": 0.43,
+      "false_friend": 0.08,
+      "opaque": 0.49
+    },
+    "confusion_risk": 0.6,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "latin_root"
+  },
+  "directly": {
+    "word": "directly",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.45,
+    "cognate_probabilities": {
+      "transparent": 0.3,
+      "false_friend": 0.07,
+      "opaque": 0.63
+    },
+    "confusion_risk": 0.37,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "latin_root"
+  },
+  "hurt": {
+    "word": "hurt",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.72,
+    "cognate_probabilities": {
+      "transparent": 0.04,
+      "false_friend": 0.15,
+      "opaque": 0.81
+    },
+    "confusion_risk": 0.57,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "vivid_scene"
+  },
+  "species": {
+    "word": "species",
+    "cognate_type": "transparent",
+    "cognate_confidence": 0.52,
+    "cognate_probabilities": {
+      "transparent": 0.68,
+      "false_friend": 0.06,
+      "opaque": 0.26
+    },
+    "confusion_risk": 0.61,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "latin_root"
+  },
+  "immediately": {
+    "word": "immediately",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.51,
+    "cognate_probabilities": {
+      "transparent": 0.24,
+      "false_friend": 0.09,
+      "opaque": 0.67
+    },
+    "confusion_risk": 0.36,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "vivid_scene"
+  },
+  "basic": {
+    "word": "basic",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.3,
+    "cognate_probabilities": {
+      "transparent": 0.35,
+      "false_friend": 0.12,
+      "opaque": 0.53
+    },
+    "confusion_risk": 0.25,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "latin_root"
+  },
+  "sky": {
+    "word": "sky",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.94,
+    "cognate_probabilities": {
+      "transparent": 0.02,
+      "false_friend": 0.02,
+      "opaque": 0.96
+    },
+    "confusion_risk": 0.13,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "vivid_scene"
+  },
+  "freedom": {
+    "word": "freedom",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.3,
+    "cognate_probabilities": {
+      "transparent": 0.43,
+      "false_friend": 0.04,
+      "opaque": 0.53
+    },
+    "confusion_risk": 0.26,
+    "sentence_quality": 0.0,
+    "pedagogical_hook": "latin_root"
+  },
+  "slowly": {
+    "word": "slowly",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.85,
+    "cognate_probabilities": {
+      "transparent": 0.06,
+      "false_friend": 0.04,
+      "opaque": 0.9
+    },
+    "confusion_risk": 0.13,
+    "sentence_quality": 0.75,
+    "pedagogical_hook": "vivid_scene"
+  },
+  "somebody": {
+    "word": "somebody",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.95,
+    "cognate_probabilities": {
+      "transparent": 0.01,
+      "false_friend": 0.02,
+      "opaque": 0.97
+    },
+    "confusion_risk": 0.38,
+    "sentence_quality": 1.03,
+    "pedagogical_hook": "vivid_scene"
+  },
+  "__curated_novel": {
+    "chosen_en": "She sat by the fire reading her favorite novel.",
+    "confidence": 1.0,
+    "model": "jev-1.14.0"
+  }
+}

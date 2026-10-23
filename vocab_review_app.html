@@ -1,0 +1,3438 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#07090e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Lexis">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>Lexis • Ecossistema de Idiomas</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E⚡%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #07090e;
+      --bg-surface: #0f1420;
+      --bg-card: rgba(18, 24, 38, 0.8);
+      --bg-card-hover: rgba(28, 38, 60, 0.9);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-focus: rgba(0, 242, 254, 0.4);
+      --accent-cyan: #00f2fe;
+      --accent-cyan-glow: rgba(0, 242, 254, 0.25);
+      --accent-blue: #38bdf8;
+      --color-known: #10b981;
+      --color-known-bg: rgba(16, 185, 129, 0.15);
+      --color-unknown: #f43f5e;
+      --color-unknown-bg: rgba(244, 63, 94, 0.18);
+      --color-doubt: #f59e0b;
+      --color-doubt-bg: rgba(245, 158, 11, 0.15);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 22px;
+      --font-heading: 'Outfit', -apple-system, sans-serif;
+      --font-body: 'Inter', -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--accent-cyan);
+      outline-offset: 2px;
+    }
+
+    html {
+      background-color: var(--bg-dark);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 15% 10%, rgba(0, 242, 254, 0.07) 0%, transparent 40%),
+        radial-gradient(circle at 85% 85%, rgba(99, 102, 241, 0.06) 0%, transparent 45%);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* CRAFT: NOISE OVERLAY TILE (GRAIN HIDES BANDING AND ADDS TEXTURE) */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+      background-size: 200px 200px;
+      background-repeat: repeat;
+      opacity: 0.04;
+      mix-blend-mode: overlay;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* CRAFT: TABULAR NUMBERS FOR METRICS, CHIPS & COUNTERS */
+    .kpi-chip .val,
+    .deck-metrics-text,
+    .badge-count,
+    .hotkey-hint,
+    .stat-badge,
+    .matrix-stat,
+    .pill-btn,
+    .cefr-badge,
+    .user-level-badge,
+    .ipa-badge,
+    td:nth-child(n) {
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* TOP HEADER & NAVBAR */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(7, 9, 14, 0.88);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 12px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, #00f2fe, #4facfe);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #07090e;
+      font-size: 20px;
+      font-weight: 800;
+      box-shadow: 0 0 16px var(--accent-cyan-glow);
+    }
+
+    .brand-text h1 {
+      font-family: var(--font-heading);
+      font-size: 19px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      background: linear-gradient(to right, #ffffff, #cbd5e1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-text span {
+      font-size: 11px;
+      color: var(--accent-cyan);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* KPI STATS CHIPS */
+    .kpi-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .kpi-chip {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 6px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .kpi-chip:hover {
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .kpi-chip.known .val { color: var(--color-known); }
+    .kpi-chip.unknown .val { color: var(--color-unknown); }
+    .kpi-chip.doubt .val { color: var(--color-doubt); }
+
+    .kpi-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    .kpi-chip.known .kpi-dot { background: var(--color-known); box-shadow: 0 0 8px var(--color-known); }
+    .kpi-chip.unknown .kpi-dot { background: var(--color-unknown); box-shadow: 0 0 8px var(--color-unknown); }
+    .kpi-chip.doubt .kpi-dot { background: var(--color-doubt); box-shadow: 0 0 8px var(--color-doubt); }
+
+    .btn-inject-anki {
+      background: linear-gradient(135deg, #f43f5e, #e11d48);
+      color: #ffffff;
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 9px 18px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 16px rgba(244, 63, 94, 0.35);
+      transition: transform 100ms ease-out, box-shadow 120ms ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-inject-anki:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(244, 63, 94, 0.5);
+    }
+
+    .btn-inject-anki:active:not(:disabled) {
+      transform: scale(0.97) !important;
+    }
+
+    .badge-count {
+      background: rgba(255, 255, 255, 0.25);
+      padding: 2px 7px;
+      border-radius: 12px;
+      font-size: 11px;
+    }
+
+    /* CONTROL TOOLBAR (CLEAN, NO CLUTTER CHECKBOXES) */
+    .toolbar {
+      background: rgba(15, 20, 32, 0.7);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 10px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .toolbar-left, .toolbar-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .select-custom {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      height: 38px;
+      padding: 0 34px 0 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-family: var(--font-body);
+      outline: none;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11.5l-5-5h10l-5 5z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      transition: all 0.2s ease;
+    }
+
+    .input-search {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      height: 38px;
+      padding: 0 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-family: var(--font-body);
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .select-custom:focus, .input-search:focus {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 0 2px var(--accent-cyan-glow);
+    }
+
+    .view-mode-tabs {
+      display: flex;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 3px;
+      border-radius: var(--radius-sm); /* outer 8px */
+      border: 1px solid var(--border-subtle);
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 6px 14px;
+      border-radius: 5px; /* CRAFT: concentric outer (8px) - inset padding (3px) = 5px */
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: transform 100ms ease-out, background-color 100ms ease, color 100ms ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .tab-btn:hover:not(.active) {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .tab-btn:active:not(:disabled) {
+      transform: scale(0.97);
+    }
+
+    .tab-btn.active {
+      background: var(--bg-surface);
+      color: var(--text-main);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border-subtle);
+    }
+
+    /* MAIN CONTAINER */
+    main {
+      flex: 1;
+      padding: 24px 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+      gap: 18px;
+    }
+
+    /* ========================================================
+       DASHBOARD DE PROGRESSO E NÍVEIS CEFR
+       ======================================================== */
+    .dashboard-progress-card {
+      width: 100%;
+      max-width: 760px;
+      background: rgba(15, 20, 32, 0.85);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 10px 16px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(12px);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 2px;
+    }
+
+    .progress-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .progress-left-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .cefr-badge {
+      background: rgba(0, 242, 254, 0.12);
+      border: 1px solid rgba(0, 242, 254, 0.3);
+      color: var(--accent-cyan);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .user-level-badge {
+      background: rgba(99, 102, 241, 0.12);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      color: #a5b4fc;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .deck-metrics-text {
+      font-size: 12px;
+      font-weight: 700;
+      color: #cbd5e1;
+      font-family: var(--font-mono);
+    }
+
+    .btn-mark-remaining {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #34d399;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: transform 100ms ease-out, background 120ms ease, border-color 120ms ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-mark-remaining:hover {
+      background: rgba(16, 185, 129, 0.28);
+      border-color: #10b981;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-mark-remaining:active:not(:disabled) {
+      transform: scale(0.97) !important;
+    }
+
+    .progress-bar-wrapper {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 8px;
+      height: 8px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(to right, #00f2fe, #38bdf8, #10b981);
+      width: 0%;
+      transition: width 0.3s ease;
+      box-shadow: 0 0 10px rgba(0, 242, 254, 0.5);
+    }
+
+    /* ========================================================
+       VIEW 1: MODO CARTÃO RÁPIDO (FOCUS MODE / 1-POR-1)
+       ======================================================== */
+    #view-focus {
+      width: 100%;
+      max-width: 760px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .focus-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 34px 32px;
+      box-shadow: 0 20px 48px rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(20px);
+      position: relative;
+      transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.2s ease;
+    }
+
+    .focus-card:hover {
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .card-header-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .card-badges-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .subdeck-badge {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      background: rgba(0, 242, 254, 0.1);
+      border: 1px solid rgba(0, 242, 254, 0.25);
+      padding: 3px 8px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      flex-shrink: 0;
+    }
+
+    .pos-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      color: #93c5fd;
+      background: rgba(59, 130, 246, 0.15);
+      padding: 3px 8px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      flex-shrink: 0;
+    }
+
+    .theme-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      color: #7dd3fc;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      padding: 3px 8px;
+      border-radius: 6px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 130px;
+      flex-shrink: 1;
+    }
+
+    .source-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 6px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .source-mairo {
+      background: rgba(99, 102, 241, 0.18);
+      border: 1px solid rgba(99, 102, 241, 0.35);
+      color: #c7d2fe;
+    }
+
+    .source-mwld {
+      background: rgba(148, 163, 184, 0.15);
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      color: #cbd5e1;
+    }
+
+    .audio-action-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .audio-btn {
+      width: 36px;
+      height: 36px;
+      background: rgba(0, 242, 254, 0.12);
+      border: 1px solid rgba(0, 242, 254, 0.3);
+      color: var(--accent-cyan);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 15px;
+      transition: transform 100ms ease-out, background 150ms ease, box-shadow 150ms ease;
+      flex-shrink: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .audio-btn:hover {
+      background: var(--accent-cyan);
+      color: #07090e;
+      transform: scale(1.08);
+      box-shadow: 0 0 14px var(--accent-cyan-glow);
+    }
+
+    .audio-btn:active:not(:disabled) {
+      transform: scale(0.95) !important;
+    }
+
+    .audio-btn.playing {
+      animation: audioPulse 1s ease-in-out infinite alternate;
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 16px var(--accent-cyan-glow);
+      background: rgba(0, 242, 254, 0.25);
+    }
+    @keyframes audioPulse {
+      from { transform: scale(1); box-shadow: 0 0 8px var(--accent-cyan-glow); }
+      to { transform: scale(1.1); box-shadow: 0 0 18px rgba(0, 242, 254, 0.6); }
+    }
+
+    /* CRAFT: OPTICAL ALIGNMENT FOR AUDIO PLAY ICON */
+    .audio-btn span,
+    .audio-btn svg {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transform: translateX(1px); /* Nudge 1px to center directional glyph optically */
+    }
+
+    .word-title-area {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .word-text {
+      font-family: var(--font-heading);
+      font-size: 46px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      color: #ffffff;
+      line-height: 1.1;
+    }
+
+    .ipa-badge {
+      font-family: var(--font-mono);
+      font-size: 17px;
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.1);
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+
+    .badge-false-friend {
+      font-family: var(--font-body);
+      font-size: 11px;
+      font-weight: 700;
+      color: #fbbf24;
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      padding: 3px 8px;
+      border-radius: 6px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.2);
+    }
+
+    /* JEV AI COGNITIVE PANEL & BUTTON */
+    .jev-btn {
+      background: linear-gradient(135deg, rgba(147, 51, 234, 0.25), rgba(99, 102, 241, 0.25));
+      border: 1px solid rgba(168, 85, 247, 0.45);
+      color: #e9d5ff;
+      border-radius: var(--radius-sm);
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: transform 100ms ease-out, background 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .jev-btn:hover {
+      background: linear-gradient(135deg, rgba(147, 51, 234, 0.45), rgba(99, 102, 241, 0.45));
+      border-color: rgba(192, 132, 252, 0.7);
+      box-shadow: 0 0 15px rgba(168, 85, 247, 0.35);
+      transform: translateY(-1px);
+    }
+    .jev-btn:active:not(:disabled) {
+      transform: scale(0.97) !important;
+    }
+    .jev-insight-panel {
+      background: linear-gradient(145deg, rgba(20, 16, 35, 0.95), rgba(15, 20, 32, 0.95));
+      border: 1px solid rgba(168, 85, 247, 0.35);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      margin-bottom: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 0 20px rgba(147, 51, 234, 0.15);
+      animation: fadeIn 0.25s ease-out;
+    }
+    .jev-panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 10px;
+    }
+    .jev-panel-title {
+      font-family: var(--font-heading);
+      font-size: 13px;
+      font-weight: 700;
+      color: #c084fc;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .jev-panel-badges {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .badge-jev-cognate {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .badge-cognate-transparent {
+      background: rgba(16, 185, 129, 0.2);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #34d399;
+    }
+    .badge-cognate-false_friend {
+      background: rgba(244, 63, 94, 0.25);
+      border: 1px solid rgba(244, 63, 94, 0.5);
+      color: #fb7185;
+    }
+    .badge-cognate-opaque {
+      background: rgba(148, 163, 184, 0.2);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      color: #cbd5e1;
+    }
+    .jev-panel-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      font-size: 12px;
+    }
+    .jev-metric-box {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 6px; /* CRAFT: Concentric nested radius outer (14px) - inset (8px) = 6px */
+      padding: 8px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .jev-metric-title {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+    .jev-metric-val {
+      font-size: 13px;
+      font-weight: 700;
+      color: #f1f5f9;
+    }
+
+    /* ALERTA DE FALSO COGNATO (DESTAQUE PROEMINENTE) */
+    .false-cognate-alert {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.18), rgba(220, 38, 38, 0.15));
+      border: 1px solid rgba(245, 158, 11, 0.5);
+      border-left: 5px solid #f59e0b;
+      border-radius: var(--radius-sm);
+      padding: 14px 18px;
+      margin-bottom: 22px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      box-shadow: 0 4px 16px rgba(245, 158, 11, 0.12);
+      animation: fadeIn 0.3s ease;
+    }
+
+    .alert-icon {
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .alert-content {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .alert-title {
+      font-size: 11px;
+      font-weight: 800;
+      color: #fbbf24;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    .alert-desc {
+      font-size: 14px;
+      font-weight: 600;
+      color: #fef3c7;
+      line-height: 1.4;
+    }
+
+    /* DEFINITION BOX */
+    .sense-container {
+      background: rgba(11, 15, 25, 0.7);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px; /* CRAFT: Nested concentric radius inside 22px focus-card */
+      padding: 20px;
+      margin-bottom: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .sense-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .tag-lang {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .tag-en { background: rgba(56, 189, 248, 0.2); color: #38bdf8; }
+    .tag-pt { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+
+    .def-en { color: #f1f5f9; font-weight: 500; }
+    .def-pt { color: #cbd5e1; font-weight: 400; }
+
+    .def-usage-tag {
+      font-size: 11px;
+      font-weight: 600;
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      padding: 1px 6px;
+      border-radius: 4px;
+      display: inline-block;
+      margin-right: 4px;
+      vertical-align: middle;
+    }
+
+    .def-em {
+      font-style: italic;
+      color: #93c5fd;
+      font-weight: 600;
+    }
+
+    /* EXAMPLE SENTENCE BOX */
+    .example-container {
+      background: rgba(0, 0, 0, 0.35);
+      border-left: 3px solid var(--accent-cyan);
+      border-radius: 0 12px 12px 0; /* CRAFT: Nested concentric radius matching sense-container */
+      padding: 18px 20px;
+      margin-bottom: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .example-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .example-meta-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .example-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      letter-spacing: 1px;
+    }
+
+    .btn-cycle {
+      background: rgba(0, 242, 254, 0.08);
+      border: 1px solid rgba(0, 242, 254, 0.25);
+      color: var(--accent-cyan);
+      padding: 3px 9px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: transform 100ms ease-out, background-color 120ms ease, border-color 120ms ease;
+      font-variant-numeric: tabular-nums;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-cycle:hover {
+      background: rgba(0, 242, 254, 0.18);
+      border-color: var(--accent-cyan);
+    }
+
+    .btn-cycle:active:not(:disabled) {
+      transform: scale(0.96);
+    }
+
+    .example-sentence {
+      font-size: 16px;
+      line-height: 1.5;
+      color: #ffffff;
+      font-style: normal;
+    }
+
+    /* HIGHLIGHT TARGET WORD */
+    .highlight-target {
+      color: var(--accent-cyan);
+      font-weight: 700;
+      background: rgba(0, 242, 254, 0.18);
+      padding: 1px 5px;
+      border-radius: 4px;
+      box-shadow: 0 0 8px rgba(0, 242, 254, 0.25);
+    }
+
+    .example-pt-box {
+      font-size: 14px;
+      line-height: 1.5;
+      color: #94a3b8;
+      font-style: italic;
+      padding-top: 8px;
+      border-top: 1px dashed rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    /* ACTION BUTTONS (HOTKEYS) */
+    .actions-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 14px;
+      margin-top: 8px;
+    }
+
+    .btn-action {
+      padding: 16px 12px;
+      border-radius: var(--radius-md);
+      border: 1px solid transparent;
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      transition: transform 100ms ease-out, background-color 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-action:active:not(:disabled) {
+      transform: scale(0.97) !important;
+    }
+
+    .btn-action .hotkey-hint {
+      font-size: 11px;
+      font-family: var(--font-mono);
+      opacity: 0.75;
+      text-transform: uppercase;
+    }
+
+    .btn-known {
+      background: var(--color-known-bg);
+      border-color: rgba(16, 185, 129, 0.3);
+      color: #34d399;
+    }
+    .btn-known:hover {
+      background: rgba(16, 185, 129, 0.3);
+      border-color: #10b981;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-unknown {
+      background: var(--color-unknown-bg);
+      border-color: rgba(244, 63, 94, 0.3);
+      color: #fb7185;
+    }
+    .btn-unknown:hover {
+      background: rgba(244, 63, 94, 0.35);
+      border-color: #f43f5e;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(244, 63, 94, 0.35);
+    }
+
+    .btn-doubt {
+      background: var(--color-doubt-bg);
+      border-color: rgba(245, 158, 11, 0.3);
+      color: #fbbf24;
+    }
+    .btn-doubt:hover {
+      background: rgba(245, 158, 11, 0.3);
+      border-color: #f59e0b;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(245, 158, 11, 0.3);
+    }
+
+    .skip-bar {
+      margin-top: 16px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .btn-skip {
+      background: transparent;
+      border: 1px solid var(--border-subtle);
+      color: var(--text-dim);
+      padding: 7px 18px;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: transform 100ms ease-out, color 120ms ease, border-color 120ms ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-skip:hover {
+      color: var(--text-muted);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+    .btn-skip:active:not(:disabled) {
+      transform: scale(0.97);
+    }
+
+    /* ========================================================
+       VIEW 2: MODO GRADE / LOTE (BATCH MATRIX)
+       ======================================================== */
+    #view-batch {
+      width: 100%;
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .batch-header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 12px 20px;
+    }
+
+    .batch-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-batch-action {
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: transform 100ms ease-out, background 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-batch-action:active:not(:disabled) {
+      transform: scale(0.97) !important;
+    }
+
+    .btn-batch-all-known {
+      background: var(--color-known-bg);
+      border-color: rgba(16, 185, 129, 0.4);
+      color: #34d399;
+    }
+    .btn-batch-all-known:hover {
+      background: rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-batch-save {
+      background: linear-gradient(135deg, #00f2fe, #38bdf8);
+      color: #07090e;
+      font-weight: 700;
+    }
+    .btn-batch-save:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px var(--accent-cyan-glow);
+    }
+
+    @keyframes pulseSave {
+      0% { transform: scale(1); box-shadow: 0 0 0 rgba(0, 242, 254, 0); }
+      50% { transform: scale(1.05); box-shadow: 0 0 16px rgba(0, 242, 254, 0.7); }
+      100% { transform: scale(1); box-shadow: 0 0 0 rgba(0, 242, 254, 0); }
+    }
+
+    .table-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      /* CRAFT: SCROLL FADE - soft edge dissolve indicating more scrollable columns */
+      mask-image: linear-gradient(
+        to right,
+        black 0%,
+        black calc(100% - 24px),
+        transparent 100%
+      );
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    th {
+      background: rgba(15, 20, 32, 0.95);
+      padding: 12px 16px;
+      font-size: 12px;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--text-dim);
+      border-bottom: 1px solid var(--border-subtle);
+      letter-spacing: 0.5px;
+    }
+
+    td {
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      vertical-align: middle;
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .table-word {
+      font-family: var(--font-heading);
+      font-size: 17px;
+      font-weight: 700;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-toggle-group {
+      display: flex;
+      gap: 6px;
+    }
+
+    .pill-btn {
+      padding: 5px 11px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid var(--border-subtle);
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: transform 100ms ease-out, background 100ms ease, color 100ms ease, border-color 100ms ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .pill-btn:hover {
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .pill-btn:active:not(:disabled) {
+      transform: scale(0.96);
+    }
+
+    .pill-btn.active-known {
+      background: var(--color-known);
+      color: #07090e;
+      border-color: var(--color-known);
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+    }
+
+    .pill-btn.active-unknown {
+      background: var(--color-unknown);
+      color: #ffffff;
+      border-color: var(--color-unknown);
+      box-shadow: 0 0 10px rgba(244, 63, 94, 0.4);
+    }
+
+    .pill-btn.active-doubt {
+      background: var(--color-doubt);
+      color: #07090e;
+      border-color: var(--color-doubt);
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+    }
+
+    /* ========================================================
+       VIEW 3: GAPS DO ANKI (QUEUE VIEW)
+       ======================================================== */
+    #view-gaps {
+      width: 100%;
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .gaps-hero {
+      background: linear-gradient(135deg, rgba(244, 63, 94, 0.12), rgba(15, 20, 32, 0.8));
+      border: 1px solid rgba(244, 63, 94, 0.3);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .gaps-hero h2 {
+      font-family: var(--font-heading);
+      font-size: 22px;
+      color: #ffffff;
+      margin-bottom: 6px;
+    }
+
+    .gaps-hero p {
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    /* TOAST NOTIFICATIONS */
+    #toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .toast {
+      background: #111827;
+      border: 1px solid var(--accent-cyan);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      color: #ffffff;
+      padding: 12px 20px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    * {
+      touch-action: manipulation;
+    }
+
+    button, input, select {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* ========================================================
+       RESPONSIVIDADE PARA CELULAR (MOBILE / TABLET)
+       ======================================================== */
+    @media (max-width: 768px) {
+
+      header {
+        padding: 8px 12px;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        overflow: hidden;
+      }
+
+      .brand {
+        gap: 8px;
+        flex-shrink: 1;
+        min-width: 0;
+      }
+
+      .brand-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 16px;
+        border-radius: 8px;
+        flex-shrink: 0;
+      }
+
+      .brand-text h1 {
+        font-size: 15px;
+        white-space: nowrap;
+      }
+
+      .brand-text span {
+        display: none;
+      }
+
+      .kpi-container {
+        gap: 5px;
+        flex-wrap: nowrap;
+        flex-shrink: 0;
+      }
+
+      .kpi-label {
+        display: none !important;
+      }
+
+      .kpi-chip {
+        padding: 4px 8px;
+        font-size: 11px;
+        font-weight: 700;
+        border-radius: 12px;
+        gap: 5px;
+      }
+
+      .kpi-dot {
+        width: 7px;
+        height: 7px;
+      }
+
+      .toolbar {
+        padding: 8px 12px;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .toolbar-left, .toolbar-right {
+        width: 100%;
+      }
+
+      .select-custom {
+        width: 100%;
+        height: 40px;
+        font-size: 13px;
+        padding: 0 32px 0 12px;
+      }
+
+      .view-mode-tabs {
+        width: 100%;
+        display: flex;
+        height: 38px;
+      }
+
+      .view-mode-tabs .tab-btn {
+        flex: 1;
+        justify-content: center;
+        text-align: center;
+        font-size: 12px;
+        padding: 6px 4px;
+        white-space: nowrap;
+      }
+
+      main {
+        padding: 8px 10px calc(24px + env(safe-area-inset-bottom, 0px)) 10px;
+        gap: 8px;
+      }
+
+      .dashboard-progress-card {
+        padding: 8px 12px;
+        gap: 6px;
+        margin-bottom: 0;
+      }
+
+      .progress-top-row {
+        gap: 6px;
+      }
+
+      .cefr-badge, .user-level-badge {
+        font-size: 10px;
+        padding: 2px 6px;
+      }
+
+      .deck-metrics-text {
+        font-size: 11px;
+      }
+
+      .progress-bar-wrapper {
+        height: 5px;
+      }
+
+      .focus-card {
+        padding: 14px 12px 18px 12px;
+        border-radius: var(--radius-md);
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
+      }
+
+      .card-header-line {
+        margin-bottom: 10px;
+      }
+
+      .card-badges-wrap {
+        gap: 4px;
+        flex-wrap: nowrap;
+        overflow: hidden;
+      }
+
+      .subdeck-badge, .pos-badge, .source-badge {
+        font-size: 10px;
+        padding: 2px 6px;
+      }
+
+      .theme-badge {
+        font-size: 10px;
+        padding: 2px 6px;
+        max-width: 95px;
+      }
+
+      .audio-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+      }
+
+      .word-title-area {
+        margin-bottom: 10px;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .word-text {
+        font-size: clamp(26px, 7.5vw, 34px);
+      }
+
+      .ipa-badge {
+        font-size: 12px;
+        padding: 3px 7px;
+      }
+
+      .false-cognate-alert {
+        padding: 10px 12px;
+        margin-bottom: 10px;
+        gap: 8px;
+      }
+
+      .alert-desc {
+        font-size: 13px;
+      }
+
+      .sense-container {
+        padding: 10px 12px;
+        margin-bottom: 10px;
+        gap: 6px;
+        border-radius: 8px; /* CRAFT: concentric nested radius outer 14px - padding 12px */
+      }
+
+      .sense-row {
+        gap: 8px;
+        font-size: 13.5px;
+        line-height: 1.4;
+      }
+
+      .example-container {
+        padding: 12px 14px;
+        margin-bottom: 12px;
+        gap: 8px;
+        border-radius: 0 8px 8px 0; /* CRAFT: concentric nested radius matching sense-container */
+      }
+
+      .example-sentence {
+        font-size: 15px;
+        line-height: 1.45;
+        color: #ffffff;
+      }
+
+      .example-pt-box {
+        font-size: 13.5px;
+        line-height: 1.4;
+        color: #cbd5e1;
+        font-style: italic;
+        padding-top: 8px;
+        border-top: 1px dashed rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+      }
+
+      /* Botões de Ação em fluxo natural integrado ao cartão - Nunca cobrem texto */
+      .actions-grid {
+        position: relative;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 8px;
+        margin-top: 14px;
+        margin-bottom: 2px;
+        padding: 0;
+        background: transparent;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+      }
+
+      .btn-action {
+        min-height: 50px;
+        padding: 6px 4px;
+        border-radius: 10px;
+        gap: 2px;
+      }
+
+      .btn-action .btn-icon {
+        font-size: 17px;
+        line-height: 1;
+      }
+
+      .btn-action .btn-text {
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .hotkey-hint {
+        display: none;
+      }
+
+      /* Tabela de Lote e Gaps no Mobile */
+      .batch-header-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        padding: 12px 14px;
+      }
+
+      .batch-buttons {
+        flex-direction: column;
+        width: 100%;
+      }
+
+      .btn-batch-action {
+        width: 100%;
+        text-align: center;
+        padding: 10px;
+      }
+
+      .table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .gaps-hero {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 14px;
+        padding: 16px 14px;
+      }
+
+      .gaps-hero div {
+        text-align: center;
+      }
+
+      .gaps-hero button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP HEADER -->
+  <header>
+    <div class="brand">
+      <div class="brand-icon">⚡</div>
+      <div class="brand-text">
+        <h1>Lexis</h1>
+        <span>Ecossistema de Idiomas • Triagem & Anki</span>
+      </div>
+    </div>
+
+    <!-- KPI STATS -->
+    <div class="kpi-container">
+      <div class="kpi-chip known" title="Palavras conhecidas">
+        <span class="kpi-dot"></span>
+        <span class="kpi-label">Conhecidos:</span>
+        <span class="val" id="stat-known">0</span>
+      </div>
+      <div class="kpi-chip unknown" title="Gaps de Ouro identificados para envio ao Anki">
+        <span class="kpi-dot"></span>
+        <span class="kpi-label">Gaps:</span>
+        <span class="val" id="stat-unknown">0</span>
+      </div>
+      <div class="kpi-chip doubt" title="Palavras com dúvida">
+        <span class="kpi-dot"></span>
+        <span class="kpi-label">Dúvidas:</span>
+        <span class="val" id="stat-doubt">0</span>
+      </div>
+    </div>
+
+  </header>
+
+  <!-- CONTROL TOOLBAR (MINIMALISTA) -->
+  <div class="toolbar">
+    <div class="toolbar-left">
+      <!-- Subdeck Select -->
+      <select class="select-custom" id="select-subdeck" onchange="onSubdeckChange()">
+        <optgroup label="── 📖 Vocabulário MWLD (Palavras) ──">
+          <option value="01k">Deck 01k • A1/A2 (Fundamentos Top 1.000)</option>
+          <option value="02k">Deck 02k • A2 (Sobrevivência Top 2.000)</option>
+          <option value="03k">Deck 03k • B1 (Intermediário Top 3.000)</option>
+          <option value="04k">Deck 04k • B1+ (Expressividade Top 4.000)</option>
+          <option value="05k">Deck 05k • B2 (Corporativo Top 5.000)</option>
+          <option value="06k">Deck 06k • B2+ (Fluência Top 6.000)</option>
+          <option value="07k">Deck 07k • C1 (Culto Top 7.000)</option>
+          <option value="08k">Deck 08k • C1 (Domínio Top 8.000)</option>
+          <option value="09k">Deck 09k • C1+ (Acadêmico Top 9.000)</option>
+          <option value="10k">Deck 10k • C1/C2 (Nativo Top 10.000)</option>
+          <option value="all">🌐 Todos os Decks (Global • 66.000 frases)</option>
+        </optgroup>
+        <optgroup label="── ⚡ Estruturas & Chunks Nativos ──">
+          <option value="pv-top150">🎯 Top 150 Phrasal Verbs Mais Usados</option>
+          <option value="pv-all">📚 Phrasal Verbs • Acervo Completo (5.300+)</option>
+          <option value="collocations">🔗 Collocations • Oxford (6.400+)</option>
+          <option value="idioms">💡 Idioms & Expressões Cotidianas (1.500+)</option>
+        </optgroup>
+      </select>
+    </div>
+
+    <div class="toolbar-right">
+      <div class="view-mode-tabs">
+        <button class="tab-btn active" id="tab-focus" onclick="switchView('focus')">⚡ Modo Foco</button>
+        <button class="tab-btn" id="tab-batch" onclick="switchView('batch')">📋 Modo Grade</button>
+        <button class="tab-btn" id="tab-gaps" onclick="switchView('gaps')">📦 Fila do Anki <span class="badge-count" id="header-gap-count" style="display:none; font-size:11px; padding:1px 6px; border-radius:10px; background:rgba(0,242,254,0.2); color:#00f2fe; margin-left:4px;">0</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN AREA -->
+  <main>
+
+    <!-- DASHBOARD DE PROGRESSO & NÍVEL CEFR (SLIM & CLEAN) -->
+    <div class="dashboard-progress-card">
+      <div class="progress-top-row">
+        <div class="progress-left-info">
+          <span class="cefr-badge" id="deck-cefr-badge">🎯 <span id="deck-cefr-text">01K • A1/A2</span></span>
+          <span class="user-level-badge" id="user-global-level-badge">📊 <span id="user-global-level-text">Nível B1</span></span>
+        </div>
+        <div class="deck-metrics-text" id="deck-metrics-text">
+          Carregando...
+        </div>
+      </div>
+      <div class="progress-bar-wrapper">
+        <div class="progress-bar-fill" id="focus-progress-fill"></div>
+      </div>
+    </div>
+
+    <!-- ==============================================
+         VIEW 1: MODO FOCO / CARTÃO RÁPIDO (1 POR 1)
+         ============================================== -->
+    <div id="view-focus">
+      
+      <div class="focus-card" id="focus-card">
+        <!-- LINHA DE CATEGORIA & ÁUDIO -->
+        <div class="card-header-line">
+          <div class="card-badges-wrap">
+            <span class="subdeck-badge" id="focus-subdeck">01K</span>
+            <span class="pos-badge" id="focus-pos">VERB</span>
+            <span class="theme-badge" id="focus-theme" title="Tema">Conversação</span>
+            <span class="source-badge source-mwld" id="focus-source" title="Fonte da frase">📖 MWLD</span>
+          </div>
+          <div class="audio-action-wrap">
+            <button class="jev-btn" id="btn-jev-analyze" title="Diagnóstico Cognitivo TypeSafe Jev IA (Tecla J)" onclick="triggerJevAnalysis()">
+              <span>✨</span> <span>Jev IA [J]</span>
+            </button>
+            <button class="audio-btn" id="focus-audio-btn" title="Ouvir pronúncia nativa (Tecla A)" onclick="playCurrentAudio()">
+              <span>🔊</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- PALAVRA & PRONÚNCIA -->
+        <div class="word-title-area">
+          <div class="word-text" id="focus-word">charge</div>
+          <div class="ipa-badge" id="focus-ipa">/ˈtʃɑːrdʒ/</div>
+          <span class="badge-false-friend" id="focus-badge-false-friend" style="display: none;">⚠️ Falso Amigo</span>
+        </div>
+
+        <!-- DIAGNÓSTICO COGNITIVO COM TYPESAFE JEV IA -->
+        <div class="jev-insight-panel" id="focus-jev-panel" style="display: none;">
+          <div class="jev-panel-header">
+            <div class="jev-panel-title">
+              <span>✨</span> <span>Diagnóstico Cognitivo Jev IA</span>
+            </div>
+            <div class="jev-panel-badges" id="focus-jev-badges"></div>
+          </div>
+          <div id="focus-jev-body"></div>
+        </div>
+
+        <!-- ALERTA DE FALSO COGNATO (SE HOUVER) -->
+        <div class="false-cognate-alert" id="focus-false-cognate" style="display: none;">
+          <div class="alert-icon">⚠️</div>
+          <div class="alert-content">
+            <div class="alert-title">Alerta de Falso Cognato (Falso Amigo)</div>
+            <div class="alert-desc" id="focus-false-cognate-text"></div>
+          </div>
+        </div>
+
+        <!-- SIGNIFICADO (DEFINIÇÕES EN & PT) -->
+        <div class="sense-container">
+          <div class="sense-row">
+            <span class="tag-lang tag-en">EN</span>
+            <div class="def-en" id="focus-def-en">to formally accuse someone of a crime</div>
+          </div>
+          <div class="sense-row">
+            <span class="tag-lang tag-pt">PT</span>
+            <div class="def-pt" id="focus-def-pt">acusar formalmente alguém de um crime</div>
+          </div>
+        </div>
+
+        <!-- CONTEXTO & TRADUÇÃO -->
+        <div class="example-container">
+          <div class="example-header">
+            <span class="example-label">Frase de Contexto</span>
+            <div style="display: inline-flex; align-items: center; gap: 6px;">
+              <button id="btn-curate-example" class="btn-cycle" onclick="curateSentenceWithJev()" title="Curar e escolher a melhor frase i+1 com Jev IA" style="display: none; background: rgba(147, 51, 234, 0.2); border-color: rgba(168, 85, 247, 0.45); color: #e9d5ff;">
+                <span aria-hidden="true">✨</span> <span>Curar com Jev</span>
+              </button>
+              <button id="btn-cycle-example" class="btn-cycle" onclick="cycleExample()" title="Alternar entre frases contextuais disponíveis (Tecla E)" style="display: none;">
+                <span aria-hidden="true">🔄</span> <span>Outro Exemplo [E]</span>
+              </button>
+            </div>
+          </div>
+          <div class="example-sentence" id="focus-example">
+            The police decided to <span class="highlight-target">charge</span> the suspect with theft.
+          </div>
+          <div class="example-pt-box">
+            <span class="tag-lang tag-pt">PT</span>
+            <div id="focus-example-pt">A polícia decidiu acusar o suspeito de roubo.</div>
+          </div>
+        </div>
+
+        <!-- AÇÕES PRINCIPAIS: CONHEÇO, NÃO CONHEÇO, TENHO DÚVIDA -->
+        <div class="actions-grid">
+          <button class="btn-action btn-known" onclick="evaluateCurrent('conhecido')">
+            <span class="btn-icon">🟢</span>
+            <span class="btn-text">Conheço</span>
+            <span class="hotkey-hint">[1/C/→]</span>
+          </button>
+          <button class="btn-action btn-unknown" onclick="evaluateCurrent('desconhecido')">
+            <span class="btn-icon">🔴</span>
+            <span class="btn-text">Não Sei</span>
+            <span class="hotkey-hint">[2/N/←]</span>
+          </button>
+          <button class="btn-action btn-doubt" onclick="evaluateCurrent('duvida')">
+            <span class="btn-icon">🟡</span>
+            <span class="btn-text">Dúvida</span>
+            <span class="hotkey-hint">[3/D/↓]</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ==============================================
+         VIEW 2: MODO GRADE EM LOTE (BATCH MATRIX)
+         ============================================== -->
+    <div id="view-batch">
+      <!-- FILTROS E PESQUISA EXCLUSIVOS DO MODO GRADE -->
+      <div class="batch-filter-row" style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; background: rgba(255, 255, 255, 0.03); padding: 12px 14px; border-radius: var(--radius-md); border: 1px solid rgba(255, 255, 255, 0.08);">
+        <select class="select-custom" id="select-status" onchange="reloadWords()" style="flex: 1; min-width: 160px;">
+          <option value="pending">Apenas Pendentes (Não avaliados)</option>
+          <option value="all">Todas as Palavras</option>
+          <option value="desconhecido">Apenas Gaps (Não Conheço)</option>
+          <option value="duvida">Apenas Dúvidas</option>
+          <option value="conhecido">Apenas Conhecidas</option>
+        </select>
+
+        <select class="select-custom" id="select-pos" onchange="reloadWords()" style="flex: 1; min-width: 140px;">
+          <option value="all">Todas as Classes</option>
+          <option value="verb">Verbos</option>
+          <option value="noun">Substantivos</option>
+          <option value="adjective">Adjetivos</option>
+          <option value="adverb">Advérbios</option>
+        </select>
+
+        <input type="text" class="input-search" id="input-search" placeholder="🔍 Buscar em todas as frases (66k acervo)..." oninput="debounceSearch()" title="Pesquisa em todas as 66.000 frases e palavras do banco" style="flex: 2; min-width: 200px;">
+      </div>
+
+      <div class="batch-header-bar">
+        <div>
+          <span style="font-weight: 700; font-size: 15px;" id="batch-info-text">Exibindo Lote de 25 palavras</span>
+          <span style="font-size: 12px; color: var(--text-dim); margin-left: 10px;">Dica: Marque todas como conhecidas e altere apenas as exceções!</span>
+        </div>
+        <div class="batch-buttons">
+          <button class="btn-batch-action" id="btn-auto-approve-cognates" onclick="autoApproveBatchCognates()" style="background: rgba(147, 51, 234, 0.25); border: 1px solid rgba(168, 85, 247, 0.45); color: #c084fc; font-weight: 700;" title="Auto-aprovar cognatos transparentes do lote com TypeSafe Jev">✨ Auto-Aprovar Cognatos (Jev)</button>
+          <button class="btn-batch-action btn-batch-all-known" id="btn-mark-batch-remaining" onclick="batchMarkAllKnown()" title="Marca as palavras restantes deste lote como conhecidas, preservando as que você marcou como Não Conheço ou Dúvida">⚡ Marcar Restantes como Conhecidas</button>
+          <button class="btn-batch-action btn-batch-save" onclick="saveBatchEvaluations()">💾 Salvar Lote e Próxima Página</button>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 180px;">Palavra & Classe</th>
+              <th style="width: 140px;">Pronúncia</th>
+              <th>Sentido Específico</th>
+              <th>Exemplo de Contexto & Tradução</th>
+              <th style="width: 220px; text-align: center;">Status</th>
+            </tr>
+          </thead>
+          <tbody id="batch-table-body">
+            <!-- Linhas geradas dinamicamente via JavaScript -->
+          </tbody>
+        </table>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+        <button class="btn-skip" onclick="prevBatchPage()">⬅️ Página Anterior</button>
+        <span id="batch-pagination-info" style="font-size: 13px; color: var(--text-dim);">Página 1</span>
+        <button class="btn-skip" onclick="nextBatchPage()">Próxima Página ➡️</button>
+      </div>
+    </div>
+
+    <!-- ==============================================
+         VIEW 3: GAPS DO ANKI (QUEUE VIEW)
+         ============================================== -->
+    <div id="view-gaps">
+      <div class="gaps-hero">
+        <div>
+          <h2>Gaps de Ouro Acumulados</h2>
+          <p>Palavras e acepções marcadas como "Não Conheço". Prontas para injeção no Anki com áudio, tema e conformidade I+1.</p>
+          <div style="margin-top: 10px; display: flex; gap: 16px; font-size: 13px;">
+            <span style="color: #34d399; font-weight: 600;">🚀 Prontos para Injetar: <b id="gaps-stat-ready">0</b></span>
+            <span style="color: #fbbf24; font-weight: 600;">⏳ Aguardando Frase i+1: <b id="gaps-stat-waiting">0</b></span>
+            <span style="color: #38bdf8; font-weight: 600;">✓ Injetados: <b id="gaps-stat-injected">0</b></span>
+          </div>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+          <button class="btn-skip" style="border: 1px solid rgba(56, 189, 248, 0.4); color: #38bdf8; padding: 10px 14px; font-size: 13px; font-weight: 600;" onclick="enrichAllGaps()">
+            <span id="enrich-spinner" style="display:none;">⏳ </span>🔍 Buscar Frases
+          </button>
+          
+          <div style="display: flex; align-items: center; background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 8px; padding: 5px 10px;">
+            <span style="font-size: 12px; color: #94a3b8; margin-right: 6px; font-weight: 600;">Qtd:</span>
+            <select id="select-inject-qty" onchange="updateInjectButtonLabel()" style="background: transparent; color: #38bdf8; border: none; font-size: 13px; font-weight: 700; outline: none; cursor: pointer;">
+              <option value="5">5 mais importantes</option>
+              <option value="10" selected>10 mais importantes</option>
+              <option value="15">15 mais importantes</option>
+              <option value="20">20 mais importantes</option>
+              <option value="30">30 mais importantes</option>
+              <option value="50">50 mais importantes</option>
+              <option value="all">Todas as prontas</option>
+            </select>
+          </div>
+
+          <button class="btn-inject-anki" id="btn-inject-anki-view" style="font-size: 14px; padding: 10px 20px; font-weight: 700;" onclick="injectSelectedGapsToAnki()">
+            🚀 Injetar 10 Mais Importantes
+          </button>
+        </div>
+      </div>
+
+      <div style="background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: var(--radius-sm); padding: 10px 16px; font-size: 13px; color: #fef3c7; display: flex; align-items: center; gap: 10px;">
+        <span style="font-size: 16px;">🔒</span>
+        <span><b>Garantia Didática i+1:</b> Palavras sem frases de contexto autênticas ou sem definições prontas permanecem retidas aqui como <i>Aguardando Frase i+1</i> e <b>nunca</b> são injetadas vazias no Anki.</span>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 120px;">Prioridade</th>
+              <th style="width: 150px;">Termo</th>
+              <th style="width: 80px;">Classe</th>
+              <th>Definição / Sentido</th>
+              <th>Frase Proposta & Tema</th>
+              <th style="width: 130px;">Status Anki</th>
+            </tr>
+          </thead>
+          <tbody id="gaps-table-body">
+            <!-- Linhas de Gaps geradas dinamicamente -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <div id="toast-container"></div>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    let currentWords = [];
+    let currentIndex = 0;
+    let currentBatchOffset = 0;
+    const batchLimit = 25;
+    let batchLocalStates = {};
+    let currentAudioObj = null;
+    let searchDebounceTimeout = null;
+    let currentDeckStats = null;
+
+    // Inicialização Inteligente: Carrega automaticamente o deck ativo em estudo (não concluído)
+    document.addEventListener("DOMContentLoaded", async () => {
+      setupKeyboardShortcuts();
+
+      const statusData = await fetchStatus();
+
+      // Determinar o deck atual sendo estudado
+      const select = document.getElementById("select-subdeck");
+      const activeServerDeck = (statusData && statusData.active_subdeck) || "02k";
+      const completedDecks = new Set((statusData && statusData.completed_subdecks) || []);
+      const savedDeck = localStorage.getItem("lexi_selected_subdeck");
+
+      let targetDeck = activeServerDeck;
+      // Se houver preferência salva e ela NÃO for um deck já 100% concluído:
+      if (savedDeck && !completedDecks.has(savedDeck)) {
+        const exists = Array.from(select.options).some(o => o.value === savedDeck);
+        if (exists) {
+          targetDeck = savedDeck;
+        }
+      }
+
+      select.value = targetDeck;
+      localStorage.setItem("lexi_selected_subdeck", targetDeck);
+
+      await loadWords(0);
+    });
+
+    // Notificações Toast
+    function showToast(msg, isSuccess = true) {
+      const container = document.getElementById("toast-container");
+      const toast = document.createElement("div");
+      toast.className = "toast";
+      toast.style.borderColor = isSuccess ? "var(--accent-cyan)" : "var(--color-unknown)";
+      toast.innerHTML = `<span>${isSuccess ? '✓' : '⚠️'}</span> <span>${msg}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    // Carregar Estatísticas Gerais do Mapa
+    async function fetchStatus() {
+      try {
+        const res = await fetch("/api/status");
+        const data = await res.json();
+        if (data.stats) {
+          document.getElementById("stat-known").innerText = data.stats.acepcoes_conhecidas || 0;
+          document.getElementById("stat-unknown").innerText = data.stats.acepcoes_desconhecidas || 0;
+          document.getElementById("stat-doubt").innerText = data.stats.acepcoes_duvida || 0;
+        }
+        const readyCount = (data.ready_gaps !== undefined) ? data.ready_gaps : (data.unlinked_gaps || 0);
+        const gapEl = document.getElementById("header-gap-count");
+        if (gapEl) {
+          gapEl.innerText = readyCount;
+          gapEl.style.display = readyCount > 0 ? "inline-block" : "none";
+        }
+        return data;
+      } catch (err) {
+        console.error("Erro ao buscar status:", err);
+        return null;
+      }
+    }
+
+    // Carregar Palavras da API (Filtros silenciosos automáticos sem poluição)
+    async function loadWords(offset = 0) {
+      const subdeck = document.getElementById("select-subdeck").value;
+      const status = document.getElementById("select-status").value;
+      const pos = document.getElementById("select-pos").value;
+      const search = document.getElementById("input-search").value.trim();
+
+      // Skip stopwords e group_by_word sempre ativos silenciosamente por padrão
+      const url = `/api/words?subdeck=${subdeck}&status=${status}&pos=${pos}&skip_functional=true&group_by_word=true&search=${encodeURIComponent(search)}&limit=${batchLimit}&offset=${offset}`;
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+        currentWords = data.words || [];
+        currentIndex = 0;
+        currentBatchOffset = offset;
+
+        // Atualizar Dashboard de Métricas
+        if (data.deck_stats) {
+          currentDeckStats = data.deck_stats;
+          updateDashboardStats(currentDeckStats);
+        }
+
+        // Atualizar views
+        renderCurrentFocusCard();
+        renderBatchTable(data.total || 0);
+      } catch (err) {
+        console.error("Erro ao carregar palavras:", err);
+      }
+    }
+
+    function updateDashboardStats(ds) {
+      // CEFR Badge do Deck
+      if (ds.cefr) {
+        const cefrEl = document.getElementById("deck-cefr-text");
+        if (cefrEl) cefrEl.innerText = `${ds.subdeck.toUpperCase()} • ${ds.cefr.code}`;
+      }
+      
+      // Nível Global Estimado do Usuário
+      if (ds.user_level) {
+        const userEl = document.getElementById("user-global-level-text");
+        if (userEl) userEl.innerText = `Nível ${ds.user_level.code}`;
+      }
+
+      // Contador e Porcentagem
+      const evalCount = ds.evaluated || 0;
+      const totalCount = ds.total || 0;
+      const pct = ds.percent || 0;
+
+      const metricsEl = document.getElementById("deck-metrics-text");
+      if (metricsEl) metricsEl.innerText = `${pct}% (${evalCount}/${totalCount})`;
+      const fillEl = document.getElementById("focus-progress-fill");
+      if (fillEl) fillEl.style.width = `${pct}%`;
+    }
+
+    function onSubdeckChange() {
+      const subdeck = document.getElementById("select-subdeck").value;
+      localStorage.setItem("lexi_selected_subdeck", subdeck);
+      currentBatchOffset = 0;
+      loadWords(0);
+    }
+
+    function reloadWords() {
+      currentBatchOffset = 0;
+      loadWords(0);
+    }
+
+    function debounceSearch() {
+      clearTimeout(searchDebounceTimeout);
+      searchDebounceTimeout = setTimeout(() => {
+        reloadWords();
+      }, 300);
+    }
+
+    // Função de Highlight Dinâmico da Palavra Alvo na Frase
+    function highlightWordInSentence(sentence, word, extraSearch = "") {
+      if (!sentence) return "";
+      let html = "";
+      
+      // Se o MWLD já destacou a palavra na frase com <i> ou <b>, converte para o highlight luminoso
+      if (/<[bi]>[^<]+<\/[bi]>/i.test(sentence)) {
+        html = sentence.replace(/<([bi])>([^<]+)<\/\1>/gi, '<span class="highlight-target">$2</span>');
+      } else {
+        const clean = sentence.replace(/<[^>]+>/g, '');
+        if (!word) {
+          html = clean;
+        } else if (word.includes(" ")) {
+          // Highlight inteligente de Chunks / Expressões / Phrasal Verbs
+          const parts = word.trim().split(/\s+/);
+          const head = parts[0];
+          const tail = parts.slice(1).map(p => p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join("\\s+");
+
+          const irregularMap = {
+            'say': ['said'], 'go': ['went', 'gone', 'going', 'goes'], 'see': ['saw', 'seen', 'seeing', 'sees'],
+            'make': ['made', 'making', 'makes'], 'take': ['took', 'taken', 'taking', 'takes'],
+            'come': ['came', 'coming', 'comes'], 'know': ['knew', 'known', 'knowing', 'knows'],
+            'get': ['got', 'gotten', 'getting', 'gets'], 'give': ['gave', 'given', 'giving', 'gives'],
+            'find': ['found', 'finding', 'finds'], 'think': ['thought', 'thinking', 'thinks'],
+            'tell': ['told', 'telling', 'tells'], 'become': ['became', 'becoming', 'becomes'],
+            'leave': ['left', 'leaving', 'leaves'], 'feel': ['felt', 'feeling', 'feels'],
+            'bring': ['brought', 'bringing', 'brings'], 'buy': ['bought', 'buying', 'buys'],
+            'teach': ['taught', 'teaching', 'teaches'], 'write': ['wrote', 'written', 'writing', 'writes'],
+            'run': ['ran', 'running', 'runs'], 'stand': ['stood', 'standing', 'stands'],
+            'lose': ['lost', 'losing', 'loses'], 'pay': ['paid', 'paying', 'pays'],
+            'meet': ['met', 'meeting', 'meets'], 'sit': ['sat', 'sitting', 'sits'],
+            'speak': ['spoke', 'spoken', 'speaking', 'speaks'], 'read': ['read', 'reading', 'reads'],
+            'break': ['broke', 'broken', 'breaking', 'breaks'], 'blow': ['blew', 'blown', 'blowing', 'blows'],
+            'call': ['called', 'calling', 'calls'], 'turn': ['turned', 'turning', 'turns'],
+            'look': ['looked', 'looking', 'looks'], 'put': ['putting', 'puts'],
+            'keep': ['kept', 'keeping', 'keeps'], 'set': ['setting', 'sets'],
+            'hold': ['held', 'holding', 'holds'], 'fall': ['fell', 'fallen', 'falling', 'falls'],
+            'cut': ['cutting', 'cuts'], 'let': ['letting', 'lets'],
+            'pick': ['picked', 'picking', 'picks'], 'work': ['worked', 'working', 'works'],
+            'catch': ['caught', 'catching', 'catches'], 'carry': ['carried', 'carrying', 'carries'],
+            'clean': ['cleaned', 'cleaning', 'cleans'], 'clear': ['cleared', 'clearing', 'clears'],
+            'hang': ['hung', 'hanged', 'hanging', 'hangs'], 'hand': ['handed', 'handing', 'hands'],
+            'kick': ['kicked', 'kicking', 'kicks'], 'lay': ['laid', 'laying', 'lays'],
+            'wear': ['wore', 'worn', 'wearing', 'wears'], 'shut': ['shutting', 'shuts'],
+            'pull': ['pulled', 'pulling', 'pulls'], 'pass': ['passed', 'passing', 'passes'],
+            'point': ['pointed', 'pointing', 'points'], 'drop': ['dropped', 'dropping', 'drops'],
+            'eat': ['ate', 'eaten', 'eating', 'eats'], 'end': ['ended', 'ending', 'ends'],
+            'figure': ['figured', 'figuring', 'figures'], 'fill': ['filled', 'filling', 'fills'],
+            'cheer': ['cheered', 'cheering', 'cheers'], 'dress': ['dressed', 'dressing', 'dresses'],
+            'grow': ['grew', 'grown', 'growing', 'grows'], 'calm': ['calmed', 'calming', 'calms'],
+            'show': ['showed', 'shown', 'showing', 'shows']
+          };
+
+          const headForms = [head, `${head}s`, `${head}ed`, `${head}ing`];
+          const irr = irregularMap[head.toLowerCase()];
+          if (irr) headForms.push(...irr);
+          const headPattern = `(?:${headForms.join('|')})`;
+
+          // Suporta chunks contíguos ou com pronomes/objetos intercalados (ex: "turn it off", "pick him up")
+          const chunkPattern = new RegExp(`\\b(${headPattern}(?:\\s+[a-zA-Z0-9'\\-]{1,15}){0,2}\\s+${tail})\\b`, 'gi');
+          if (chunkPattern.test(clean)) {
+            html = clean.replace(chunkPattern, '<span class="highlight-target">$1</span>');
+          } else {
+            const litPattern = new RegExp(`\\b(${word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\\s+/g, '\\s+')})\\b`, 'gi');
+            if (litPattern.test(clean)) {
+              html = clean.replace(litPattern, '<span class="highlight-target">$1</span>');
+            } else {
+              html = clean;
+            }
+          }
+        } else {
+          // Casar a palavra, plural e flexões regulares
+          const pattern = new RegExp(`\\b(${word}[a-zA-Z]*)\\b`, 'gi');
+          if (pattern.test(clean)) {
+            html = clean.replace(pattern, '<span class="highlight-target">$1</span>');
+          } else {
+            const irregularMap = {
+              'say': ['said'], 'go': ['went', 'gone'], 'see': ['saw', 'seen'], 'make': ['made'],
+              'take': ['took', 'taken'], 'come': ['came'], 'know': ['knew', 'known'],
+              'get': ['got', 'gotten'], 'give': ['gave', 'given'], 'find': ['found'],
+              'think': ['thought'], 'tell': ['told'], 'become': ['became'], 'leave': ['left'],
+              'feel': ['felt'], 'bring': ['brought'], 'buy': ['bought'], 'teach': ['taught'],
+              'write': ['wrote', 'written'], 'run': ['ran'], 'stand': ['stood'], 'lose': ['lost'],
+              'pay': ['paid'], 'meet': ['met'], 'sit': ['sat'], 'speak': ['spoke', 'spoken'], 'read': ['read']
+            };
+            const irr = irregularMap[word.toLowerCase()];
+            let replaced = false;
+            if (irr) {
+              for (const v of irr) {
+                const pIrr = new RegExp(`\\b(${v})\\b`, 'gi');
+                if (pIrr.test(clean)) {
+                  html = clean.replace(pIrr, '<span class="highlight-target">$1</span>');
+                  replaced = true;
+                  break;
+                }
+              }
+            }
+            if (!replaced) html = clean;
+          }
+        }
+      }
+
+      // Se houver termo pesquisado diferente da palavra-alvo (ex: busca em todas as frases), destaca também
+      if (extraSearch && extraSearch.trim().length >= 2) {
+        const s = extraSearch.trim();
+        if (s.toLowerCase() !== (word || "").toLowerCase()) {
+          const sPat = new RegExp(`\\b(${s}[a-zA-Z]*)\\b`, 'gi');
+          html = html.replace(sPat, '<span class="highlight-target" style="box-shadow: 0 0 10px rgba(245,158,11,0.5); border: 1px dashed #f59e0b; color: #fef08a;" title="Termo pesquisado">$1</span>');
+        }
+      }
+
+      return html;
+    }
+
+    // Formatar e Destacar a Palavra Traduzida em Português
+    function formatPortugueseSentence(ptSentence, enWord, defPt) {
+      if (!ptSentence) return "";
+      const wLower = (enWord || "").toLowerCase().trim();
+      
+      // 1. Se já contém <b> ou <i> da tradução com tag preservada
+      if (/<[bi]>[^<]+<\/[bi]>/i.test(ptSentence)) {
+        let cleaned = ptSentence;
+
+        // Separar pronomes oblíquos da tag (ex: <b>me ajudaria</b> -> me <b>ajudaria</b>)
+        if (!['me', 'him', 'her', 'us', 'them', 'it', 'you'].includes(wLower)) {
+          cleaned = cleaned.replace(/<([bi])>(me|te|se|nos|vos|lhe|lhes|o|a|os|as)\s+([^<]+)<\/\1>/gi, '$2 <$1>$3</$1>');
+        }
+
+        // Separar artigos/preposições da tag (ex: <b>um carro</b> -> um <b>carro</b>)
+        if (!['a', 'an', 'the', 'of', 'in', 'on', 'at', 'to', 'for', 'by'].includes(wLower)) {
+          cleaned = cleaned.replace(/<([bi])>(o|a|os|as|um|uma|uns|umas|de|do|da|dos|das|em|no|na|nos|nas|ao|à|aos|às|por|pelo|pela|pelos|pelas)\s+([^<]+)<\/\1>/gi, '$2 <$1>$3</$1>');
+        }
+
+        return cleaned.replace(/<[bi]>([^<]+)<\/[bi]>/gi, '<span class="highlight-target">$1</span>');
+      }
+
+      const clean = ptSentence.replace(/<[^>]+>/g, '');
+      if (!enWord) return clean;
+
+      // 2. Heurística gramatical precisa para verbos modais e auxiliares
+      if (wLower === 'would') {
+        const condMatch = clean.match(/\b([a-záàâãéèêíïóôõöúçñ]+(?:ria|riam|ríamos))\b/i);
+        if (condMatch) {
+          return clean.replace(new RegExp(`\\b(${condMatch[1]})\\b`, 'i'), '<span class="highlight-target">$1</span>');
+        }
+      } else if (wLower === 'will' || wLower === "'ll") {
+        const futMatch = clean.match(/\b([a-záàâãéèêíïóôõöúçñ]+(?:rá|rão|rei|remos)|irá|irão|vai|vão)\b/i);
+        if (futMatch) {
+          return clean.replace(new RegExp(`\\b(${futMatch[1]})\\b`, 'i'), '<span class="highlight-target">$1</span>');
+        }
+      }
+
+      // 3. Mapeamento de termos frequentes de alta precisão
+      const commonTranslations = {
+        'this': ['esta', 'este', 'isto', 'essa', 'esse', 'isso'],
+        'that': ['aquela', 'aquele', 'aquilo', 'essa', 'esse', 'isso'],
+        'these': ['estas', 'estes', 'essas', 'esses'],
+        'those': ['aquelas', 'aqueles', 'essas', 'esses'],
+        'say': ['disse', 'dizer', 'diz', 'disseram', 'falou'],
+        'said': ['disse', 'disseram', 'falou'],
+        'not': ['não', 'nao'],
+        'what': ['qual', 'que', 'o que'],
+        'who': ['quem'],
+        'where': ['onde', 'aonde'],
+        'when': ['quando'],
+        'why': ['por que', 'porque', 'por quê'],
+        'how': ['como', 'quanto'],
+        'all': ['todos', 'todas', 'todo', 'toda', 'tudo'],
+        'one': ['um', 'uma', 'único'],
+        'can': ['pode', 'podem', 'posso', 'consigo', 'consegue'],
+        'could': ['poderia', 'poderiam', 'podia', 'pude', 'pôde'],
+        'should': ['deveria', 'deveriam', 'deve'],
+        'must': ['deve', 'devem', 'precisa'],
+        'have': ['tem', 'ter', 'tinha', 'têm', 'possuo'],
+        'has': ['tem', 'possui'],
+        'had': ['tinha', 'tinham', 'havia'],
+        'do': ['fazer', 'faz', 'fez', 'faço'],
+        'did': ['fez', 'fizeram', 'fiz'],
+        'see': ['ver', 'vê', 'vejo', 'viu'],
+        'saw': ['viu', 'viram'],
+        'push': ['empurrar', 'empurra', 'empurrou', 'pressionar'],
+        'pull': ['puxar', 'puxa', 'puxou'],
+        'drive': ['dirigir', 'dirige', 'cravou', 'pregar']
+      };
+
+      const candidates = commonTranslations[wLower] || [];
+      for (const cand of candidates) {
+        const p = new RegExp(`\\b(${cand})\\b`, 'i');
+        if (p.test(clean)) {
+          return clean.replace(p, '<span class="highlight-target">$1</span>');
+        }
+      }
+
+      return clean;
+    }
+
+    let currentExampleIndex = 0;
+    let currentSentenceAudioUrl = "";
+
+    function getWordSentences(item) {
+      if (item && item.sentences && item.sentences.length > 0) {
+        return item.sentences;
+      }
+      const s = [];
+      if (item && item.example_1) {
+        let srcLabel = "Dicionário MWLD";
+        if (item.chunk_type === "phrasal_verb" || item.pos === "phrasal verb") srcLabel = "Phrasal Verbs in Context";
+        else if (item.chunk_type === "collocation" || item.pos === "collocation") srcLabel = "Oxford Collocations";
+        else if (item.chunk_type === "idiom" || item.pos === "idiom") srcLabel = "Native Idioms & Chunks";
+
+        s.push({
+          en: item.example_1,
+          pt: item.example_1_pt || "",
+          source: srcLabel,
+          theme: item.theme_1 || item.theme || "Conversação & Geral",
+          audio: item.audio_url || "",
+          nid: null
+        });
+      }
+      if (item && item.example_2) {
+        s.push({
+          en: item.example_2,
+          pt: item.example_2_pt || "",
+          source: "Dicionário MWLD",
+          theme: item.theme_2 || item.theme || "Conversação & Geral",
+          audio: item.audio_url || "",
+          nid: null
+        });
+      }
+      if (s.length === 0 && item) {
+        s.push({
+          en: `The ${item.word} is important.`,
+          pt: "Frase de contexto.",
+          source: "Geral",
+          theme: "Conversação & Geral",
+          audio: item.audio_url || "",
+          nid: null
+        });
+      }
+      return s;
+    }
+
+    function displayExample(sentences, idx, item, searchVal) {
+      if (!sentences || sentences.length === 0) return;
+      const safeIdx = Math.max(0, Math.min(idx, sentences.length - 1));
+      const chosen = sentences[safeIdx];
+
+      // Atualizar tema e indicador de origem da frase de forma elegante e independente
+      const themeEl = document.getElementById("focus-theme");
+      if (themeEl) {
+        const cleanTheme = chosen.theme || item.theme || "Conversação";
+        themeEl.innerText = cleanTheme;
+        themeEl.title = cleanTheme;
+      }
+      const sourceEl = document.getElementById("focus-source");
+      if (sourceEl) {
+        sourceEl.style.display = "inline-block";
+        if (chosen.source === "Mairo Vergara") {
+          sourceEl.innerText = "🎙️ Mairo";
+          sourceEl.className = "source-badge source-mairo";
+          sourceEl.title = "Frase do Acervo Mairo Vergara";
+        } else {
+          sourceEl.innerText = "📖 MWLD";
+          sourceEl.className = "source-badge source-mwld";
+          sourceEl.title = "Dicionário Merriam-Webster";
+        }
+      }
+
+      // Exemplo em inglês com destaque
+      const exEl = document.getElementById("focus-example");
+      if (exEl) {
+        exEl.innerHTML = highlightWordInSentence(chosen.en, item.word, searchVal);
+      }
+
+      // Tradução em português
+      const ptEl = document.getElementById("focus-example-pt");
+      if (ptEl) {
+        const cleanEn = chosen.en.replace(/<[^>]+>/g, '').trim().toLowerCase();
+        if (chosen.pt && chosen.pt.trim().toLowerCase() !== cleanEn) {
+          ptEl.innerHTML = formatPortugueseSentence(chosen.pt, item.word, item.definition_pt);
+        } else {
+          ptEl.innerText = "Traduzindo frase contextual...";
+          fetchSentenceTranslation(item, safeIdx);
+        }
+      }
+
+      // Botão de ciclar com contagem real e botão de curadoria Jev
+      const btnCycle = document.getElementById("btn-cycle-example");
+      const btnCurate = document.getElementById("btn-curate-example");
+      if (sentences.length > 1) {
+        if (btnCycle) {
+          btnCycle.style.display = "inline-flex";
+          btnCycle.innerHTML = `<span aria-hidden="true">🔄</span> <span>Outro Exemplo [E] (${safeIdx + 1}/${sentences.length})</span>`;
+        }
+        if (btnCurate) {
+          btnCurate.style.display = "inline-flex";
+          btnCurate.innerHTML = `<span>✨</span> <span>Curar com Jev</span>`;
+        }
+      } else {
+        if (btnCycle) btnCycle.style.display = "none";
+        if (btnCurate) btnCurate.style.display = "none";
+      }
+
+      // Áudio da frase
+      currentSentenceAudioUrl = chosen.audio || item.audio_url || "";
+    }
+
+    async function curateSentenceWithJev() {
+      const item = getFocusItem();
+      if (!item) return;
+      const sentences = getWordSentences(item);
+      if (!sentences || sentences.length <= 1) return;
+
+      const btn = document.getElementById("btn-curate-example");
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = `<span>⏳</span> <span>Curando...</span>`;
+      }
+
+      try {
+        const res = await fetch("/api/curate-sentence", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            word: item.word,
+            definition: item.definition_en || "",
+            sentences: sentences
+          })
+        });
+        const data = await res.json();
+        if (data.success && data.best_sentence) {
+          const foundIdx = sentences.findIndex(s => s.en.trim() === data.best_sentence.en.trim());
+          if (foundIdx !== -1) {
+            currentExampleIndex = foundIdx;
+            displayExample(sentences, currentExampleIndex, item);
+            showToast(`✨ Jev escolheu a melhor frase i+1 (${foundIdx + 1}/${sentences.length}) com contexto autêntico!`, true);
+          }
+        } else {
+          showToast("Aviso: Jev Curador não pôde avaliar no momento.", false);
+        }
+      } catch (err) {
+        console.error("Erro na curadoria Jev:", err);
+        showToast("Erro ao conectar à API Jev", false);
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = `<span>✨</span> <span>Curada [Jev]</span>`;
+        }
+      }
+    }
+
+    // Formatação elegante de definições (remove tags brutas e destaca padrões de uso)
+    function formatDefinitionHtml(rawText) {
+      if (!rawText) return "";
+      let clean = String(rawText).trim();
+      clean = clean.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+      // Trata padrões de uso como [often + <i>of</i>] ou [frequentemente + <i>do</i>]
+      clean = clean.replace(/\[([^\]]+)\]/g, (match, p1) => {
+        const inner = p1.replace(/<([bi])>([^<]+)<\/\1>/gi, '<$1 class="def-em">$2</$1>');
+        return `<span class="def-usage-tag">[${inner}]</span> `;
+      });
+      // Converte tags <i> e <b> residuais para classe estilizada
+      clean = clean.replace(/<([bi])>([^<]+)<\/\1>/gi, '<$1 class="def-em">$2</$1>');
+      clean = clean.replace(/<br\s*\/?>\s*/gi, '<br>');
+      clean = clean.replace(/(<br>){2,}/gi, '<br>');
+      clean = clean.replace(/^<br>|<br>$/gi, '');
+      return clean.trim();
+    }
+
+    // ==========================================
+    // RENDERIZAÇÃO DO MODO FOCO (1-POR-1)
+    // ==========================================
+    function renderCurrentFocusCard() {
+      const card = document.getElementById("focus-card");
+      if (card) {
+        card.style.transition = "none";
+        card.style.transform = "none";
+        card.style.opacity = "1";
+        card.style.borderColor = "";
+        card.style.boxShadow = "";
+      }
+      const searchVal = document.getElementById("input-search").value.trim();
+
+      if (!currentWords || currentWords.length === 0 || currentIndex >= currentWords.length) {
+        if (searchVal) {
+          document.getElementById("focus-word").innerText = searchVal;
+          document.getElementById("focus-subdeck").innerText = "NOVO";
+          document.getElementById("focus-pos").innerText = "CUSTOM";
+          document.getElementById("focus-ipa").innerText = "";
+          document.getElementById("focus-def-en").innerText = `Nenhum exemplo nativo encontrado para "${searchVal}" no acervo de 66.000 notas.`;
+          document.getElementById("focus-def-pt").innerHTML = `<button class="btn-primary" style="margin-top:10px; padding: 8px 16px; font-size:13px;" onclick="addCustomWord('${searchVal.replace(/'/g, "\\'")}')">➕ Adicionar "${searchVal}" como Gap I+1 no Anki</button>`;
+          document.getElementById("focus-example").innerText = `Exemplo: I heard "${searchVal}" today.`;
+          document.getElementById("focus-example-pt").innerText = "Clique no botão acima para cadastrar sua própria frase e significado.";
+          document.getElementById("focus-theme").innerText = "✍️ Vocabulário do Dia a Dia";
+          document.getElementById("focus-false-cognate").style.display = "none";
+          const fcBadge = document.getElementById("focus-badge-false-friend");
+          if (fcBadge) fcBadge.style.display = "none";
+          return;
+        }
+
+        const curDeck = document.getElementById("select-subdeck").value;
+        const isFinished = currentDeckStats && currentDeckStats.remaining === 0;
+        document.getElementById("focus-word").innerText = isFinished ? "🎉 Deck Concluído!" : "Lote Concluído!";
+        document.getElementById("focus-ipa").innerText = isFinished ? "100%" : "✓";
+        document.getElementById("focus-def-en").innerText = isFinished
+          ? `Todas as palavras do Deck ${curDeck.toUpperCase()} foram avaliadas com sucesso!`
+          : "Todas as palavras deste lote foram avaliadas.";
+
+        let nextBtnHtml = "";
+        if (curDeck !== "all" && curDeck !== "10k") {
+          nextBtnHtml = `<button class="btn-primary" style="margin-top:12px; padding: 10px 20px; font-size:13px; font-weight:700; cursor:pointer;" onclick="advanceToNextSubdeck()">Avançar para o Próximo Deck 🚀</button>`;
+        }
+        document.getElementById("focus-def-pt").innerHTML = (isFinished && nextBtnHtml)
+          ? nextBtnHtml
+          : "Selecione outro deck ou avance para a próxima página.";
+        document.getElementById("focus-example").innerText = isFinished ? "Parabéns pelo progresso!" : "Excelente trabalho de triagem!";
+        document.getElementById("focus-example-pt").innerText = "Nenhuma pendência neste segmento.";
+        document.getElementById("focus-theme").innerText = isFinished ? "🏆 100% Dominado" : "Concluído";
+        document.getElementById("focus-false-cognate").style.display = "none";
+        const fcBadgeFin = document.getElementById("focus-badge-false-friend");
+        if (fcBadgeFin) fcBadgeFin.style.display = "none";
+        const jevPanelFinished = document.getElementById("focus-jev-panel");
+        if (jevPanelFinished) jevPanelFinished.style.display = "none";
+        return;
+      }
+
+      const item = currentWords[currentIndex];
+      document.getElementById("focus-word").innerText = item.word;
+
+      const subdeckBadge = document.getElementById("focus-subdeck");
+      const posBadge = document.getElementById("focus-pos");
+
+      let sLabel = (item.subdeck || "").toUpperCase();
+      if (item.subdeck === "pv-top150") sLabel = "🎯 TOP 150 PV";
+      else if (item.subdeck === "pv-all") sLabel = "📚 PHRASAL VERBS";
+      else if (item.subdeck === "collocations") sLabel = "🔗 COLLOCATIONS";
+      else if (item.subdeck === "idioms") sLabel = "💡 IDIOMS";
+      subdeckBadge.innerText = sLabel;
+
+      let posLabel = (item.pos || "WORD").toUpperCase();
+      posBadge.innerText = posLabel;
+
+      if (item.chunk_type === "phrasal_verb" || item.pos === "phrasal verb") {
+        posBadge.style.background = "rgba(16, 185, 129, 0.22)";
+        posBadge.style.color = "#34d399";
+        posBadge.style.borderColor = "rgba(16, 185, 129, 0.4)";
+      } else if (item.chunk_type === "collocation" || item.pos === "collocation") {
+        posBadge.style.background = "rgba(99, 102, 241, 0.22)";
+        posBadge.style.color = "#a5b4fc";
+        posBadge.style.borderColor = "rgba(99, 102, 241, 0.4)";
+      } else if (item.chunk_type === "idiom" || item.pos === "idiom") {
+        posBadge.style.background = "rgba(217, 70, 239, 0.22)";
+        posBadge.style.color = "#f0abfc";
+        posBadge.style.borderColor = "rgba(217, 70, 239, 0.4)";
+      } else {
+        posBadge.style.background = "";
+        posBadge.style.color = "";
+        posBadge.style.borderColor = "";
+      }
+      document.getElementById("focus-ipa").innerText = item.ipa ? `/${item.ipa}/` : "";
+      const themeEl = document.getElementById("focus-theme");
+      if (themeEl) {
+        themeEl.innerText = item.theme ? `🏷️ ${item.theme}` : "🌐 Conversação";
+      }
+      document.getElementById("focus-def-en").innerHTML = formatDefinitionHtml(item.definition_en);
+      document.getElementById("focus-def-pt").innerHTML = formatDefinitionHtml(item.definition_pt || "Carregando tradução...");
+
+      // Falso Cognato Preventivo
+      const fcAlert = document.getElementById("focus-false-cognate");
+      const fcBadge = document.getElementById("focus-badge-false-friend");
+      if (item.false_cognate) {
+        document.getElementById("focus-false-cognate-text").innerText = item.false_cognate;
+        fcAlert.style.display = "flex";
+        if (fcBadge) fcBadge.style.display = "inline-flex";
+      } else {
+        fcAlert.style.display = "none";
+        if (fcBadge) fcBadge.style.display = "none";
+      }
+
+      // Reset Painel Jev
+      const jevPanel = document.getElementById("focus-jev-panel");
+      if (jevPanel) jevPanel.style.display = "none";
+      const btnJev = document.getElementById("btn-jev-analyze");
+      if (btnJev) btnJev.innerHTML = `<span>✨</span> <span>Jev IA [J]</span>`;
+
+      currentExampleIndex = 0;
+      const sentences = getWordSentences(item);
+      displayExample(sentences, currentExampleIndex, item, searchVal);
+
+      // Se a definição PT não estiver em cache, traduzir
+      if (!item.definition_pt) {
+        fetchDefTranslation(item);
+      }
+
+      // Atualizar contagem dinâmica nos botões de marcar restantes do lote
+      const batchRem = (currentWords && currentWords.length > currentIndex) ? (currentWords.length - currentIndex) : 0;
+      const btnFocusBatch = document.getElementById("btn-focus-mark-batch");
+      if (btnFocusBatch) {
+        btnFocusBatch.innerHTML = `⚡ Marcar Restantes do Lote (${batchRem}) como Conhecidas <span style="opacity:0.7; font-size:11px;">[K]</span>`;
+      }
+      const btnHeaderBatch = document.getElementById("btn-mark-batch-remaining");
+      if (btnHeaderBatch) {
+        btnHeaderBatch.innerText = `⚡ Marcar Restantes do Lote (${batchRem}) como Conhecidas`;
+      }
+
+      // IMPORTANTE: SEM AUTO-PLAY! O áudio só toca se o usuário clicar ou apertar tecla A
+    }
+
+    async function fetchDefTranslation(item) {
+      try {
+        const res = await fetch("/api/translate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: item.definition_en })
+        });
+        const data = await res.json();
+        if (data.translation) {
+          item.definition_pt = data.translation;
+          if (currentWords[currentIndex] && currentWords[currentIndex].id === item.id) {
+            document.getElementById("focus-def-pt").innerHTML = formatDefinitionHtml(data.translation);
+          }
+        }
+      } catch (e) {
+        console.error("Erro ao traduzir definição:", e);
+      }
+    }
+
+    async function fetchSentenceTranslation(item, exIdx = 0) {
+      if (!item) return;
+      const sentence = (item.sentences && item.sentences[exIdx]) ? item.sentences[exIdx].en : (exIdx === 0 ? item.example_1 : item.example_2);
+      if (!sentence) return;
+
+      try {
+        const res = await fetch("/api/translate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: sentence, word: item.word })
+        });
+        const data = await res.json();
+        const cleanRaw = sentence.replace(/<[^>]+>/g, '').trim();
+        if (data.translation && data.translation.trim().toLowerCase() !== cleanRaw.toLowerCase()) {
+          if (item.sentences && item.sentences[exIdx]) {
+            item.sentences[exIdx].pt = data.translation;
+          }
+          if (exIdx === 0) {
+            item.example_1_pt = data.translation;
+          } else {
+            item.example_2_pt = data.translation;
+          }
+          if (currentWords[currentIndex] && currentWords[currentIndex].id === item.id && currentExampleIndex === exIdx) {
+            document.getElementById("focus-example-pt").innerHTML = formatPortugueseSentence(data.translation, item.word, item.definition_pt);
+          }
+        }
+      } catch (e) {
+        console.error("Erro ao traduzir frase:", e);
+      }
+    }
+
+    // Tocar áudio apenas manualmente com feedback visual
+    function playCurrentAudio() {
+      if (!currentWords || currentIndex >= currentWords.length) return;
+      const item = currentWords[currentIndex];
+      const targetAudio = currentSentenceAudioUrl || (item && item.audio_url);
+      const btn = document.getElementById("focus-audio-btn");
+      if (targetAudio) {
+        if (currentAudioObj) {
+          currentAudioObj.pause();
+        }
+        currentAudioObj = new Audio(targetAudio);
+        if (btn) btn.classList.add("playing");
+        currentAudioObj.onended = () => { if (btn) btn.classList.remove("playing"); };
+        currentAudioObj.onerror = () => {
+          if (btn) btn.classList.remove("playing");
+          showToast("Áudio indisponível para esta frase", false);
+        };
+        currentAudioObj.play().catch(e => {
+          if (btn) btn.classList.remove("playing");
+          console.log("Áudio bloqueado:", e);
+        });
+      } else {
+        showToast("Áudio indisponível para esta palavra", false);
+      }
+    }
+
+    // ==========================================
+    // DIAGNÓSTICO COGNITIVO COM TYPESAFE JEV IA
+    // ==========================================
+    async function triggerJevAnalysis() {
+      if (!currentWords || currentIndex >= currentWords.length) return;
+      const item = currentWords[currentIndex];
+      const btn = document.getElementById("btn-jev-analyze");
+      const panel = document.getElementById("focus-jev-panel");
+
+      if (panel.style.display !== "none") {
+        panel.style.display = "none";
+        return;
+      }
+
+      // Se já analisado nesta sessão, renderiza instantaneamente da memória (Zero latência)
+      if (item.jev_analysis) {
+        renderJevAnalysisContent(item.jev_analysis);
+        panel.style.display = "flex";
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = `<span aria-hidden="true">⏳</span> <span>Analisando Jev...</span>`;
+
+      try {
+        const sentences = getWordSentences(item);
+        const curSentence = (sentences && sentences[currentExampleIndex]) ? sentences[currentExampleIndex].en : (item.example_1 || "");
+
+        const res = await fetch("/api/jev-analyze", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            word: item.word,
+            definition: item.definition_en || "",
+            sentence: curSentence
+          })
+        });
+        const data = await res.json();
+        btn.innerHTML = `<span>✨</span> <span>Jev IA [J]</span>`;
+
+        if (!data.success || !data.analysis) {
+          showToast("Aviso: Jev IA temporariamente indisponível.", false);
+          return;
+        }
+
+        item.jev_analysis = data.analysis;
+        renderJevAnalysisContent(item.jev_analysis);
+        panel.style.display = "flex";
+      } catch (err) {
+        btn.innerHTML = `<span>✨</span> <span>Jev IA [J]</span>`;
+        console.error("Erro ao invocar Jev:", err);
+        showToast("Erro ao conectar à Jev IA", false);
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    function renderJevAnalysisContent(an) {
+      const badges = document.getElementById("focus-jev-badges");
+      const body = document.getElementById("focus-jev-body");
+
+      let cogBadge = "";
+      if (an.cognate_type === "transparent") {
+        cogBadge = `<span class="badge-jev-cognate badge-cognate-transparent">🟢 Cognato Transparente (${Math.round(an.cognate_confidence * 100)}%)</span>`;
+      } else if (an.cognate_type === "false_friend") {
+        cogBadge = `<span class="badge-jev-cognate badge-cognate-false_friend">⚠️ FALSO COGNATO (${Math.round(an.cognate_confidence * 100)}%)</span>`;
+      } else {
+        cogBadge = `<span class="badge-jev-cognate badge-cognate-opaque">⚪ Raiz Opaca / Distinta</span>`;
+      }
+
+      badges.innerHTML = cogBadge;
+
+      // Ativação preventiva de falso amigo se Jev detectar alto risco
+      if (an.cognate_type === "false_friend" || an.confusion_risk >= 0.70) {
+        const fcBadge = document.getElementById("focus-badge-false-friend");
+        if (fcBadge) fcBadge.style.display = "inline-flex";
+        const fcAlert = document.getElementById("focus-false-cognate");
+        if (fcAlert && (!item.false_cognate || fcAlert.style.display === "none")) {
+          document.getElementById("focus-false-cognate-text").innerText = `Alerta Jev (${Math.round(an.cognate_confidence * 100)}% conf.): Alto risco de confusão ou falso amigo para falantes de português!`;
+          fcAlert.style.display = "flex";
+        }
+      }
+
+      const riskLabel = an.confusion_risk < 0.35 
+        ? `<span style="color:#34d399;">Baixo (${an.confusion_risk})</span>` 
+        : (an.confusion_risk < 0.70 ? `<span style="color:#fbbf24;">Moderado (${an.confusion_risk})</span>` : `<span style="color:#f87171;">Alto (${an.confusion_risk})</span>`);
+
+      const sentQLabel = an.sentence_quality >= 1.4 
+        ? `<span style="color:#34d399;">🌟 Ótima para Flashcard (${an.sentence_quality})</span>` 
+        : (an.sentence_quality >= 0.8 ? `<span style="color:#fbbf24;">Boa Contextualização (${an.sentence_quality})</span>` : `<span style="color:#f87171;">Frase Genérica (${an.sentence_quality})</span>`);
+
+      const hookMap = {
+        "latin_root": "🔗 Conectar com a raiz cognata em português",
+        "contrast_warning": "🚫 Atenção ao contraste: memorize o que NÃO significa",
+        "vivid_scene": "🎬 Ancorar em cena visual ou ação física marcante",
+        "usage_pattern": "🧩 Focar na regência e combinação de palavras (collocation)"
+      };
+      const hookText = hookMap[an.pedagogical_hook] || "Fixação em repetição espaçada";
+
+      body.innerHTML = `
+        <div class="jev-panel-grid">
+          <div class="jev-metric-box">
+            <span class="jev-metric-title">Risco de Confusão</span>
+            <span class="jev-metric-val">${riskLabel}</span>
+          </div>
+          <div class="jev-metric-box">
+            <span class="jev-metric-title">Qualidade da Frase i+1</span>
+            <span class="jev-metric-val">${sentQLabel}</span>
+          </div>
+          <div class="jev-metric-box" style="grid-column: 1 / -1;">
+            <span class="jev-metric-title">Estratégia Mnemônica Sugerida</span>
+            <span class="jev-metric-val" style="color: #c084fc; font-weight: 600;">${hookText}</span>
+          </div>
+        </div>
+      `;
+    }
+
+    async function autoApproveBatchCognates() {
+      if (!currentWords || currentWords.length === 0) {
+        showToast("Nenhuma palavra pendente no lote.", false);
+        return;
+      }
+      const pendingWords = currentWords.slice(currentIndex).map(w => w.word);
+      if (pendingWords.length === 0) {
+        showToast("Todas as palavras do lote já foram avaliadas.", false);
+        return;
+      }
+
+      const btn = document.getElementById("btn-auto-approve-cognates");
+      if (btn) btn.innerHTML = `<span>⏳</span> <span>Analisando com Jev...</span>`;
+
+      try {
+        const res = await fetch("/api/auto-approve-cognates", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ words: pendingWords })
+        });
+        const data = await res.json();
+        if (btn) btn.innerHTML = `✨ Auto-Aprovar Cognatos (Jev)`;
+
+        if (data.success) {
+          const count = data.approved_count || 0;
+          if (count > 0) {
+            showToast(`🎉 Jev aprovou automaticamente ${count} cognatos transparentes!`, true);
+            await fetchStatus();
+            await loadWords(currentBatchOffset);
+          } else {
+            showToast("Nenhum cognato transparente óbvio encontrado nos termos restantes.", false);
+          }
+        }
+      } catch (e) {
+        if (btn) btn.innerHTML = `✨ Auto-Aprovar Cognatos (Jev)`;
+        console.error("Erro em autoApproveBatchCognates:", e);
+        showToast("Erro ao processar cognatos com Jev", false);
+      }
+    }
+
+    async function evaluateCurrent(status) {
+      if (!currentWords || currentIndex >= currentWords.length) return;
+
+      // Feedback tátil háptico em smartphones/tablets
+      if (window.navigator && window.navigator.vibrate) {
+        try {
+          if (status === "conhecido") window.navigator.vibrate(18);
+          else if (status === "desconhecido") window.navigator.vibrate([30, 45, 30]);
+          else if (status === "duvida") window.navigator.vibrate(35);
+        } catch (e) {}
+      }
+
+      const item = currentWords[currentIndex];
+
+      const sentences = getWordSentences(item);
+      const safeIdx = Math.max(0, Math.min(currentExampleIndex, sentences.length - 1));
+      const chosenSent = sentences[safeIdx] || sentences[0];
+      const chosenEx = chosenSent.en;
+      const chosenNid = chosenSent.nid || null;
+      const subdeckVal = document.getElementById("select-subdeck").value;
+
+      const payload = {
+        id: item.id,
+        word: item.word,
+        pos: item.pos,
+        subdeck: subdeckVal,
+        definition_en: item.definition_en,
+        definition_pt: item.definition_pt,
+        example_1: chosenEx,
+        card_id: chosenNid,
+        status: status
+      };
+
+      // Atualização imediata local do progresso do deck (Zero lag)
+      if (currentDeckStats) {
+        currentDeckStats.evaluated++;
+        currentDeckStats.remaining = Math.max(0, currentDeckStats.remaining - 1);
+        currentDeckStats.percent = Math.min(100, Math.round((currentDeckStats.evaluated / currentDeckStats.total) * 100));
+        updateDashboardStats(currentDeckStats);
+      }
+
+      // Atualização imediata dos contadores do cabeçalho
+      if (status === "conhecido") {
+        const el = document.getElementById("stat-known");
+        if (el) el.innerText = parseInt(el.innerText || "0", 10) + 1;
+      } else if (status === "desconhecido") {
+        const el = document.getElementById("stat-unknown");
+        if (el) el.innerText = parseInt(el.innerText || "0", 10) + 1;
+      } else if (status === "duvida") {
+        const el = document.getElementById("stat-doubt");
+        if (el) el.innerText = parseInt(el.innerText || "0", 10) + 1;
+      }
+
+      // Atualização imediata da Fila do Anki e feedback ao usuário
+      if (status === "desconhecido" || status === "duvida") {
+        const gapEl = document.getElementById("header-gap-count");
+        if (gapEl) {
+          const cur = parseInt(gapEl.innerText || "0", 10) + 1;
+          gapEl.innerText = cur;
+          gapEl.style.display = "inline-block";
+        }
+        const actionLabel = status === "desconhecido" ? "Não Sei" : "Dúvida";
+        showToast(`📦 "${item.word}" (${actionLabel}) adicionado à Fila do Anki!`);
+      }
+
+      // Próxima carta instantaneamente (Zero delay)
+      currentIndex++;
+      if (currentIndex >= currentWords.length) {
+        const statusFilter = document.getElementById("select-status").value;
+        const nextOffset = (statusFilter === "pending") ? 0 : (currentBatchOffset + batchLimit);
+        loadWords(nextOffset);
+      } else {
+        renderCurrentFocusCard();
+      }
+
+      // Envio em background
+      try {
+        const res = await fetch("/api/evaluate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const evalRes = await res.json();
+        if (evalRes && evalRes.deck_stats) {
+          currentDeckStats = evalRes.deck_stats;
+          updateDashboardStats(currentDeckStats);
+        }
+        fetchStatus();
+      } catch (err) {
+        console.error("Erro ao salvar avaliação:", err);
+      }
+    }
+
+    function skipCurrent() {
+      if (currentIndex < currentWords.length - 1) {
+        currentIndex++;
+        renderCurrentFocusCard();
+      } else {
+        loadWords(currentBatchOffset + batchLimit);
+      }
+    }
+
+    function markBatchRemainingAsKnown() {
+      if (!currentWords || currentWords.length === 0) {
+        showToast("Nenhuma palavra carregada neste lote.", false);
+        return;
+      }
+
+      let markedCount = 0;
+      currentWords.forEach(item => {
+        // Preserva o que o usuário já marcou como desconhecido ou dúvida neste lote!
+        if (batchLocalStates[item.id] !== "desconhecido" && batchLocalStates[item.id] !== "duvida") {
+          batchLocalStates[item.id] = "conhecido";
+          markedCount++;
+        }
+      });
+
+      // Atualiza visualmente as caixas (pills) na tabela
+      const rows = document.querySelectorAll("#batch-table-body tr");
+      rows.forEach((tr, idx) => {
+        const item = currentWords[idx];
+        if (item && batchLocalStates[item.id] === "conhecido") {
+          const group = tr.querySelector(".status-toggle-group");
+          if (group) {
+            const btns = group.querySelectorAll(".pill-btn");
+            btns[0].classList.add("active-known");
+            btns[1].classList.remove("active-unknown");
+            btns[2].classList.remove("active-doubt");
+          }
+        }
+      });
+
+      // Se o usuário estiver no Modo Foco, alterna para o Modo Grade para que veja as caixas marcadas
+      const isFocusView = document.getElementById("view-focus").style.display !== "none";
+      if (isFocusView) {
+        switchView("batch");
+      }
+
+      showToast(`✓ ${markedCount} caixas marcadas como Conhecidas! Revise e clique em "Salvar Lote e Próxima Página".`);
+
+      // Destaque visual no botão de salvar para o usuário ver onde clicar
+      const saveBtn = document.querySelector(".btn-batch-save");
+      if (saveBtn) {
+        saveBtn.style.animation = "none";
+        saveBtn.offsetHeight; // trigger reflow
+        saveBtn.style.animation = "pulseSave 1.2s ease 2";
+      }
+    }
+
+    function advanceToNextSubdeck() {
+      const select = document.getElementById("select-subdeck");
+      const currentIdx = select.selectedIndex;
+      if (currentIdx < select.options.length - 1) {
+        select.selectedIndex = currentIdx + 1;
+        onSubdeckChange();
+        showToast(`🚀 Carregando ${select.options[select.selectedIndex].text}...`);
+      }
+    }
+
+    function cycleExample() {
+      if (!currentWords || currentIndex >= currentWords.length) return;
+      const item = currentWords[currentIndex];
+      const sentences = getWordSentences(item);
+      if (sentences.length <= 1) {
+        showToast("Esta palavra só possui 1 frase de exemplo disponível no momento.", false);
+        return;
+      }
+
+      currentExampleIndex = (currentExampleIndex + 1) % sentences.length;
+      const searchVal = document.getElementById("input-search").value.trim();
+      displayExample(sentences, currentExampleIndex, item, searchVal);
+      const chosen = sentences[currentExampleIndex];
+      showToast(`Frase ${currentExampleIndex + 1} de ${sentences.length} (${chosen.source})`);
+    }
+
+    async function addCustomWord(term) {
+      if (!term || !term.trim()) return;
+      const phrase = prompt(`Digite uma frase em inglês onde você viu ou ouviu '${term}':`, `I encountered '${term}' in my daily routine.`);
+      if (phrase === null) return;
+      const defPt = prompt(`Tradução ou significado em português de '${term}':`, term);
+      if (defPt === null) return;
+
+      try {
+        const res = await fetch("/api/evaluate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            word: term.trim(),
+            id: `${term.trim().toLowerCase()}_custom_${Date.now()}`,
+            pos: "custom",
+            definition_en: phrase.trim(),
+            definition_pt: defPt.trim(),
+            example_1: phrase.trim(),
+            status: "desconhecido"
+          })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(`🌟 '${term.trim()}' adicionado aos seus Gaps do Anki!`);
+          fetchStatus();
+          document.getElementById("input-search").value = "";
+          reloadWords();
+        }
+      } catch (err) {
+        showToast("Erro ao adicionar palavra customizada.", false);
+      }
+    }
+
+    async function flagIntruderWord() {
+      if (!currentWords || currentIndex >= currentWords.length) return;
+      const item = currentWords[currentIndex];
+      
+      const intruder = prompt(`Frase: "${document.getElementById("focus-example").innerText}"\n\nDigite qual palavra desconhecida você encontrou nesta frase para registrá-la como Gap I+1:`);
+      if (!intruder || !intruder.trim()) return;
+
+      try {
+        const res = await fetch("/api/flag-intruder", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            intruder: intruder.trim(),
+            target_word: item.word
+          })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(`🚩 Palavra '${intruder.trim()}' registrada como Gap de Ouro!`);
+          fetchStatus();
+          if (item.example_2) cycleExample();
+        }
+      } catch (err) {
+        showToast("Erro ao registrar palavra intrusa.", false);
+      }
+    }
+
+    // ==========================================
+    // RENDERIZAÇÃO DO MODO GRADE EM LOTE
+    // ==========================================
+    function renderBatchTable(total) {
+      const tbody = document.getElementById("batch-table-body");
+      tbody.innerHTML = "";
+      batchLocalStates = {};
+      const searchVal = document.getElementById("input-search").value.trim();
+
+      if (!currentWords || currentWords.length === 0) {
+        const tr = document.createElement("tr");
+        if (searchVal) {
+          tr.innerHTML = `
+            <td colspan="5" style="text-align:center; padding: 35px 20px; color: #94a3b8;">
+              <div style="font-size: 15px; font-weight: 600; color: #f1f5f9; margin-bottom: 8px;">Nenhuma ocorrência encontrada para "${searchVal}" em 66.000 frases.</div>
+              <div style="font-size: 13px; color: #64748b; margin-bottom: 14px;">Você pode adicionar este vocábulo do seu dia a dia diretamente aos seus Gaps.</div>
+              <button class="btn-primary" style="padding: 8px 18px; font-size:13px;" onclick="addCustomWord('${searchVal.replace(/'/g, "\\'")}')">➕ Adicionar "${searchVal}" como Gap I+1 no Anki</button>
+            </td>
+          `;
+        } else {
+          tr.innerHTML = `<td colspan="5" style="text-align:center; padding: 25px; color: #94a3b8;">Nenhum termo pendente neste filtro.</td>`;
+        }
+        tbody.appendChild(tr);
+        document.getElementById("batch-pagination-info").innerText = `0 resultados`;
+        return;
+      }
+
+      currentWords.forEach(item => {
+        batchLocalStates[item.id] = item.status || "pending";
+        const tr = document.createElement("tr");
+
+        const isKnown = batchLocalStates[item.id] === "conhecido";
+        const isUnknown = batchLocalStates[item.id] === "desconhecido";
+        const isDoubt = batchLocalStates[item.id] === "duvida";
+
+        const fcBadge = item.false_cognate ? `<span style="background:rgba(245,158,11,0.2);color:#fbbf24;font-size:10px;padding:2px 6px;border-radius:4px;margin-left:6px;" title="${item.false_cognate}">⚠️ Falso Amigo</span>` : '';
+        const themeBadge = `<span style="background:rgba(56,189,248,0.15);color:#7dd3fc;font-size:10px;padding:1px 6px;border-radius:4px;display:inline-block;margin-bottom:4px;">${item.theme || 'Geral'}</span>`;
+        const deckBadge = `<span class="subdeck-badge" style="font-size:9px; padding:1px 5px; margin-left:6px;">${item.subdeck.toUpperCase()}</span>`;
+
+        tr.innerHTML = `
+          <td>
+            <div class="table-word">
+              <span>${item.word}</span>
+              ${deckBadge}
+              ${fcBadge}
+            </div>
+            <div style="font-size: 11px; color: #93c5fd;">${item.pos}</div>
+          </td>
+          <td>
+            <div style="font-family: var(--font-mono); font-size: 12px; color: #38bdf8; display: flex; align-items: center; gap: 6px;">
+              <span>${item.ipa ? `/${item.ipa}/` : ''}</span>
+              ${item.audio_url ? `<button class="audio-btn" style="padding:2px 6px;font-size:11px;" onclick="playAudioUrl('${item.audio_url}')">🔊</button>` : ''}
+            </div>
+          </td>
+          <td>
+            <div style="font-size: 13px; color: #f8fafc; font-weight: 500;">${formatDefinitionHtml(item.definition_en)}</div>
+            <div style="font-size: 12px; color: #10b981; margin-top: 3px;">${formatDefinitionHtml(item.definition_pt || '')}</div>
+          </td>
+          <td>
+            ${themeBadge}
+            ${item.has_mairo ? `<span style="background: rgba(99, 102, 241, 0.2); color: #c7d2fe; border: 1px solid rgba(99, 102, 241, 0.35); padding: 1px 6px; border-radius: 4px; font-size: 10px; font-weight: 600; margin-left: 4px;">🎙️ ${item.total_sentences} frases</span>` : ''}
+            <div style="font-size: 13px; color: #cbd5e1;">${highlightWordInSentence(item.example_1 || '—', item.word, searchVal)}</div>
+            ${item.example_1_pt ? `<div style="font-size: 12px; color: #94a3b8; font-style: italic; margin-top: 3px;">${formatPortugueseSentence(item.example_1_pt, item.word, item.definition_pt)}</div>` : ''}
+          </td>
+          <td style="text-align: center;">
+            <div class="status-toggle-group">
+              <button class="pill-btn ${isKnown ? 'active-known' : ''}" onclick="setRowStatus('${item.id}', 'conhecido', this)">C</button>
+              <button class="pill-btn ${isUnknown ? 'active-unknown' : ''}" onclick="setRowStatus('${item.id}', 'desconhecido', this)">N</button>
+              <button class="pill-btn ${isDoubt ? 'active-doubt' : ''}" onclick="setRowStatus('${item.id}', 'duvida', this)">D</button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      const pageNum = Math.floor(currentBatchOffset / batchLimit) + 1;
+      const totalPages = Math.ceil(total / batchLimit) || 1;
+      document.getElementById("batch-pagination-info").innerText = `Página ${pageNum} de ${totalPages} (${total} termos encontrados)`;
+    }
+
+    function playAudioUrl(url) {
+      new Audio(url).play().catch(e => console.log("Áudio bloqueado:", e));
+    }
+
+    function setRowStatus(id, status, btnElement) {
+      batchLocalStates[id] = status;
+      const group = btnElement.parentElement;
+      group.querySelectorAll(".pill-btn").forEach(b => {
+        b.classList.remove("active-known", "active-unknown", "active-doubt");
+      });
+      if (status === "conhecido") btnElement.classList.add("active-known");
+      if (status === "desconhecido") btnElement.classList.add("active-unknown");
+      if (status === "duvida") btnElement.classList.add("active-doubt");
+    }
+
+    function batchMarkAllKnown() {
+      markBatchRemainingAsKnown();
+    }
+
+    async function saveBatchEvaluations() {
+      const itemsToSave = [];
+      currentWords.forEach(item => {
+        const st = batchLocalStates[item.id];
+        if (st && st !== "pending") {
+          itemsToSave.push({
+            id: item.id,
+            word: item.word,
+            pos: item.pos,
+            definition_en: item.definition_en,
+            definition_pt: item.definition_pt,
+            example_1: item.example_1,
+            status: st
+          });
+        }
+      });
+
+      if (itemsToSave.length === 0) {
+        showToast("Nenhuma alteração a salvar.");
+        nextBatchPage();
+        return;
+      }
+
+      showToast(`💾 Salvando ${itemsToSave.length} palavras do lote...`);
+
+      const subdeckVal = document.getElementById("select-subdeck").value;
+      try {
+        const res = await fetch("/api/batch-evaluate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ items: itemsToSave, subdeck: subdeckVal })
+        });
+        const data = await res.json();
+        if (data && data.deck_stats) {
+          currentDeckStats = data.deck_stats;
+          updateDashboardStats(currentDeckStats);
+        }
+        fetchStatus();
+        showToast(`✓ Salvas ${itemsToSave.length} palavras! Próximo lote carregado.`);
+        nextBatchPage();
+      } catch (err) {
+        console.error("Erro ao salvar lote:", err);
+        showToast("Erro ao salvar lote.", false);
+      }
+    }
+
+    function nextBatchPage() {
+      const statusFilter = document.getElementById("select-status").value;
+      if (statusFilter === "pending") {
+        currentBatchOffset = 0;
+      } else {
+        currentBatchOffset += batchLimit;
+      }
+      loadWords(currentBatchOffset);
+    }
+
+    function prevBatchPage() {
+      if (currentBatchOffset >= batchLimit) {
+        currentBatchOffset -= batchLimit;
+        loadWords(currentBatchOffset);
+      }
+    }
+
+    // ==========================================
+    // RENDERIZAÇÃO DA FILA DE GAPS DO ANKI
+    // ==========================================
+    async function loadGapsView() {
+      try {
+        const res = await fetch("/api/gaps");
+        const data = await res.json();
+        const tbody = document.getElementById("gaps-table-body");
+        tbody.innerHTML = "";
+
+        if (document.getElementById("gaps-stat-ready")) {
+          document.getElementById("gaps-stat-ready").innerText = data.ready_count || 0;
+          document.getElementById("gaps-stat-waiting").innerText = data.waiting_count || 0;
+          document.getElementById("gaps-stat-injected").innerText = data.injected_count || 0;
+        }
+
+        window.currentReadyGapsCount = data.ready_count || 0;
+        updateInjectButtonLabel();
+
+        const gapEl = document.getElementById("header-gap-count");
+        if (gapEl) {
+          gapEl.innerText = data.ready_count || 0;
+          gapEl.style.display = (data.ready_count || 0) > 0 ? "inline-block" : "none";
+        }
+
+        if (!data.gaps || data.gaps.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-dim); padding: 30px;">Nenhum gap registrado ainda. Continue triando no Modo Foco ou Grade!</td></tr>`;
+          return;
+        }
+
+        data.gaps.forEach(g => {
+          const tr = document.createElement("tr");
+
+          const prioLabel = g.priority_label || (g.subdeck ? `★ Top ${g.subdeck.toUpperCase()}` : 'Top 01K');
+          let prioStyle = "background: rgba(99, 102, 241, 0.15); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.3);";
+          if (g.subdeck === "01k" || g.importance_prio === 1) {
+            prioStyle = "background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.35);";
+          } else if (g.subdeck === "02k" || g.importance_prio === 2) {
+            prioStyle = "background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3);";
+          }
+          const prioBadge = `<span style="display:inline-block; padding: 3px 8px; border-radius: 6px; font-weight: 700; font-size: 11px; ${prioStyle}">${prioLabel}</span>`;
+
+          let statusBadge = "";
+          if (g.status_label === "injetado" || g.card_id) {
+            statusBadge = `<span style="display:inline-block; padding: 4px 10px; border-radius: 999px; background: rgba(56, 189, 248, 0.15); color: #38bdf8; font-weight: 700; font-size: 11px; border: 1px solid rgba(56, 189, 248, 0.3);">✓ Estudo Ativo</span>`;
+          } else if (g.status_label === "pronto") {
+            statusBadge = `<span style="display:inline-block; padding: 4px 10px; border-radius: 999px; background: rgba(16, 185, 129, 0.15); color: #34d399; font-weight: 700; font-size: 11px; border: 1px solid rgba(16, 185, 129, 0.3);">🚀 Pronto p/ Injetar</span>`;
+          } else {
+            statusBadge = `<span style="display:inline-block; padding: 4px 10px; border-radius: 999px; background: rgba(245, 158, 11, 0.15); color: #fbbf24; font-weight: 700; font-size: 11px; border: 1px solid rgba(245, 158, 11, 0.3);">⏳ Aguardando Frase i+1</span>`;
+          }
+
+          let typeBadge = "";
+          if (g.status === "duvida") {
+            typeBadge = `<span style="display:inline-block; margin-left: 6px; padding: 2px 7px; border-radius: 6px; background: rgba(245, 158, 11, 0.2); color: #fbbf24; font-size: 11px; font-weight: 600;">🟡 Dúvida</span>`;
+          } else if (g.status === "desconhecido") {
+            typeBadge = `<span style="display:inline-block; margin-left: 6px; padding: 2px 7px; border-radius: 6px; background: rgba(239, 68, 68, 0.2); color: #f87171; font-size: 11px; font-weight: 600;">🔴 Não Sei</span>`;
+          }
+
+          const hasValidPhrase = g.has_sentence && g.frase;
+          let iLevelBadge = "";
+          if (g.is_strict_i1) {
+            iLevelBadge = `<span style="display:inline-block; margin-left: 6px; padding: 2px 7px; border-radius: 6px; background: rgba(16, 185, 129, 0.2); color: #34d399; font-size: 10px; font-weight: 700; border: 1px solid rgba(16, 185, 129, 0.35);">✓ i+1 Puro</span>`;
+          } else if (g.extra_unknowns_count > 0) {
+            const badWords = (g.extra_unknowns || []).slice(0, 3).join(", ");
+            iLevelBadge = `<span style="display:inline-block; margin-left: 6px; padding: 2px 7px; border-radius: 6px; background: rgba(239, 68, 68, 0.2); color: #f87171; font-size: 10px; font-weight: 700; border: 1px solid rgba(239, 68, 68, 0.35);" title="Palavras desconhecidas extras: ${(g.extra_unknowns || []).join(', ')}">⚠️ ${g.i_level || 'i+2+'} (${badWords})</span>`;
+          }
+
+          const phraseHtml = hasValidPhrase 
+            ? `<div><span style="font-style: italic; color: #e2e8f0;">"${g.frase}"</span>${iLevelBadge}</div>`
+            : (g.frase 
+                ? `<div><span style="font-style: italic; color: #94a3b8;">"${g.frase}"</span>${iLevelBadge}<div style="color: #f87171; font-size: 11px; margin-top: 3px;">⚠️ Não é i+1 puro (requer curadoria)</div></div>`
+                : `<span style="font-style: italic; color: #64748b; font-size: 12px;">(Aguardando frase autêntica no acervo)</span>`);
+
+          const defPtHtml = g.definicao_pt ? `<div style="color: #10b981; font-size: 12px; margin-top: 2px;">${formatDefinitionHtml(g.definicao_pt)}</div>` : "";
+          const defHtml = g.has_def 
+            ? `<div style="color: #f1f5f9;">${formatDefinitionHtml(g.definicao)}</div>${defPtHtml}`
+            : `<div style="color: #fbbf24; font-style: italic; font-size: 13px;">(Aguardando definição pronta)</div>`;
+
+          tr.innerHTML = `
+            <td>${prioBadge}</td>
+            <td><b style="color: #ffffff; font-family: var(--font-heading); font-size: 15px;">${g.termo_display || g.termo}</b>${typeBadge}</td>
+            <td><span class="pos-badge">${g.pos || 'geral'}</span></td>
+            <td>${defHtml}</td>
+            <td>${phraseHtml}</td>
+            <td>${statusBadge}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        console.error("Erro ao carregar gaps:", err);
+      }
+    }
+
+    function updateInjectButtonLabel() {
+      const sel = document.getElementById("select-inject-qty");
+      const btn = document.getElementById("btn-inject-anki-view");
+      if (!btn) return;
+      const ready = window.currentReadyGapsCount || 0;
+      btn.disabled = ready === 0;
+      btn.style.opacity = ready === 0 ? "0.5" : "1";
+
+      if (!sel) return;
+      const val = sel.value;
+      if (val === "all") {
+        btn.innerHTML = `🚀 Injetar Todas as Prontas (${ready})`;
+      } else {
+        const qty = parseInt(val, 10);
+        const toInject = Math.min(qty, ready);
+        btn.innerHTML = `🚀 Injetar ${toInject > 0 ? toInject : qty} Mais Importantes`;
+      }
+    }
+
+    async function enrichAllGaps() {
+      const spinner = document.getElementById("enrich-spinner");
+      if (spinner) spinner.style.display = "inline";
+      showToast("🔍 Buscando frases e definições no acervo (Mairo Vergara e MWLD)...");
+
+      try {
+        const res = await fetch("/api/enrich-gaps", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({})
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(`✓ ${data.message || 'Termos enriquecidos com sucesso!'}`);
+          loadGapsView();
+          fetchStatus();
+        } else {
+          showToast(`Erro ao enriquecer: ${data.error || 'Falha'}`, false);
+        }
+      } catch (err) {
+        showToast("Erro na requisição de enriquecimento.", false);
+      } finally {
+        if (spinner) spinner.style.display = "none";
+      }
+    }
+
+    // ==========================================
+    // INJEÇÃO NO ANKI & SINCRONIZAÇÃO
+    // ==========================================
+    async function injectSelectedGapsToAnki() {
+      const btnView = document.getElementById("btn-inject-anki-view");
+      const sel = document.getElementById("select-inject-qty");
+      const qty = sel ? sel.value : "10";
+
+      if (btnView) { btnView.disabled = true; btnView.style.opacity = "0.6"; }
+      showToast(`🚀 Injetando as palavras mais importantes no Anki e baixando áudios...`);
+
+      try {
+        const res = await fetch("/api/inject-anki", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ limit: qty })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(`🎉 ${data.message || 'Cartas injetadas e sincronizadas!'}`);
+          fetchStatus();
+          loadGapsView();
+        } else {
+          showToast(data.message || data.error || 'Falha ao injetar no Anki', false);
+        }
+      } catch (err) {
+        showToast("Erro ao conectar com o AnkiConnect.", false);
+      } finally {
+        if (btnView) { btnView.disabled = false; btnView.style.opacity = "1"; }
+        updateInjectButtonLabel();
+      }
+    }
+
+    function injectAllGapsToAnki() {
+      return injectSelectedGapsToAnki();
+    }
+
+    // ==========================================
+    // CONTROLE DE TELAS (SWITCH VIEW)
+    // ==========================================
+    function switchView(mode) {
+      document.getElementById("view-focus").style.display = mode === "focus" ? "flex" : "none";
+      document.getElementById("view-batch").style.display = mode === "batch" ? "flex" : "none";
+      document.getElementById("view-gaps").style.display = mode === "gaps" ? "flex" : "none";
+
+      const dashCard = document.querySelector(".dashboard-progress-card");
+      if (dashCard) {
+        dashCard.style.display = mode === "gaps" ? "none" : "block";
+      }
+
+      document.getElementById("tab-focus").classList.toggle("active", mode === "focus");
+      document.getElementById("tab-batch").classList.toggle("active", mode === "batch");
+      document.getElementById("tab-gaps").classList.toggle("active", mode === "gaps");
+
+      if (mode === "gaps") {
+        loadGapsView();
+      }
+    }
+
+    // ==========================================
+    // ATALHOS DE TECLADO GLOBAIS
+    // ==========================================
+    function setupKeyboardShortcuts() {
+      window.addEventListener("keydown", (e) => {
+        if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
+
+        const isFocusView = document.getElementById("view-focus").style.display !== "none";
+        if (!isFocusView) return;
+
+        const key = e.key.toLowerCase();
+        if (key === "1" || key === "c" || e.key === "ArrowRight") {
+          e.preventDefault();
+          evaluateCurrent("conhecido");
+        } else if (key === "2" || key === "n" || e.key === "ArrowLeft") {
+          e.preventDefault();
+          evaluateCurrent("desconhecido");
+        } else if (key === "3" || key === "d" || e.key === "ArrowDown") {
+          e.preventDefault();
+          evaluateCurrent("duvida");
+        } else if (key === " " || key === "p") {
+          e.preventDefault();
+          skipCurrent();
+        } else if (key === "k") {
+          e.preventDefault();
+          markBatchRemainingAsKnown();
+        } else if (key === "a") {
+          e.preventDefault();
+          playCurrentAudio();
+        } else if (key === "i") {
+          e.preventDefault();
+          flagIntruderWord();
+        } else if (key === "e") {
+          e.preventDefault();
+          cycleExample();
+        } else if (key === "j") {
+          e.preventDefault();
+          triggerJevAnalysis();
+        }
+      });
+
+      // CRAFT: Enable instant :active pseudo-class button-press feedback on iOS Safari
+      window.addEventListener("touchstart", () => {}, { passive: true });
+    }
+  </script>
+</body>
+</html>

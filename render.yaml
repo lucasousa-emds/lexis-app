@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: lexis
+    env: python
+    plan: free
+    region: ohio
+    buildCommand: pip install -r requirements.txt
+    startCommand: python vocab_review_server.py
+    envVars:
+      - key: TYPESAFE_API_KEY
+        sync: false
