@@ -1706,6 +1706,8 @@ class RequestHandler(BaseHTTPRequestHandler):
 
         if path == "/api/evaluate":
             self.handle_api_evaluate(data)
+        elif path == "/api/revert-evaluate":
+            self.handle_api_revert_evaluate(data)
         elif path == "/api/batch-evaluate":
             self.handle_api_batch_evaluate(data)
         elif path == "/api/mark-remaining-known":
@@ -2352,6 +2354,50 @@ class RequestHandler(BaseHTTPRequestHandler):
             "success": True,
             "word": word,
             "status": status,
+            "stats": KNOWLEDGE_MAP.get("estatisticas"),
+            "deck_stats": deck_stats
+        })
+
+    def handle_api_revert_evaluate(self, data):
+        word = data.get("word", "").strip()
+        sentido_id = data.get("id", "")
+        previous_status = data.get("previous_status")
+        subdeck = data.get("subdeck", "01k")
+
+        if not word:
+            self.send_json({"error": "Parâmetro word ausente"}, 400)
+            return
+
+        w_norm = word.lower()
+        vocab_map = KNOWLEDGE_MAP.setdefault("mapa_vocabulario", {})
+
+        if w_norm in vocab_map:
+            if not previous_status:
+                # O item era pendente/não avaliado antes: remover a acepção avaliada
+                if sentido_id:
+                    vocab_map[w_norm]["acepcoes"] = [
+                        ac for ac in vocab_map[w_norm].get("acepcoes", [])
+                        if ac.get("sentido_id") != sentido_id
+                    ]
+                # Se não sobrou nenhuma outra acepção, remove o termo do mapa
+                if not vocab_map[w_norm].get("acepcoes"):
+                    del vocab_map[w_norm]
+                else:
+                    vocab_map[w_norm]["status_geral"] = vocab_map[w_norm]["acepcoes"][0].get("status", "pending")
+            else:
+                # Restaura o status anterior
+                vocab_map[w_norm]["status_geral"] = previous_status
+                for ac in vocab_map[w_norm].get("acepcoes", []):
+                    if ac.get("sentido_id") == sentido_id or not sentido_id:
+                        ac["status"] = previous_status
+                        break
+
+        save_knowledge_map_memory()
+        deck_stats = get_deck_progress(subdeck)
+        self.send_json({
+            "success": True,
+            "word": word,
+            "reverted_to": previous_status,
             "stats": KNOWLEDGE_MAP.get("estatisticas"),
             "deck_stats": deck_stats
         })

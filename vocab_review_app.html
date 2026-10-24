@@ -1019,33 +1019,85 @@
       box-shadow: 0 6px 18px rgba(245, 158, 11, 0.3);
     }
 
-    .skip-bar {
-      margin-top: 16px;
+    /* CONTROLES AUXILIARES DO MODO FOCO (VOLTAR CARTA & PULAR) */
+    .focus-aux-controls {
       display: flex;
-      justify-content: center;
+      gap: 12px;
+      margin-top: 14px;
+      width: 100%;
     }
 
-    .btn-skip {
-      background: transparent;
-      border: 1px solid var(--border-subtle);
-      color: var(--text-dim);
-      padding: 7px 18px;
-      border-radius: var(--radius-sm);
-      font-size: 12px;
-      font-weight: 500;
-      cursor: pointer;
+    .btn-aux {
+      flex: 1;
       display: flex;
       align-items: center;
-      gap: 6px;
-      transition: transform 100ms ease-out, color 120ms ease, border-color 120ms ease;
+      justify-content: center;
+      gap: 8px;
+      padding: 11px 14px;
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #94a3b8;
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 120ms ease;
+      user-select: none;
       -webkit-tap-highlight-color: transparent;
     }
-    .btn-skip:hover {
-      color: var(--text-muted);
-      border-color: rgba(255, 255, 255, 0.2);
+
+    .btn-aux:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.22);
+      color: #f1f5f9;
+      transform: translateY(-1px);
     }
-    .btn-skip:active:not(:disabled) {
-      transform: scale(0.97);
+
+    .btn-aux:active:not(:disabled) {
+      transform: scale(0.98);
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .btn-aux:disabled {
+      opacity: 0.35 !important;
+      cursor: not-allowed !important;
+      pointer-events: none !important;
+    }
+
+    .btn-aux.btn-undo {
+      color: #38bdf8;
+      border-color: rgba(56, 189, 248, 0.28);
+      background: rgba(56, 189, 248, 0.06);
+    }
+
+    .btn-aux.btn-undo:hover:not(:disabled) {
+      color: #7dd3fc;
+      border-color: rgba(56, 189, 248, 0.55);
+      background: rgba(56, 189, 248, 0.15);
+      box-shadow: 0 0 14px rgba(56, 189, 248, 0.2);
+    }
+
+    .btn-aux.btn-skip {
+      color: #94a3b8;
+      border-color: rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .btn-aux.btn-skip:hover:not(:disabled) {
+      color: #cbd5e1;
+      border-color: rgba(255, 255, 255, 0.22);
+      background: rgba(255, 255, 255, 0.07);
+    }
+
+    .btn-aux .aux-hotkey {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      padding: 1px 6px;
+      border-radius: 4px;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #cbd5e1;
     }
 
     /* ========================================================
@@ -1776,6 +1828,20 @@
           </button>
         </div>
 
+        <!-- CONTROLES AUXILIARES DO MODO FOCO (VOLTAR CARTA & PULAR) -->
+        <div class="focus-aux-controls">
+          <button class="btn-aux btn-undo" id="btn-undo-card" onclick="undoLastEvaluation()" title="Desfazer e voltar para a última carta avaliada (Tecla Z, Backspace ou Ctrl+Z)" disabled>
+            <span class="aux-icon">↩️</span>
+            <span class="aux-text">Voltar Última Carta</span>
+            <span class="aux-hotkey">[Z]</span>
+          </button>
+          <button class="btn-aux btn-skip" id="btn-skip-card" onclick="skipCurrent()" title="Pular palavra sem alterar status (Espaço ou P)">
+            <span class="aux-icon">⏭️</span>
+            <span class="aux-text">Pular Palavra</span>
+            <span class="aux-hotkey">[Espaço]</span>
+          </button>
+        </div>
+
       </div>
     </div>
 
@@ -1916,6 +1982,7 @@
     let currentAudioObj = null;
     let searchDebounceTimeout = null;
     let currentDeckStats = null;
+    let focusReviewHistory = [];
 
     // Inicialização Inteligente: Carrega automaticamente o deck ativo em estudo (não concluído)
     document.addEventListener("DOMContentLoaded", async () => {
@@ -1996,6 +2063,10 @@
         currentWords = data.words || [];
         currentIndex = 0;
         currentBatchOffset = offset;
+        if (offset === 0) {
+          focusReviewHistory = [];
+        }
+        updateUndoButtonState();
 
         // Atualizar Dashboard de Métricas
         if (data.deck_stats) {
@@ -2860,6 +2931,17 @@
         showToast(`📦 "${item.word}" (${actionLabel}) adicionado à Fila do Anki!`);
       }
 
+      // Salva no histórico para possibilitar Desfazer/Voltar (Tecla Z / Backspace)
+      focusReviewHistory.push({
+        item: JSON.parse(JSON.stringify(item)),
+        index: currentIndex,
+        exampleIndex: currentExampleIndex,
+        evaluatedStatus: status,
+        previousUserStatus: item.user_status || null,
+        previousStats: currentDeckStats ? JSON.parse(JSON.stringify(currentDeckStats)) : null
+      });
+      updateUndoButtonState();
+
       // Próxima carta instantaneamente (Zero delay)
       currentIndex++;
       if (currentIndex >= currentWords.length) {
@@ -2885,6 +2967,109 @@
         fetchStatus();
       } catch (err) {
         console.error("Erro ao salvar avaliação:", err);
+      }
+    }
+
+    function updateUndoButtonState() {
+      const btn = document.getElementById("btn-undo-card");
+      if (!btn) return;
+      if (focusReviewHistory && focusReviewHistory.length > 0) {
+        btn.removeAttribute("disabled");
+        const prevWord = focusReviewHistory[focusReviewHistory.length - 1].item.word;
+        btn.title = `Voltar para "${prevWord}" e desfazer avaliação (Tecla Z, Backspace ou Ctrl+Z)`;
+      } else {
+        btn.setAttribute("disabled", "true");
+        btn.title = "Nenhuma carta anterior para voltar";
+      }
+    }
+
+    async function undoLastEvaluation() {
+      if (!focusReviewHistory || focusReviewHistory.length === 0) {
+        showToast("Nenhuma carta anterior para voltar.", false);
+        return;
+      }
+
+      const last = focusReviewHistory.pop();
+      updateUndoButtonState();
+
+      // Feedback tátil háptico em smartphones/tablets
+      if (window.navigator && window.navigator.vibrate) {
+        try { window.navigator.vibrate(22); } catch (e) {}
+      }
+
+      // 1. Reverter contadores locais imediatamente (Zero lag)
+      if (last.evaluatedStatus === "conhecido") {
+        const el = document.getElementById("stat-known");
+        if (el && parseInt(el.innerText || "0", 10) > 0) {
+          el.innerText = parseInt(el.innerText, 10) - 1;
+        }
+      } else if (last.evaluatedStatus === "desconhecido") {
+        const el = document.getElementById("stat-unknown");
+        if (el && parseInt(el.innerText || "0", 10) > 0) {
+          el.innerText = parseInt(el.innerText, 10) - 1;
+        }
+        const gapEl = document.getElementById("header-gap-count");
+        if (gapEl && parseInt(gapEl.innerText || "0", 10) > 0) {
+          const val = parseInt(gapEl.innerText, 10) - 1;
+          gapEl.innerText = val;
+          if (val === 0) gapEl.style.display = "none";
+        }
+      } else if (last.evaluatedStatus === "duvida") {
+        const el = document.getElementById("stat-doubt");
+        if (el && parseInt(el.innerText || "0", 10) > 0) {
+          el.innerText = parseInt(el.innerText, 10) - 1;
+        }
+        const gapEl = document.getElementById("header-gap-count");
+        if (gapEl && parseInt(gapEl.innerText || "0", 10) > 0) {
+          const val = parseInt(gapEl.innerText, 10) - 1;
+          gapEl.innerText = val;
+          if (val === 0) gapEl.style.display = "none";
+        }
+      }
+
+      if (last.previousStats) {
+        currentDeckStats = last.previousStats;
+        updateDashboardStats(currentDeckStats);
+      } else if (currentDeckStats) {
+        currentDeckStats.evaluated = Math.max(0, currentDeckStats.evaluated - 1);
+        currentDeckStats.remaining++;
+        currentDeckStats.percent = Math.min(100, Math.round((currentDeckStats.evaluated / currentDeckStats.total) * 100));
+        updateDashboardStats(currentDeckStats);
+      }
+
+      // 2. Reposicionar ponteiro da lista
+      if (last.index < currentWords.length && currentWords[last.index] && currentWords[last.index].id === last.item.id) {
+        currentIndex = last.index;
+      } else {
+        currentWords.splice(currentIndex, 0, last.item);
+      }
+      currentExampleIndex = last.exampleIndex || 0;
+
+      // 3. Renderizar imediatamente a carta desfeita
+      renderCurrentFocusCard();
+      showToast(`↩️ Voltou para "${last.item.word}". Avaliação anterior desfeita! Escolha a nova resposta.`, true);
+
+      // 4. Sincronizar reversão com o servidor em background
+      try {
+        const subdeckVal = document.getElementById("select-subdeck").value;
+        const res = await fetch("/api/revert-evaluate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            word: last.item.word,
+            id: last.item.id,
+            previous_status: last.previousUserStatus,
+            subdeck: subdeckVal
+          })
+        });
+        const evalRes = await res.json();
+        if (evalRes && evalRes.deck_stats) {
+          currentDeckStats = evalRes.deck_stats;
+          updateDashboardStats(currentDeckStats);
+        }
+        fetchStatus();
+      } catch (err) {
+        console.error("Erro ao sincronizar reversão com servidor:", err);
       }
     }
 
@@ -3409,6 +3594,9 @@
         } else if (key === "3" || key === "d" || e.key === "ArrowDown") {
           e.preventDefault();
           evaluateCurrent("duvida");
+        } else if (key === "z" || key === "u" || key === "backspace" || (e.ctrlKey && key === "z")) {
+          e.preventDefault();
+          undoLastEvaluation();
         } else if (key === " " || key === "p") {
           e.preventDefault();
           skipCurrent();
