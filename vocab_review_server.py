@@ -23,6 +23,13 @@ import threading
 import sqlite3
 import socket
 
+if hasattr(sys.stdout, "reconfigure"):
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+
 PORT = int(os.environ.get("PORT", 5050))
 WORKSPACE_DIR = os.path.dirname(os.path.abspath(__file__))
 MAP_FILE = os.path.join(WORKSPACE_DIR, "knowledge_map_english.json")
@@ -34,8 +41,27 @@ ANKI_URL = "http://127.0.0.1:8765"
 TYPESAFE_URL = "https://api.typesafe.ai/v1/systemone"
 
 # Integração Mairo Vergara (Anki SQLite & Mídia)
-ANKI_DB_PATH = os.path.expanduser("~/.var/app/net.ankiweb.Anki/data/Anki2/Usuário 1/collection.anki2")
-ANKI_MEDIA_DIR = os.path.expanduser("~/.var/app/net.ankiweb.Anki/data/Anki2/Usuário 1/collection.media")
+def _resolve_anki_paths():
+    env_db = os.environ.get("ANKI_DB_PATH")
+    env_media = os.environ.get("ANKI_MEDIA_DIR")
+    if env_db and env_media:
+        return env_db, env_media
+    candidates = []
+    appdata = os.environ.get("APPDATA")
+    if appdata:
+        candidates.append(os.path.join(appdata, "Anki2", "Usuário 1"))
+    candidates.append(os.path.expanduser("~/.var/app/net.ankiweb.Anki/data/Anki2/Usuário 1"))
+    candidates.append(os.path.expanduser("~/.local/share/Anki2/Usuário 1"))
+    candidates.append(os.path.expanduser("~/Library/Application Support/Anki2/Usuário 1"))
+    for base in candidates:
+        db = os.path.join(base, "collection.anki2")
+        media = os.path.join(base, "collection.media")
+        if os.path.exists(db):
+            return db, media
+    default_base = os.path.expanduser("~/.var/app/net.ankiweb.Anki/data/Anki2/Usuário 1")
+    return (env_db or os.path.join(default_base, "collection.anki2")), (env_media or os.path.join(default_base, "collection.media"))
+
+ANKI_DB_PATH, ANKI_MEDIA_DIR = _resolve_anki_paths()
 MAIRO_SENTENCES_BY_KEYWORD = {}
 MAIRO_SENTENCES_BY_WORD = {}
 
@@ -56,6 +82,13 @@ TRANSLATE_QUEUE = queue.Queue()
 def get_typesafe_key():
     key = os.environ.get("TYPESAFE_API_KEY", "")
     if key: return key
+    env_path = os.path.join(WORKSPACE_DIR, ".env")
+    if os.path.exists(env_path):
+        with open(env_path, "r", encoding="utf-8") as f:
+            for line in f:
+                if "TYPESAFE_API_KEY" in line and "=" in line:
+                    m = re.search(r'TYPESAFE_API_KEY=["\']?([^"\'\s]+)["\']?', line)
+                    if m: return m.group(1)
     bashrc_path = os.path.expanduser("~/.bashrc")
     if os.path.exists(bashrc_path):
         with open(bashrc_path, "r", encoding="utf-8") as f:
