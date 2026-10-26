@@ -1290,12 +1290,12 @@ def find_ready_sentence_and_def(termo):
         }
 
     # Se não houver candidato com 0 palavras desconhecidas, ranqueia os melhores com Jev
+    best_cand = scored[0] if scored else None
     if scored and len(scored) > 1:
         top_pool = [x[4] for x in scored[:3]]
         cand_dict = curate_best_sentence_with_jev(termo, top_pool, def_en)
-        extra_unknowns = scored[0][2]
+        extra_unknowns = best_cand[2] if best_cand else []
     else:
-        best_cand = scored[0] if scored else None
         cand_dict = best_cand[4] if best_cand else {}
         extra_unknowns = best_cand[2] if best_cand else []
 

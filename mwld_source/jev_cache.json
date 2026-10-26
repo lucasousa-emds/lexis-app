@@ -1069,5 +1069,130 @@
     "chosen_en": "She sat by the fire reading her favorite novel.",
     "confidence": 1.0,
     "model": "jev-1.14.0"
+  },
+  "__curated_miss": {
+    "chosen_en": "He <i>missed</i> his train.",
+    "confidence": 0.97,
+    "model": "jev-1.14.0"
+  },
+  "__curated_knowledge": {
+    "chosen_en": "There is a lack of knowledge about the tax system.",
+    "confidence": 0.52,
+    "model": "jev-1.14.0"
+  },
+  "__curated_indeed": {
+    "chosen_en": "“I did my best.” “Did you <i>indeed</i>?”",
+    "confidence": 0.86,
+    "model": "jev-1.14.0"
+  },
+  "__curated_rather": {
+    "chosen_en": "Yesterday was a <i>rather</i> [=<i>fairly</i>] hot day.",
+    "confidence": 0.95,
+    "model": "jev-1.14.0"
+  },
+  "__curated_claim": {
+    "chosen_en": "They <i>claim</i> (that) the drug prevents hair loss.",
+    "confidence": 0.96,
+    "model": "jev-1.14.0"
+  },
+  "__curated_manager": {
+    "chosen_en": "I'd like to speak to the <i>manager</i>, please.",
+    "confidence": 0.76,
+    "model": "jev-1.14.0"
+  },
+  "__curated_spring": {
+    "chosen_en": "We'll plant the seeds next <i>spring</i>.",
+    "confidence": 0.83,
+    "model": "jev-1.14.0"
+  },
+  "__curated_manage": {
+    "chosen_en": "The business is <i>managed</i> by the owner's daughter.",
+    "confidence": 0.72,
+    "model": "jev-1.14.0"
+  },
+  "__curated_trip": {
+    "chosen_en": "The travel agency has helped me plan my trip.",
+    "confidence": 0.64,
+    "model": "jev-1.14.0"
+  },
+  "__curated_throughout": {
+    "chosen_en": "She has traveled <i>throughout</i> the world.",
+    "confidence": 0.52,
+    "model": "jev-1.14.0"
+  },
+  "__curated_challenge": {
+    "chosen_en": "Do you accept my <i>challenge</i> to a game of chess?",
+    "confidence": 0.52,
+    "model": "jev-1.14.0"
+  },
+  "__curated_sea": {
+    "chosen_en": "Our hotel room had a beautiful view of the sea.",
+    "confidence": 0.98,
+    "model": "jev-1.14.0"
+  },
+  "__curated_improve": {
+    "chosen_en": "Her writing has <i>improved</i> since the beginning of the school year.",
+    "confidence": 0.82,
+    "model": "jev-1.14.0"
+  },
+  "__curated_purpose": {
+    "chosen_en": "We shared a <b>common purpose</b>. [=we had the same goals]",
+    "confidence": 0.16,
+    "model": "jev-1.14.0"
+  },
+  "__curated_partner": {
+    "chosen_en": "Come to the New Year disco and bring your partner .",
+    "confidence": 0.94,
+    "model": "jev-1.14.0"
+  },
+  "__curated_budget": {
+    "chosen_en": "We'll have to work out a <i>budget</i> so we can buy a new car.",
+    "confidence": 0.94,
+    "model": "jev-1.14.0"
+  },
+  "__curated_painting": {
+    "chosen_en": "He stood there, considering the painting.",
+    "confidence": 1.0,
+    "model": "jev-1.14.0"
+  },
+  "__curated_western": {
+    "chosen_en": "the island's <i>western</i> shore",
+    "confidence": 0.59,
+    "model": "jev-1.14.0"
+  },
+  "__curated_majority": {
+    "chosen_en": "They won by a <i>majority</i> of seven. [=the total number of votes they received was seven more than half of all the votes]",
+    "confidence": 0.53,
+    "model": "jev-1.14.0"
+  },
+  "__curated_assume": {
+    "chosen_en": "“Is he coming?” “So I <i>assume</i>.” = “I <i>assume</i> so.”",
+    "confidence": 0.6,
+    "model": "jev-1.14.0"
+  },
+  "__curated_argument": {
+    "chosen_en": "The committee presented strong <i>arguments</i> against building a new school.",
+    "confidence": 0.66,
+    "model": "jev-1.14.0"
+  },
+  "__curated_scale": {
+    "chosen_en": "Place your bag on the scale .",
+    "confidence": 0.96,
+    "model": "jev-1.14.0"
+  },
+  "__curated_handle": {
+    "chosen_en": "He's having a hard time <i>handling</i> the pressure of his new job.",
+    "confidence": 0.92,
+    "model": "jev-1.14.0"
+  },
+  "__curated_survey": {
+    "chosen_en": "The class <i>surveys</i> American history before the Civil War.",
+    "confidence": 0.1,
+    "model": "jev-1.14.0"
+  },
+  "__curated_supposed": {
+    "chosen_en": "<i>I suppose</i> that could happen, but it's not likely.",
+    "confidence": 0.59,
+    "model": "jev-1.14.0"
   }
 }
