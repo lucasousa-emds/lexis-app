@@ -73,8 +73,9 @@ MWLD_BY_WORD = {}
 STRUCTURES_BY_SUBDECK = {}
 TRANSLATIONS_CACHE = {}
 JEV_CACHE = {}
-LOCK = threading.Lock()
+LOCK = threading.RLock()
 SAVE_DIRTY = False
+DEFAULT_CLOUD_URL = os.environ.get("LEXIS_CLOUD_URL", "https://lexis-app-704932267423.us-central1.run.app")
 
 # Fila para traduções em background (sem travar a requisição do usuário)
 TRANSLATE_QUEUE = queue.Queue()
@@ -417,21 +418,81 @@ def save_knowledge_map_memory():
         }
         SAVE_DIRTY = True
 
+def merge_vocabulary_maps(target_vocab, incoming_vocab):
+    """Realiza merge profundo (por sentido_id e confirmado_em) sem perder card_id ou enriquecimentos."""
+    updated_count = 0
+    for w, inc_item in (incoming_vocab or {}).items():
+        if w not in target_vocab:
+            target_vocab[w] = dict(inc_item)
+            updated_count += 1
+            continue
+        cur_item = target_vocab[w]
+        acs_by_id = {}
+        for ac in cur_item.get("acepcoes", []):
+            sid = ac.get("sentido_id") or f"{w}_default"
+            acs_by_id[sid] = dict(ac)
+        word_changed = False
+        for ac in inc_item.get("acepcoes", []):
+            sid = ac.get("sentido_id") or f"{w}_default"
+            if sid not in acs_by_id:
+                acs_by_id[sid] = dict(ac)
+                word_changed = True
+            else:
+                cur_ac = acs_by_id[sid]
+                t_cur = cur_ac.get("confirmado_em") or ""
+                t_new = ac.get("confirmado_em") or ""
+                if t_new >= t_cur and ac.get("status") and ac.get("status") != cur_ac.get("status"):
+                    cur_ac["status"] = ac["status"]
+                    if t_new:
+                        cur_ac["confirmado_em"] = t_new
+                    word_changed = True
+                for field in ("card_id", "injetado_em", "definicao", "definicao_pt", "frase_i1", "frase_exemplo", "frase_pt", "ipa", "audio_url", "mairo_audio", "pos"):
+                    if ac.get(field) and not cur_ac.get(field):
+                        cur_ac[field] = ac[field]
+                        word_changed = True
+        ac_list = list(acs_by_id.values())
+        cur_item["acepcoes"] = ac_list
+        statuses = [a.get("status") for a in ac_list]
+        new_general = (
+            "desconhecido" if "desconhecido" in statuses else
+            "duvida" if "duvida" in statuses else
+            "em_estudo" if "em_estudo" in statuses else
+            "conhecido"
+        )
+        if cur_item.get("status_geral") != new_general:
+            cur_item["status_geral"] = new_general
+            word_changed = True
+        if word_changed:
+            updated_count += 1
+    return updated_count
+
 def disk_saver_worker():
-    """Worker de persistência em disco em segundo plano (evita lag de I/O em cliques)."""
+    """Worker de persistência em disco em segundo plano (evita lag de I/O em cliques) e espelhamento entre pastas."""
     global SAVE_DIRTY
+    sibling_dirs = [
+        os.path.abspath(os.path.join(WORKSPACE_DIR, "..", "anki_cards")),
+        os.path.abspath(os.path.join(WORKSPACE_DIR, "..", "lexis-app"))
+    ]
     while True:
         time.sleep(1.0)
         if SAVE_DIRTY:
             with LOCK:
                 SAVE_DIRTY = False
                 try:
+                    payload_str = json.dumps(KNOWLEDGE_MAP, ensure_ascii=False, indent=2)
                     tmp = MAP_FILE + ".tmp"
                     with open(tmp, "w", encoding="utf-8") as f:
-                        json.dump(KNOWLEDGE_MAP, f, ensure_ascii=False, indent=2)
+                        f.write(payload_str)
                     os.replace(tmp, MAP_FILE)
+                    for sdir in sibling_dirs:
+                        if os.path.isdir(sdir) and os.path.abspath(sdir) != os.path.abspath(WORKSPACE_DIR):
+                            smap = os.path.join(sdir, "knowledge_map_english.json")
+                            stmp = smap + ".tmp"
+                            with open(stmp, "w", encoding="utf-8") as sf:
+                                sf.write(payload_str)
+                            os.replace(stmp, smap)
                 except Exception as e:
-                    print(f"⚠️ Erro ao salvar knowledge_map no disco: {e}")
+                    print(f"Erro ao salvar knowledge_map no disco: {e}")
 
 def index_mwld():
     global MWLD_ENTRIES, MWLD_BY_SUBDECK, MWLD_BY_WORD
@@ -1147,6 +1208,62 @@ CURATED_I1_SENTENCES = {
         "frase_pt": "Você pode jogar a bola para mim?",
         "def_en": "to cause something to move through the air by moving your arm quickly",
         "def_pt": "jogar ou arremessar algo com a mão pelo ar"
+    },
+    "spring": {
+        "frase": "He made a quick spring from the chair.",
+        "frase_pt": "Ele deu um salto rápido da cadeira."
+    },
+    "challenge": {
+        "frase": "Learning a new language is a big challenge.",
+        "frase_pt": "Aprender um novo idioma é um grande desafio."
+    },
+    "instead": {
+        "frase": "He stayed home instead of going out.",
+        "frase_pt": "Ele ficou em casa em vez de sair."
+    },
+    "western": {
+        "frase": "They live in the western part of the city.",
+        "frase_pt": "Eles moram na parte ocidental da cidade."
+    },
+    "argument": {
+        "frase": "That is a very strong argument for the plan.",
+        "frase_pt": "Esse é um argumento muito forte a favor do plano."
+    },
+    "unless": {
+        "frase": "You cannot go in unless you ask me first.",
+        "frase_pt": "Você não pode entrar a menos que me peça primeiro."
+    },
+    "worth": {
+        "frase": "This old book is worth a lot of money.",
+        "frase_pt": "Este livro antigo vale muito dinheiro."
+    },
+    "procedure": {
+        "frase": "You must follow the normal procedure at work.",
+        "frase_pt": "Você deve seguir o procedimento normal no trabalho."
+    },
+    "slightly": {
+        "frase": "This room is slightly different from that one.",
+        "frase_pt": "Este quarto é ligeiramente diferente daquele."
+    },
+    "committee": {
+        "frase": "The committee will meet again next week.",
+        "frase_pt": "O comitê se reunirá novamente na próxima semana."
+    },
+    "eastern": {
+        "frase": "She comes from the eastern part of the country.",
+        "frase_pt": "Ela vem da parte oriental do país."
+    },
+    "civic": {
+        "frase": "It is a very important civic group in the city.",
+        "frase_pt": "É um grupo cívico muito importante na cidade."
+    },
+    "magnitude": {
+        "frase": "We did not know the full magnitude of the problem.",
+        "frase_pt": "Não sabíamos a magnitude total do problema."
+    },
+    "hostage": {
+        "frase": "The man was held as a hostage for two days.",
+        "frase_pt": "O homem foi mantido como refém por dois dias."
     }
 }
 
@@ -1763,6 +1880,8 @@ class RequestHandler(BaseHTTPRequestHandler):
             self.handle_api_curate_sentence(data)
         elif path == "/api/import-knowledge-map":
             self.handle_api_import_knowledge_map(data)
+        elif path == "/api/sync-cloud":
+            self.handle_api_sync_cloud(data)
         else:
             self.send_response(404)
             self.end_headers()
@@ -1831,9 +1950,11 @@ class RequestHandler(BaseHTTPRequestHandler):
                     has_def = is_valid_definition(def_en)
                     is_ready = bool(has_sentence and has_def)
 
+                    if ac.get("card_id") or ac.get("injetado_em"):
+                        continue
                     if not is_ready:
                         waiting_gaps += 1
-                    elif not ac.get("card_id") and not ac.get("injetado_em"):
+                    else:
                         ready_gaps += 1
                         unlinked_gaps += 1
 
@@ -1933,17 +2054,87 @@ class RequestHandler(BaseHTTPRequestHandler):
             self.send_json({"success": False, "message": "Não foi possível curar com Jev"}, 500)
 
     def handle_api_import_knowledge_map(self, data):
-        """Mescla o mapa de vocabulário da nuvem com o banco local garantindo persistência."""
+        """Mescla o mapa de vocabulário da nuvem com o banco local garantindo persistência sem deadlock."""
         global KNOWLEDGE_MAP
         new_map = data.get("mapa_vocabulario", {})
         if not new_map:
             self.send_json({"error": "Dados inválidos de mapa_vocabulario"}, 400)
             return
         with LOCK:
-            for k, v in new_map.items():
-                KNOWLEDGE_MAP.setdefault("mapa_vocabulario", {})[k] = v
+            target_vocab = KNOWLEDGE_MAP.setdefault("mapa_vocabulario", {})
+            updated_count = merge_vocabulary_maps(target_vocab, new_map)
+        save_knowledge_map_memory()
+        self.send_json({
+            "success": True,
+            "updated": updated_count,
+            "total": len(KNOWLEDGE_MAP.get("mapa_vocabulario", {})),
+            "stats": KNOWLEDGE_MAP.get("estatisticas", {}),
+            "message": f"{len(new_map)} termos processados ({updated_count} atualizados) com sucesso!"
+        })
+
+    def handle_api_sync_cloud(self, data):
+        """Sincroniza bidirecionalmente o mapa local com o servidor Google Cloud Run."""
+        cloud_url = (data.get("cloud_url") if data else None) or DEFAULT_CLOUD_URL
+        cloud_url = cloud_url.rstrip("/")
+        try:
+            export_url = f"{cloud_url}/api/export-knowledge-map"
+            req_get = urllib.request.Request(export_url, headers={"User-Agent": "LexiSync-Desktop/2.0"})
+            with urllib.request.urlopen(req_get, timeout=12.0) as res_get:
+                cloud_data = json.loads(res_get.read().decode("utf-8"))
+            cloud_vocab = cloud_data.get("mapa_vocabulario", {})
+            with LOCK:
+                local_vocab = KNOWLEDGE_MAP.setdefault("mapa_vocabulario", {})
+                pulled_updates = merge_vocabulary_maps(local_vocab, cloud_vocab)
             save_knowledge_map_memory()
-        self.send_json({"success": True, "message": f"{len(new_map)} termos sincronizados com sucesso!"})
+
+            # Enviar deltas locais de volta para a nuvem via /api/batch-evaluate (compativel com qualquer revisao do container)
+            c_sids = {}
+            for cw, c_item in cloud_vocab.items():
+                for cac in c_item.get("acepcoes", []):
+                    if cac.get("sentido_id"):
+                        c_sids[cac["sentido_id"]] = cac.get("status")
+
+            delta_items = []
+            with LOCK:
+                for lw, l_item in KNOWLEDGE_MAP.get("mapa_vocabulario", {}).items():
+                    for lac in l_item.get("acepcoes", []):
+                        sid = lac.get("sentido_id")
+                        if sid and (sid not in c_sids or c_sids[sid] != lac.get("status")):
+                            delta_items.append({
+                                "word": l_item.get("termo", lw),
+                                "status": lac.get("status", "conhecido"),
+                                "id": sid,
+                                "pos": lac.get("pos", ""),
+                                "definition_en": lac.get("definicao", ""),
+                                "definition_pt": lac.get("definicao_pt", ""),
+                                "example_1": lac.get("frase_i1") or lac.get("frase_exemplo", "")
+                            })
+
+            pushed_updates = 0
+            if delta_items:
+                batch_url = f"{cloud_url}/api/batch-evaluate"
+                payload_bytes = json.dumps({"items": delta_items, "subdeck": "02k"}, ensure_ascii=False).encode("utf-8")
+                req_post = urllib.request.Request(
+                    batch_url,
+                    data=payload_bytes,
+                    headers={"Content-Type": "application/json; charset=utf-8", "User-Agent": "LexiSync-Desktop/2.0"},
+                    method="POST"
+                )
+                with urllib.request.urlopen(req_post, timeout=15.0) as res_post:
+                    _ = res_post.read()
+                pushed_updates = len(delta_items)
+
+            total_terms = len(KNOWLEDGE_MAP.get("mapa_vocabulario", {}))
+            self.send_json({
+                "success": True,
+                "pulled_updates": pulled_updates,
+                "pushed_updates": pushed_updates,
+                "total_terms": total_terms,
+                "stats": KNOWLEDGE_MAP.get("estatisticas", {}),
+                "message": f"Sincronizacao bidirecional concluida ({total_terms} termos unificados | +{pulled_updates} da nuvem, +{pushed_updates} enviados)!"
+            })
+        except Exception as e:
+            self.send_json({"success": False, "error": str(e), "message": f"Falha ao sincronizar com a nuvem: {e}"}, 500)
 
     def handle_api_auto_approve_cognates(self, data):
         """Avalia lista de palavras com TypeSafe Jev e auto-aprova cognatos transparentes."""
@@ -2660,10 +2851,10 @@ class RequestHandler(BaseHTTPRequestHandler):
 
                     card_id = ac.get("card_id")
                     injetado_em = ac.get("injetado_em")
-                    if not is_ready:
-                        status_label = "aguardando_frase"
-                    elif card_id or injetado_em:
+                    if card_id or injetado_em:
                         status_label = "injetado"
+                    elif not is_ready:
+                        status_label = "aguardando_frase"
                     else:
                         status_label = "pronto"
 
@@ -3119,10 +3310,10 @@ class RequestHandler(BaseHTTPRequestHandler):
             self.send_json({"error": str(e_main)}, 500)
 
 def keep_alive_worker():
-    """Mantém o servidor na nuvem (Render) acordado enviando um ping a cada 9 minutos."""
-    cloud_url = os.environ.get("RENDER_EXTERNAL_URL", "").strip()
+    """Mantém o servidor na nuvem (Google Cloud Run) acordado enviando um ping periódico."""
+    cloud_url = os.environ.get("LEXIS_CLOUD_URL", "").strip() or os.environ.get("RENDER_EXTERNAL_URL", "").strip()
     if not cloud_url and os.environ.get("PORT"):
-        cloud_url = "https://lexis-app-swxb.onrender.com"
+        cloud_url = DEFAULT_CLOUD_URL
     if not cloud_url:
         return
 

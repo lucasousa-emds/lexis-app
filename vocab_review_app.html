@@ -1665,6 +1665,10 @@
         <span class="kpi-label">Dúvidas:</span>
         <span class="val" id="stat-doubt">0</span>
       </div>
+      <button class="kpi-chip" id="btn-header-sync" onclick="syncWithCloud()" title="Sincronizar bidirecionalmente com Google Cloud Run" style="cursor: pointer; border-color: rgba(0, 242, 254, 0.35); color: var(--accent-cyan); background: rgba(0, 242, 254, 0.08);">
+        <span class="kpi-label">Sync</span>
+        <span class="val" id="sync-status-label" style="font-size: 12px;">Nuvem</span>
+      </button>
     </div>
 
   </header>
@@ -3512,6 +3516,38 @@
         showToast("Erro na requisição de enriquecimento.", false);
       } finally {
         if (spinner) spinner.style.display = "none";
+      }
+    }
+
+    async function syncWithCloud() {
+      const btn = document.getElementById("btn-header-sync");
+      const lbl = document.getElementById("sync-status-label");
+      if (btn) btn.disabled = true;
+      if (lbl) lbl.innerText = "...";
+      showToast("Sincronizando mapa de vocabulario com Google Cloud Run...");
+      try {
+        const res = await fetch("/api/sync-cloud", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({})
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(data.message || "Sincronizacao concluida com sucesso!");
+          await fetchStatus();
+          if (document.getElementById("view-gaps") && document.getElementById("view-gaps").style.display !== "none") {
+            loadGapsView();
+          } else {
+            loadWords(currentBatchOffset);
+          }
+        } else {
+          showToast(data.message || "Erro ao sincronizar com a nuvem.", false);
+        }
+      } catch (err) {
+        showToast("Falha de rede ao sincronizar com a nuvem.", false);
+      } finally {
+        if (btn) btn.disabled = false;
+        if (lbl) lbl.innerText = "Nuvem";
       }
     }
 
