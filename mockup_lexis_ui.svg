@@ -1,0 +1,260 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1060" viewBox="0 0 1600 1060" role="img" aria-labelledby="title desc"><title id="title">Lexis Suite — Desktop e Mobile</title><desc id="desc">Mockup escuro do Listening Studio, com navegação superior no desktop, navegação inferior fixa no celular, waveform, controles de áudio e botão de revelar transcrição. Quatro módulos identificados por cores.</desc><defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#17242d"/><stop offset="1" stop-color="#080c12"/></linearGradient><linearGradient id="card" x2="0" y2="1"><stop stop-color="#201d30"/><stop offset="1" stop-color="#111720"/></linearGradient><filter id="shadow" x="-20%" y="-20%" width="150%" height="160%"><feDropShadow dy="20" stdDeviation="20" flood-opacity=".3"/></filter></defs><g font-family="Segoe UI,Arial,sans-serif">
+<rect x="0" y="0" width="1600" height="1060" rx="0" fill="url(#bg)" stroke="none"/>
+<text x="60" y="66" fill="#65e1d8" font-size="11" font-weight="700">LEXIS SUITE / DESIGN PREVIEW 01</text>
+<text x="60" y="111" fill="#eff4fa" font-size="34" font-weight="650">Um universo. Quatro formas de evoluir.</text>
+<text x="60" y="144" fill="#8593a5" font-size="15" font-weight="400">Seu vocabulário ganha voz. Seu aprendizado ganha ritmo.</text>
+<rect x="1245" y="76" width="295" height="32" rx="16" fill="#131c25" stroke="#2a3642"/>
+<text x="1262" y="96" fill="#9cabb9" font-size="10" font-weight="400">MULTI-MODULE EXPERIENCE · DARK EDITION</text>
+<text x="60" y="200" fill="#92a1b2" font-size="11" font-weight="400">●  DESKTOP · TOP NAVIGATION</text>
+<text x="1190" y="200" fill="#92a1b2" font-size="11" font-weight="400">●  MOBILE · BOTTOM NAVIGATION</text>
+<g filter="url(#shadow)">
+<rect x="60" y="220" width="1080" height="754" rx="16" fill="#080c12" stroke="#3b4654"/>
+</g>
+<rect x="61" y="221" width="1078" height="34" rx="15" fill="#171e27" stroke="none"/>
+<rect x="61" y="239" width="1078" height="16" rx="0" fill="#171e27" stroke="none"/>
+<circle cx="80" cy="238" r="4" fill="#cb7a7c"/>
+<circle cx="94" cy="238" r="4" fill="#c7ae70"/>
+<circle cx="108" cy="238" r="4" fill="#79ad93"/>
+<text x="460" y="242" fill="#7e8b9a" font-size="11" font-weight="400">lexis.app / listening / escuta-as-cegas</text>
+<path d="M61 331H1139" stroke="#293341"/>
+<text x="87" y="295" fill="#eff4fa" font-size="27" font-weight="750">lexis</text>
+<text x="143" y="293" fill="#65e1d8" font-size="24" font-weight="400">✦</text>
+<text x="88" y="313" fill="#8593a5" font-size="9" font-weight="400">S U I T E</text>
+<rect x="290" y="292" width="6" height="6" rx="2" fill="#65e1d8" stroke="none"/>
+<text x="305" y="300" fill="#98a5b5" font-size="13" font-weight="400">Vocabulário</text>
+<rect x="460" y="292" width="6" height="6" rx="2" fill="#b19aff" stroke="none"/>
+<text x="475" y="300" fill="#b19aff" font-size="13" font-weight="600">Listening Studio</text>
+<rect x="675" y="292" width="6" height="6" rx="2" fill="#edc579" stroke="none"/>
+<text x="690" y="300" fill="#98a5b5" font-size="13" font-weight="400">Anki Hub</text>
+<rect x="840" y="292" width="6" height="6" rx="2" fill="#80b8ff" stroke="none"/>
+<text x="855" y="300" fill="#98a5b5" font-size="13" font-weight="400">Analytics</text>
+<rect x="457" y="329" width="145" height="2" rx="0" fill="#b19aff" stroke="none"/>
+<circle cx="1094" cy="292" r="17" fill="#293e42"/>
+<text x="1086" y="296" fill="#cae9df" font-size="10" font-weight="400">LC</text>
+<text x="88" y="365" fill="#8593a5" font-size="11" font-weight="400">Workspace  /</text>
+<text x="165" y="365" fill="#b19aff" font-size="11" font-weight="400">Listening Studio</text>
+<text x="266" y="365" fill="#8593a5" font-size="11" font-weight="400">/  Escuta às Cegas</text>
+<rect x="88" y="387" width="138" height="24" rx="5" fill="#211c32" stroke="#3d3658"/>
+<text x="98" y="403" fill="#c5b6fc" font-size="10" font-weight="600">LISTENING STUDIO</text>
+<text x="88" y="446" fill="#eff4fa" font-size="29" font-weight="650">Escuta às Cegas</text>
+<text x="88" y="472" fill="#8593a5" font-size="13" font-weight="400">Treine seu ouvido. Confie na sua percepção.</text>
+<rect x="1010" y="418" width="100" height="33" rx="7" fill="#131c26" stroke="#293341"/>
+<text x="1024" y="439" fill="#bac6d4" font-size="12" font-weight="400">↻  Reiniciar</text>
+<rect x="88" y="495" width="744" height="412" rx="12" fill="url(#card)" stroke="#34364b"/>
+<text x="108" y="522" fill="#96a3b5" font-size="10" font-weight="400">FAIXA 04 / 12</text>
+<text x="705" y="522" fill="#65e1d8" font-size="10" font-weight="400">● Áudio de exemplo</text>
+<rect x="434" y="543" width="52" height="52" rx="16" fill="#2b233e" stroke="#55436f"/>
+<text x="449" y="578" fill="#b19aff" font-size="29" font-weight="400">♫</text>
+<text x="349" y="624" fill="#eff4fa" font-size="19" font-weight="600">Primeiro, apenas ouça.</text>
+<text x="334" y="648" fill="#8593a5" font-size="12" font-weight="400">Encontre o sentido antes das palavras.</text>
+<rect x="188" y="694" width="4" height="10" rx="2" fill="#b19aff" stroke="none"/>
+<rect x="196" y="673.3399841345495" width="4" height="51.32003173090101" rx="2" fill="#b19aff" stroke="none"/>
+<rect x="204" y="682.7123217686767" width="4" height="32.57535646264651" rx="2" fill="#b19aff" stroke="none"/>
+<rect x="212" y="686.7359292114193" width="4" height="24.528141577161435" rx="2" fill="#b19aff" stroke="none"/>
+<rect x="220" y="687.6171022915117" width="4" height="22.765795416976456" rx="2" fill="#b19aff" stroke="none"/>
+<rect x="228" y="693.9495293331885" width="4" height="10.100941333623007" rx="2" fill="#b19aff" stroke="none"/>
+<rect x="236" y="686.7653975099676" width="4" height="24.469204980064973" rx="2" fill="#b19aff" stroke="none"/>
+<rect x="244" y="684.4463663282817" width="4" height="29.107267343436583" rx="2" fill="#b19aff" stroke="none"/>
+<rect x="252" y="684.6521264307937" width="4" height="28.69574713841266" rx="2" fill="#b19aff" stroke="none"/>
+<rect x="260" y="672.1365119498355" width="4" height="53.72697610032904" rx="2" fill="#b19aff" stroke="none"/>
+<rect x="268" y="690.558702385404" width="4" height="16.88259522919213" rx="2" fill="#b19aff" stroke="none"/>
+<rect x="276" y="675.0389181201784" width="4" height="47.92216375964308" rx="2" fill="#b19aff" stroke="none"/>
+<rect x="284" y="681.2556786906707" width="4" height="35.488642618658545" rx="2" fill="#b19aff" stroke="none"/>
+<rect x="292" y="688.9388944758509" width="4" height="20.122211048298244" rx="2" fill="#b19aff" stroke="none"/>
+<rect x="300" y="688.7313988237636" width="4" height="20.53720235247294" rx="2" fill="#b19aff" stroke="none"/>
+<rect x="308" y="693.5496970057306" width="4" height="10.900605988538612" rx="2" fill="#b19aff" stroke="none"/>
+<rect x="316" y="686.2503257924635" width="4" height="25.499348415072966" rx="2" fill="#b19aff" stroke="none"/>
+<rect x="324" y="682.1703931321747" width="4" height="33.65921373565054" rx="2" fill="#b19aff" stroke="none"/>
+<rect x="332" y="687.027800777796" width="4" height="23.944398444408105" rx="2" fill="#b19aff" stroke="none"/>
+<rect x="340" y="671.4821680260401" width="4" height="55.03566394791975" rx="2" fill="#b19aff" stroke="none"/>
+<rect x="348" y="687.2299775363368" width="4" height="23.540044927326246" rx="2" fill="#b19aff" stroke="none"/>
+<rect x="356" y="677.161520904145" width="4" height="43.67695819170998" rx="2" fill="#b19aff" stroke="none"/>
+<rect x="364" y="680.3085533091847" width="4" height="37.3828933816306" rx="2" fill="#b19aff" stroke="none"/>
+<rect x="372" y="690.9622437690402" width="4" height="16.07551246191962" rx="2" fill="#b19aff" stroke="none"/>
+<rect x="380" y="690.0229587861762" width="4" height="17.954082427647553" rx="2" fill="#b19aff" stroke="none"/>
+<rect x="388" y="692.7708123635065" width="4" height="12.458375272987034" rx="2" fill="#b19aff" stroke="none"/>
+<rect x="396" y="686.1311101508104" width="4" height="25.73777969837912" rx="2" fill="#b19aff" stroke="none"/>
+<rect x="404" y="680.0110059128475" width="4" height="37.977988174305054" rx="2" fill="#b19aff" stroke="none"/>
+<rect x="412" y="689.7728591494013" width="4" height="18.45428170119741" rx="2" fill="#b19aff" stroke="none"/>
+<rect x="420" y="671.4101483680477" width="4" height="55.179703263904756" rx="2" fill="#b19aff" stroke="none"/>
+<rect x="428" y="684.1218188347872" width="4" height="29.756362330425745" rx="2" fill="#564768" stroke="none"/>
+<rect x="436" y="679.6209758087322" width="4" height="38.75804838253562" rx="2" fill="#564768" stroke="none"/>
+<rect x="444" y="679.8755332750725" width="4" height="38.24893344985493" rx="2" fill="#564768" stroke="none"/>
+<rect x="452" y="692.724147268145" width="4" height="12.551705463709995" rx="2" fill="#564768" stroke="none"/>
+<rect x="460" y="691.3991876239976" width="4" height="15.201624752004923" rx="2" fill="#564768" stroke="none"/>
+<rect x="468" y="691.6535035139675" width="4" height="14.692992972065072" rx="2" fill="#564768" stroke="none"/>
+<rect x="476" y="686.449269604834" width="4" height="25.101460790332148" rx="2" fill="#564768" stroke="none"/>
+<rect x="484" y="678.0694991178781" width="4" height="41.86100176424391" rx="2" fill="#564768" stroke="none"/>
+<rect x="492" y="692.8042004436583" width="4" height="12.391599112683576" rx="2" fill="#564768" stroke="none"/>
+<rect x="500" y="671.931695533455" width="4" height="54.13660893309005" rx="2" fill="#564768" stroke="none"/>
+<rect x="508" y="681.333257268115" width="4" height="35.333485463770174" rx="2" fill="#564768" stroke="none"/>
+<rect x="516" y="682.3191695973692" width="4" height="33.361660805261735" rx="2" fill="#564768" stroke="none"/>
+<rect x="524" y="679.9395479948611" width="4" height="38.12090401027784" rx="2" fill="#564768" stroke="none"/>
+<rect x="532" y="693.8425316342089" width="4" height="10.314936731582401" rx="2" fill="#564768" stroke="none"/>
+<rect x="540" y="692.7645574107784" width="4" height="12.470885178443162" rx="2" fill="#564768" stroke="none"/>
+<rect x="548" y="690.2564235690108" width="4" height="17.487152861978235" rx="2" fill="#564768" stroke="none"/>
+<rect x="556" y="687.2265071491021" width="4" height="23.546985701795844" rx="2" fill="#564768" stroke="none"/>
+<rect x="564" y="676.4410000051175" width="4" height="45.117999989764996" rx="2" fill="#564768" stroke="none"/>
+<rect x="572" y="691.974586691208" width="4" height="14.050826617584121" rx="2" fill="#564768" stroke="none"/>
+<rect x="580" y="673.0355413534182" width="4" height="51.928917293163614" rx="2" fill="#564768" stroke="none"/>
+<rect x="588" y="678.9503626508416" width="4" height="40.09927469831668" rx="2" fill="#564768" stroke="none"/>
+<rect x="596" y="685.1508822463509" width="4" height="27.69823550729828" rx="2" fill="#564768" stroke="none"/>
+<rect x="604" y="680.4629143291488" width="4" height="37.074171341702424" rx="2" fill="#564768" stroke="none"/>
+<rect x="612" y="692.7873984130886" width="4" height="12.425203173822915" rx="2" fill="#564768" stroke="none"/>
+<rect x="620" y="693.9749391210452" width="4" height="10.05012175790958" rx="2" fill="#564768" stroke="none"/>
+<rect x="628" y="688.6536161004872" width="4" height="20.69276779902564" rx="2" fill="#564768" stroke="none"/>
+<rect x="636" y="688.4634657707683" width="4" height="21.07306845846348" rx="2" fill="#564768" stroke="none"/>
+<rect x="644" y="675.2102433739715" width="4" height="47.579513252056984" rx="2" fill="#564768" stroke="none"/>
+<rect x="652" y="688.6693328442211" width="4" height="20.661334311557766" rx="2" fill="#564768" stroke="none"/>
+<rect x="660" y="674.6883001674812" width="4" height="48.623399665037624" rx="2" fill="#564768" stroke="none"/>
+<rect x="668" y="677.0428002854273" width="4" height="43.91439942914522" rx="2" fill="#564768" stroke="none"/>
+<rect x="676" y="688.0082579108426" width="4" height="21.983484178314686" rx="2" fill="#564768" stroke="none"/>
+<rect x="684" y="681.3892697538948" width="4" height="35.22146049221029" rx="2" fill="#564768" stroke="none"/>
+<rect x="692" y="692.1404789247424" width="4" height="13.719042150515232" rx="2" fill="#564768" stroke="none"/>
+<rect x="700" y="692.9074095154845" width="4" height="12.185180969031109" rx="2" fill="#564768" stroke="none"/>
+<rect x="708" y="686.9311843636823" width="4" height="24.13763127263549" rx="2" fill="#564768" stroke="none"/>
+<rect x="716" y="690.1394091285803" width="4" height="17.721181742839356" rx="2" fill="#564768" stroke="none"/>
+<rect x="724" y="674.4477707783578" width="4" height="49.10445844328439" rx="2" fill="#564768" stroke="none"/>
+<rect x="108" y="737" width="704" height="3" rx="2" fill="#383144" stroke="none"/>
+<rect x="108" y="737" width="246.39999999999998" height="3" rx="2" fill="#b19aff" stroke="none"/>
+<circle cx="354.4" cy="738" r="4" fill="#d3c5ff"/>
+<text x="108" y="758" fill="#8593a5" font-size="10" font-weight="400">00:04</text>
+<text x="782" y="758" fill="#8593a5" font-size="10" font-weight="400">00:12</text>
+<text x="386" y="800" fill="#b3bfce" font-size="23" font-weight="400">↶</text>
+<circle cx="460" cy="792" r="24" fill="#b19aff"/>
+<path d="M455 783l14 9-14 9z" fill="#1b1327"/>
+<text x="512" y="800" fill="#b3bfce" font-size="23" font-weight="400">↷</text>
+<rect x="551" y="781" width="35" height="23" rx="5" fill="#18202b" stroke="#303a48"/>
+<text x="557" y="797" fill="#c5cfdd" font-size="11" font-weight="400">1×</text>
+<rect x="108" y="830" width="704" height="38" rx="7" fill="#292139" stroke="#7e679b"/>
+<text x="369" y="854" fill="#d2c4ff" font-size="12" font-weight="600">◉  Revelar transcrição</text>
+<text x="328" y="890" fill="#8593a5" font-size="10.5" font-weight="400">Ouça. Formule sua hipótese. Só então revele.</text>
+<rect x="851" y="495" width="260" height="139" rx="10" fill="#101720" stroke="#293341"/>
+<text x="870" y="522" fill="#edf3fa" font-size="13" font-weight="600">Sua sessão</text>
+<text x="870" y="560" fill="#edf3fa" font-size="31" font-weight="600">04</text>
+<text x="912" y="558" fill="#8593a5" font-size="12" font-weight="400">/ 12 faixas</text>
+<rect x="870" y="577" width="220" height="4" rx="2" fill="#29313d" stroke="none"/>
+<rect x="870" y="577" width="73" height="4" rx="2" fill="#65e1d8" stroke="none"/>
+<text x="870" y="608" fill="#8593a5" font-size="12" font-weight="400">Um passo de cada vez.</text>
+<rect x="851" y="648" width="260" height="173" rx="10" fill="#101720" stroke="#293341"/>
+<text x="870" y="675" fill="#edf3fa" font-size="13" font-weight="600">Como funciona</text>
+<circle cx="881" cy="700" r="10" fill="#332841"/>
+<text x="878" y="704" fill="#b19aff" font-size="10" font-weight="400">1</text>
+<text x="901" y="704" fill="#c6b5ff" font-size="12" font-weight="400">Ouça com atenção</text>
+<circle cx="881" cy="731" r="10" fill="#1c2530"/>
+<text x="878" y="735" fill="#93a0b2" font-size="10" font-weight="400">2</text>
+<text x="901" y="735" fill="#8593a5" font-size="12" font-weight="400">Imagine o significado</text>
+<circle cx="881" cy="762" r="10" fill="#1c2530"/>
+<text x="878" y="766" fill="#93a0b2" font-size="10" font-weight="400">3</text>
+<text x="901" y="766" fill="#8593a5" font-size="12" font-weight="400">Revele e compare</text>
+<circle cx="881" cy="793" r="10" fill="#1c2530"/>
+<text x="878" y="797" fill="#93a0b2" font-size="10" font-weight="400">4</text>
+<text x="901" y="797" fill="#8593a5" font-size="12" font-weight="400">Leve para o Anki</text>
+
+<path d="M88 923H1110" stroke="#293341"/>
+<text x="88" y="951" fill="#65e1d8" font-size="11" font-weight="400">●  Seu progresso, sempre conectado.</text>
+<text x="882" y="951" fill="#8593a5" font-size="11" font-weight="400">EN → PT-BR · Nível B1–B2</text>
+<g filter="url(#shadow)">
+<rect x="1190" y="220" width="350" height="754" rx="44" fill="#1b222b" stroke="#58636f"/>
+<rect x="1198" y="228" width="334" height="738" rx="37" fill="#080c12" stroke="none"/>
+</g>
+<text x="1220" y="254" fill="#edf3fa" font-size="11" font-weight="600">9:41</text>
+<rect x="1319" y="237" width="92" height="23" rx="13" fill="#000" stroke="none"/>
+<text x="1465" y="254" fill="#edf3fa" font-size="12" font-weight="400">▴ ▰</text>
+<text x="1218" y="299" fill="#edf3fa" font-size="26" font-weight="750">lexis</text>
+<text x="1273" y="299" fill="#65e1d8" font-size="24" font-weight="400">✦</text>
+<circle cx="1498" cy="290" r="15" fill="#293e42"/>
+<text x="1491" y="294" fill="#cae9df" font-size="9" font-weight="400">LC</text>
+<rect x="1218" y="325" width="136" height="23" rx="5" fill="#211c32" stroke="#3d3658"/>
+<text x="1228" y="341" fill="#c5b6fc" font-size="10" font-weight="600">LISTENING STUDIO</text>
+<text x="1218" y="379" fill="#eff4fa" font-size="25" font-weight="650">Escuta às Cegas</text>
+<text x="1218" y="403" fill="#8593a5" font-size="11" font-weight="400">Treine seu ouvido. Confie na sua percepção.</text>
+<rect x="1218" y="422" width="294" height="412" rx="12" fill="url(#card)" stroke="#34364b"/>
+<text x="1238" y="449" fill="#96a3b5" font-size="10" font-weight="400">FAIXA 04 / 12</text>
+<text x="1385" y="449" fill="#65e1d8" font-size="10" font-weight="400">● Áudio de exemplo</text>
+<rect x="1339" y="470" width="52" height="52" rx="16" fill="#2b233e" stroke="#55436f"/>
+<text x="1354" y="505" fill="#b19aff" font-size="29" font-weight="400">♫</text>
+<text x="1266" y="551" fill="#eff4fa" font-size="17" font-weight="600">Primeiro, apenas ouça.</text>
+<text x="1244" y="575" fill="#8593a5" font-size="11" font-weight="400">Encontre o sentido antes das palavras.</text>
+<rect x="1239" y="621" width="4" height="10" rx="2" fill="#b19aff" stroke="none"/>
+<rect x="1245" y="600.3399841345495" width="4" height="51.32003173090101" rx="2" fill="#b19aff" stroke="none"/>
+<rect x="1251" y="609.7123217686767" width="4" height="32.57535646264651" rx="2" fill="#b19aff" stroke="none"/>
+<rect x="1257" y="613.7359292114193" width="4" height="24.528141577161435" rx="2" fill="#b19aff" stroke="none"/>
+<rect x="1263" y="614.6171022915117" width="4" height="22.765795416976456" rx="2" fill="#b19aff" stroke="none"/>
+<rect x="1269" y="620.9495293331885" width="4" height="10.100941333623007" rx="2" fill="#b19aff" stroke="none"/>
+<rect x="1275" y="613.7653975099676" width="4" height="24.469204980064973" rx="2" fill="#b19aff" stroke="none"/>
+<rect x="1281" y="611.4463663282817" width="4" height="29.107267343436583" rx="2" fill="#b19aff" stroke="none"/>
+<rect x="1287" y="611.6521264307937" width="4" height="28.69574713841266" rx="2" fill="#b19aff" stroke="none"/>
+<rect x="1293" y="599.1365119498355" width="4" height="53.72697610032904" rx="2" fill="#b19aff" stroke="none"/>
+<rect x="1299" y="617.558702385404" width="4" height="16.88259522919213" rx="2" fill="#b19aff" stroke="none"/>
+<rect x="1305" y="602.0389181201784" width="4" height="47.92216375964308" rx="2" fill="#b19aff" stroke="none"/>
+<rect x="1311" y="608.2556786906707" width="4" height="35.488642618658545" rx="2" fill="#b19aff" stroke="none"/>
+<rect x="1317" y="615.9388944758509" width="4" height="20.122211048298244" rx="2" fill="#b19aff" stroke="none"/>
+<rect x="1323" y="615.7313988237636" width="4" height="20.53720235247294" rx="2" fill="#b19aff" stroke="none"/>
+<rect x="1329" y="620.5496970057306" width="4" height="10.900605988538612" rx="2" fill="#b19aff" stroke="none"/>
+<rect x="1335" y="613.2503257924635" width="4" height="25.499348415072966" rx="2" fill="#b19aff" stroke="none"/>
+<rect x="1341" y="609.1703931321747" width="4" height="33.65921373565054" rx="2" fill="#b19aff" stroke="none"/>
+<rect x="1347" y="614.027800777796" width="4" height="23.944398444408105" rx="2" fill="#b19aff" stroke="none"/>
+<rect x="1353" y="598.4821680260401" width="4" height="55.03566394791975" rx="2" fill="#564768" stroke="none"/>
+<rect x="1359" y="614.2299775363368" width="4" height="23.540044927326246" rx="2" fill="#564768" stroke="none"/>
+<rect x="1365" y="604.161520904145" width="4" height="43.67695819170998" rx="2" fill="#564768" stroke="none"/>
+<rect x="1371" y="607.3085533091847" width="4" height="37.3828933816306" rx="2" fill="#564768" stroke="none"/>
+<rect x="1377" y="617.9622437690402" width="4" height="16.07551246191962" rx="2" fill="#564768" stroke="none"/>
+<rect x="1383" y="617.0229587861762" width="4" height="17.954082427647553" rx="2" fill="#564768" stroke="none"/>
+<rect x="1389" y="619.7708123635065" width="4" height="12.458375272987034" rx="2" fill="#564768" stroke="none"/>
+<rect x="1395" y="613.1311101508104" width="4" height="25.73777969837912" rx="2" fill="#564768" stroke="none"/>
+<rect x="1401" y="607.0110059128475" width="4" height="37.977988174305054" rx="2" fill="#564768" stroke="none"/>
+<rect x="1407" y="616.7728591494013" width="4" height="18.45428170119741" rx="2" fill="#564768" stroke="none"/>
+<rect x="1413" y="598.4101483680477" width="4" height="55.179703263904756" rx="2" fill="#564768" stroke="none"/>
+<rect x="1419" y="611.1218188347872" width="4" height="29.756362330425745" rx="2" fill="#564768" stroke="none"/>
+<rect x="1425" y="606.6209758087322" width="4" height="38.75804838253562" rx="2" fill="#564768" stroke="none"/>
+<rect x="1431" y="606.8755332750725" width="4" height="38.24893344985493" rx="2" fill="#564768" stroke="none"/>
+<rect x="1437" y="619.724147268145" width="4" height="12.551705463709995" rx="2" fill="#564768" stroke="none"/>
+<rect x="1443" y="618.3991876239976" width="4" height="15.201624752004923" rx="2" fill="#564768" stroke="none"/>
+<rect x="1449" y="618.6535035139675" width="4" height="14.692992972065072" rx="2" fill="#564768" stroke="none"/>
+<rect x="1455" y="613.449269604834" width="4" height="25.101460790332148" rx="2" fill="#564768" stroke="none"/>
+<rect x="1461" y="605.0694991178781" width="4" height="41.86100176424391" rx="2" fill="#564768" stroke="none"/>
+<rect x="1467" y="619.8042004436583" width="4" height="12.391599112683576" rx="2" fill="#564768" stroke="none"/>
+<rect x="1473" y="598.931695533455" width="4" height="54.13660893309005" rx="2" fill="#564768" stroke="none"/>
+<rect x="1479" y="608.333257268115" width="4" height="35.333485463770174" rx="2" fill="#564768" stroke="none"/>
+<rect x="1485" y="609.3191695973692" width="4" height="33.361660805261735" rx="2" fill="#564768" stroke="none"/>
+<rect x="1238" y="664" width="254" height="3" rx="2" fill="#383144" stroke="none"/>
+<rect x="1238" y="664" width="88.89999999999999" height="3" rx="2" fill="#b19aff" stroke="none"/>
+<circle cx="1326.9" cy="665" r="4" fill="#d3c5ff"/>
+<text x="1238" y="685" fill="#8593a5" font-size="10" font-weight="400">00:04</text>
+<text x="1462" y="685" fill="#8593a5" font-size="10" font-weight="400">00:12</text>
+<text x="1291" y="727" fill="#b3bfce" font-size="23" font-weight="400">↶</text>
+<circle cx="1365" cy="719" r="24" fill="#b19aff"/>
+<path d="M1360 710l14 9-14 9z" fill="#1b1327"/>
+<text x="1417" y="727" fill="#b3bfce" font-size="23" font-weight="400">↷</text>
+<rect x="1456" y="708" width="35" height="23" rx="5" fill="#18202b" stroke="#303a48"/>
+<text x="1462" y="724" fill="#c5cfdd" font-size="11" font-weight="400">1×</text>
+<rect x="1238" y="757" width="254" height="38" rx="7" fill="#292139" stroke="#7e679b"/>
+<text x="1274" y="781" fill="#d2c4ff" font-size="12" font-weight="600">◉  Revelar transcrição</text>
+<text x="1238" y="817" fill="#8593a5" font-size="10" font-weight="400">Ouça. Formule sua hipótese. Só então revele.</text>
+<text x="1219" y="858" fill="#8593a5" font-size="11" font-weight="400">Sua sessão</text>
+<text x="1432" y="858" fill="#65e1d8" font-size="11" font-weight="400">04 / 12 faixas</text>
+<rect x="1218" y="870" width="294" height="3" rx="2" fill="#29313d" stroke="none"/>
+<rect x="1218" y="870" width="98" height="3" rx="2" fill="#65e1d8" stroke="none"/>
+<rect x="1199" y="890" width="332" height="48" rx="0" fill="#121923" stroke="none"/>
+<path d="M1199 890H1531" stroke="#293341"/>
+<rect x="1285" y="896" width="80" height="42" rx="7" fill="#282136" stroke="none"/>
+<text x="1234" y="916" fill="#65e1d8" font-size="18" font-weight="400">▧</text>
+<text x="1216" y="933" fill="#9aa7b8" font-size="8" font-weight="400">Vocabulário</text>
+<text x="1317" y="916" fill="#b19aff" font-size="18" font-weight="400">♫</text>
+<text x="1304" y="933" fill="#b19aff" font-size="8" font-weight="400">Listening</text>
+<text x="1400" y="916" fill="#edc579" font-size="18" font-weight="400">▣</text>
+<text x="1388" y="933" fill="#9aa7b8" font-size="8" font-weight="400">Anki Hub</text>
+<text x="1482" y="916" fill="#80b8ff" font-size="18" font-weight="400">▥</text>
+<text x="1468" y="933" fill="#9aa7b8" font-size="8" font-weight="400">Analytics</text>
+<rect x="1317" y="952" width="97" height="3" rx="2" fill="#d6dce4" stroke="none"/>
+<circle cx="63" cy="1023" r="3" fill="#65e1d8"/>
+<text x="75" y="1027" fill="#9aa7b8" font-size="12" font-weight="400">Vocabulário</text>
+<circle cx="248" cy="1023" r="3" fill="#b19aff"/>
+<text x="260" y="1027" fill="#9aa7b8" font-size="12" font-weight="400">Listening Studio</text>
+<circle cx="453" cy="1023" r="3" fill="#edc579"/>
+<text x="465" y="1027" fill="#9aa7b8" font-size="12" font-weight="400">Anki Hub</text>
+<circle cx="618" cy="1023" r="3" fill="#80b8ff"/>
+<text x="630" y="1027" fill="#9aa7b8" font-size="12" font-weight="400">Analytics</text>
+<text x="1110" y="1027" fill="#708092" font-size="10" font-weight="400">LEXIS SUITE · RESPONSIVE SYSTEM</text>
+</g></svg>
