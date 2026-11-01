@@ -1,13 +1,5 @@
 {
   "usuario": "Lucas",
-  "ultima_atualizacao": "2026-10-26T20:40:47.234359",
-  "estatisticas": {
-    "total_termos": 1506,
-    "acepcoes_conhecidas": 1170,
-    "acepcoes_em_estudo": 48,
-    "acepcoes_desconhecidas": 247,
-    "acepcoes_duvida": 102
-  },
   "mapa_vocabulario": {
     "a": {
       "termo": "a",
@@ -11695,7 +11687,7 @@
           "definicao": "the place where the devil lives and where evil people go after they die according to some religions",
           "definicao_pt": "",
           "status": "desconhecido",
-          "frase_exemplo": "",
+          "frase_exemplo": "But, <i>hell</i>, why not?",
           "confirmado_em": "2026-10-24T21:13:43.340206",
           "frase_i1": "But, <i>hell</i>, why not?",
           "frase_pt": "Mas, inferno, por que não?",
@@ -28316,5 +28308,13 @@
       "collocations": [],
       "observacoes": "Classificado via Web Reviewer"
     }
-  }
+  },
+  "estatisticas": {
+    "total_termos": 1506,
+    "acepcoes_conhecidas": 1170,
+    "acepcoes_em_estudo": 48,
+    "acepcoes_desconhecidas": 247,
+    "acepcoes_duvida": 102
+  },
+  "ultima_atualizacao": "2026-11-01T07:53:56.356752"
 }
