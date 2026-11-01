@@ -2300,6 +2300,37 @@
       color: #110d1c;
     }
 
+
+    .video-toolbar-row { align-items: flex-start; }
+    #yt-url-input { background-image: none; padding-right: 12px; }
+    .file-picker { position: relative; display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 4px 0; }
+    .file-picker input { max-width: 100%; min-width: 0; font-size: 11px; }
+    .file-picker:focus-within { outline: 2px solid var(--cyan); outline-offset: 3px; }
+    .study-notice { max-width: 900px; margin: 14px auto; padding: 14px; border: 1px solid var(--line); border-radius: 12px; color: var(--muted); line-height: 1.6; font-size: 13px; }
+    .study-notice .dictation-btn { margin: 6px 4px 0 0; }
+    .study-notice[hidden] { display: none; }
+    .dictation-success-box { flex-direction: column; }
+    .dictation-success-box > div:first-child { gap: 12px; flex-wrap: wrap; }
+    .dictation-btn:disabled { opacity: .5; cursor: default; }
+    .word-slot { overflow-wrap: anywhere; max-width: 100%; }
+    @media (max-width: 767px) {
+      .video-dictation-card { padding: 14px; }
+      .listening-stage { min-width: 0; }
+      .listening-title-row, .dictation-header-info { flex-wrap: wrap; gap: 10px; }
+      .listening-title-row h2 { font-size: 24px; }
+      #yt-controls-wrap, #local-controls-wrap { min-width: 0 !important; width: 100%; }
+      #yt-controls-wrap input, #video-preset-select { min-width: 0 !important; width: 100% !important; max-width: 100%; }
+      .dictation-actions-row { flex-wrap: wrap; }
+      .dictation-actions-row .dictation-btn { min-height: 44px; }
+      .dictation-input-field { font-size: 16px; }
+      .bottom-nav { height: calc(72px + env(safe-area-inset-bottom, 0px)); }
+      #toast-container { bottom: calc(94px + env(safe-area-inset-bottom, 0px)); right: 12px; left: 12px; }
+    }
+    .dictation-timing-controls { margin-top: 14px; color: var(--muted); font-size: 12px; line-height: 1.6; }
+    .dictation-timing-controls summary { cursor: pointer; padding: 8px 0; }
+    .dictation-timing-controls p { margin-bottom: 10px; }
+    .dictation-timing-controls label { display: inline-flex; align-items: center; gap: 8px; margin: 4px 12px 8px 0; }
+    .dictation-timing-controls input { width: 100px; padding: 8px; border: 1px solid var(--line); border-radius: 8px; color: var(--text); background: var(--surface); font: inherit; }
   </style>
 </head>
 <body>
@@ -2682,26 +2713,30 @@
             <input type="text" id="yt-url-input" class="select-custom" placeholder="Cole o link do YouTube (ex: https://www.youtube.com/watch?v=...):" style="flex: 1; min-width: 200px;">
             <select id="video-preset-select" class="select-custom" onchange="onSelectVideoPreset(this.value)" style="width: auto; min-width: 220px;">
               <option value="jobs">Steve Jobs · Discurso Stanford (3 Frases)</option>
-              <option value="altman">Sam Altman · The Era of Intelligence (3 Frases)</option>
-              <option value="friends">Friends · Conversação Cotidiana (3 Frases)</option>
+              <option value="altman" disabled>Sam Altman · Fonte e legendas pendentes de validação</option>
+              <option value="friends" disabled>Friends · Fonte e legendas pendentes de validação</option>
             </select>
             <button type="button" class="dictation-btn primary" onclick="loadVideoFromInput()">Carregar</button>
+            <label class="dictation-btn file-picker">Importar legenda do YouTube (.srt/.vtt)
+              <input type="file" accept=".srt,.vtt" onchange="onYoutubeSrtSelected(event)">
+            </label>
           </div>
 
           <!-- Controles Vídeo Local & Legenda -->
           <div id="local-controls-wrap" style="display: none; flex: 1; gap: 10px; align-items: center; min-width: 280px; flex-wrap: wrap;">
             <label class="dictation-btn" style="cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
               🎥 1. Escolher Vídeo (.mp4, .webm)
-              <input type="file" id="local-video-input" accept="video/mp4,video/webm,video/ogg,video/quicktime,video/*" style="display: none;" onchange="onLocalVideoSelected(event)">
+              <input type="file" id="local-video-input" accept="video/mp4,video/webm,video/ogg,video/quicktime,video/*"  onchange="onLocalVideoSelected(event)">
             </label>
             <label class="dictation-btn" style="cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
               📄 2. Escolher Legenda (.srt, .vtt)
-              <input type="file" id="local-srt-input" accept=".srt,.vtt,text/plain" style="display: none;" onchange="onLocalSrtSelected(event)">
+              <input type="file" id="local-srt-input" accept=".srt,.vtt,text/plain"  onchange="onLocalSrtSelected(event)">
             </label>
             <span id="local-file-status" style="font-size: 11px; color: var(--muted); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Nenhum arquivo local selecionado</span>
           </div>
         </div>
 
+        <p id="listening-player-status" class="transcript-hint" role="status"></p>
         <div class="video-player-container" id="video-wrapper">
           <div id="yt-player-frame"></div>
           <video id="local-video-player" playsinline style="width: 100%; height: 100%; object-fit: contain; display: none; background: #000; border-radius: 12px;"></video>
@@ -2710,54 +2745,80 @@
         <!-- CAIXA DE DITADO ATIVO -->
         <div class="dictation-interactive-box">
           <div class="dictation-header-info">
-            <span id="dictation-segment-label">FRASE 01 / 03</span>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span id="dictation-segment-label" style="font-weight: 700;">FRASE 01 / 03</span>
+              <button type="button" class="dictation-btn" onclick="prevDictationSegment()" title="Frase Anterior" style="padding: 2px 8px; font-size: 11px; height: 26px;">◀</button>
+              <button type="button" class="dictation-btn" onclick="skipToNextSegment()" title="Pular para Próxima Frase" style="padding: 2px 8px; font-size: 11px; height: 26px;">▶</button>
+            </div>
             <div style="display: flex; align-items: center; gap: 10px;">
               <button type="button" class="dictation-btn" id="dictation-speed-toggle" onclick="toggleDictationSpeed()" style="padding: 3px 8px; font-size: 11px; height: 26px;" title="Alternar velocidade de reprodução">⚡ 1.0×</button>
               <span style="color: var(--cyan); display: flex; align-items: center; gap: 6px;">
                 <span style="width: 7px; height: 7px; border-radius: 50%; background: var(--cyan); display: inline-block;"></span>
-                <span id="dictation-time-label">Trecho: 00:23.5 - 00:28.2</span>
+                <span id="dictation-time-label">Trecho: 00:25.800 – 00:30.100</span>
               </span>
             </div>
           </div>
 
           <!-- SLOTS VISUAIS DE PALAVRAS EM TEMPO REAL -->
-          <div id="dictation-word-slots" class="word-slots-container"></div>
+          <div id="dictation-word-slots" aria-label="Progresso por palavra" class="word-slots-container"></div>
 
-          <input type="text" id="dictation-input" class="dictation-input-field" placeholder="Ouça o trecho e digite o que escutou..." autocomplete="off" spellcheck="false" oninput="onDictationInput(this.value)" onkeydown="onDictationKey(event)">
+          <input type="text" id="dictation-input" aria-label="Sua transcrição do trecho" class="dictation-input-field" placeholder="Ouça o trecho e digite o que escutou..." autocomplete="off" spellcheck="false" oninput="onDictationInput(this.value)" onkeydown="onDictationKey(event)">
 
           <!-- DICA ORTOGRÁFICA INTELIGENTE -->
-          <div id="spelling-hint-box" class="spelling-hint-box" style="display: none;">
+          <div id="spelling-hint-box" role="status" aria-live="polite" class="spelling-hint-box" style="display: none;">
             <span>💡</span>
             <span id="spelling-hint-text">Quase lá!</span>
           </div>
 
           <!-- BANNER DE SUCESSO / REVELAÇÃO -->
-          <div id="dictation-success-box" class="dictation-success-box" style="display: none;">
+          <div id="dictation-success-box" role="status" aria-live="polite" class="dictation-success-box" style="display: none;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
-              <span style="color: #34d399; font-weight: 700;">✓ Perfeito! Frase decodificada com sucesso</span>
-              <button type="button" class="dictation-btn primary" onclick="nextDictationSegment()" style="padding: 6px 14px; font-size: 11px;">▶ Próxima Frase (Enter)</button>
+              <span id="dictation-result-label" style="color: #34d399; font-weight: 700;">Frase conferida</span>
+              <button type="button" class="dictation-btn primary" id="dictation-next-btn" onclick="nextDictationSegment()" style="padding: 6px 14px; font-size: 11px;">▶ Próxima Frase (Enter)</button>
             </div>
             <div id="dictation-revealed-en" style="font-size: 15px; font-weight: 600; margin-top: 4px;">Sentence text</div>
             <div id="dictation-revealed-pt" style="font-size: 12px; color: var(--muted);">Tradução para português</div>
           </div>
 
           <div class="dictation-actions-row">
-            <button type="button" class="dictation-btn" onclick="replayCurrentSegment()" title="Atalho: Tab">↺ Repetir Trecho (Tab)</button>
-            <button type="button" class="dictation-btn" onclick="showNextWordHint()" title="Atalho: Ctrl+H">💡 Pista da Palavra (Ctrl+H)</button>
+            <button type="button" class="dictation-btn" onclick="extendDictationSegment()" title="Amplia o fim do trecho e reproduz a continuação sem apagar sua resposta">Ouvir mais 2s</button>
+            <button type="button" class="dictation-btn" onclick="replayCurrentSegment()" title="Atalho: Alt+R">↺ Repetir Trecho (Alt+R)</button>
+            <button type="button" class="dictation-btn" onclick="showNextWordHint()" title="Atalho: Alt+H">💡 Pista da Palavra (Alt+H)</button>
             <button type="button" class="dictation-btn" onclick="giveUpAndReveal()">👁️ Revelar Frase</button>
-            <button type="button" class="dictation-btn" onclick="saveCurrentSegmentToAnki()" style="margin-left: auto; color: var(--purple); border-color: rgba(177, 154, 255, 0.3);">+ Enviar Trecho para o Anki</button>
+            <button type="button" class="dictation-btn" id="dictation-save-btn" onclick="saveCurrentSegmentToAnki()" style="margin-left: auto; color: var(--purple); border-color: rgba(177, 154, 255, 0.3);">+ Enviar Trecho para o Anki</button>
           </div>
+          <details class="dictation-timing-controls">
+            <summary>Ajustar sincronização do trecho</summary>
+            <p>Se uma fala estiver cortada, ajuste os limites em segundos. Sua resposta será mantida.</p>
+            <label>Início (s) <input id="dictation-start-time" type="number" min="0" step="0.1" inputmode="decimal"></label>
+            <label>Fim (s) <input id="dictation-end-time" type="number" min="0" step="0.1" inputmode="decimal"></label>
+            <button type="button" class="dictation-btn" onclick="applyDictationTiming()">Aplicar limites</button>
+            <button type="button" class="dictation-btn" onclick="resetDictationTiming()">Restaurar limites</button>
+          </details>
         </div>
       </div>
 
+      <div id="dictation-summary" class="study-notice" role="status" hidden></div>
+      <div class="study-notice"><span id="dictation-session-status" role="status">Selecione um treino ou importe seu vídeo e legenda.</span>
+        <button type="button" class="dictation-btn" onclick="restartDictationSession()">Recomeçar treino</button>
+        <button type="button" class="dictation-btn" onclick="retryPendingListening()">Reenviar pendências <span id="listening-pending-count"></span></button>
+      </div>
       <!-- SUBMODO 2: ESCUTA ÀS CEGAS PURA (ÁUDIO) -->
       <div id="submode-audio-container" class="listening-workspace" style="display: none;">
         <section class="player-card" aria-label="Player de Escuta">
+          <label class="dictation-btn file-picker">Escolher áudio ou vídeo para escutar
+            <input id="listening-audio-file" type="file" accept="audio/*,video/*" onchange="onListeningAudioSelected(event)">
+          </label>
+          <label class="dictation-btn file-picker">Importar transcrição sincronizada (.srt/.vtt)
+            <input type="file" accept=".srt,.vtt" onchange="onListeningCaptionsSelected(event)">
+          </label>
+          <audio id="listening-audio" preload="metadata"></audio>
+          <p class="transcript-hint" id="listening-file-status" role="status">Selecione um arquivo. Seus arquivos ficam neste navegador.</p>
           <div class="player-top-line">
-            <span id="listening-track-label">FAIXA 04 / 12</span>
+            <span id="listening-track-label">ARQUIVO LOCAL</span>
             <span style="color: var(--cyan); display: flex; align-items: center; gap: 5px;">
               <span style="width: 6px; height: 6px; border-radius: 50%; background: var(--cyan); display: inline-block;"></span>
-              Áudio de exemplo
+              Áudio do seu arquivo
             </span>
           </div>
 
@@ -2767,10 +2828,10 @@
 
           <div class="wave-visualizer" id="listening-waveform" aria-hidden="true"></div>
 
-          <input class="seek-bar" id="listening-seek" type="range" min="0" max="12" value="4" step="0.1" aria-label="Posição do áudio" oninput="onListeningSeek(this.value)">
+          <input class="seek-bar" id="listening-seek" type="range" min="0" max="0" value="0" step="0.1" aria-label="Posição do áudio" oninput="onListeningSeek(this.value)">
           <div class="time-readout">
-            <span id="listening-elapsed">00:04</span>
-            <span id="listening-total">00:12</span>
+            <span id="listening-elapsed">00:00</span>
+            <span id="listening-total">00:00</span>
           </div>
 
           <div class="player-controls-row">
@@ -2780,15 +2841,19 @@
             <button type="button" class="player-btn-speed" id="listening-speed-btn" onclick="cycleListeningSpeed()">1×</button>
           </div>
 
+          <div class="dictation-actions-row">
+            <button type="button" class="dictation-btn" onclick="stepListeningTrack(-1)">Trecho anterior</button>
+            <button type="button" class="dictation-btn" onclick="stepListeningTrack(1)">Próximo trecho</button>
+          </div>
           <button type="button" class="btn-reveal-transcript" id="btn-reveal-transcript" onclick="toggleListeningReveal()">
             ◉ &nbsp; Revelar transcrição
           </button>
           <div class="transcript-hint">Ouça. Formule sua hipótese. Só então revele.</div>
 
           <div class="transcript-box" id="listening-transcript-box" style="display:none;">
-            <div id="listening-sentence-en" style="font-size: 15px; font-weight: 600; color: #eff4fa;">A colleague of mine will be speaking at the conference.</div>
-            <small id="listening-sentence-pt" style="color: var(--muted); font-size: 13px;">Um colega meu falará na conferência.</small>
-            <button type="button" id="btn-save-listening-anki" class="listening-restart-btn" style="margin-top: 14px; border-color: rgba(177, 154, 255, 0.4); color: var(--purple); background: rgba(177, 154, 255, 0.08);" onclick="saveListeningToAnki()">
+            <div id="listening-sentence-en" style="font-size: 15px; font-weight: 600; color: #eff4fa;">Importe uma transcrição para comparar.</div>
+            <small id="listening-sentence-pt" style="color: var(--muted); font-size: 13px;"></small>
+            <button type="button" id="btn-save-listening-anki" class="listening-restart-btn" style="margin-top: 14px; border-color: rgba(177, 154, 255, 0.4); color: var(--purple); background: rgba(177, 154, 255, 0.08);" disabled onclick="saveListeningToAnki()">
               + Salvar no Anki Hub
             </button>
           </div>
@@ -2798,9 +2863,9 @@
         <aside>
           <div class="listening-sidecard">
             <h4>Sua sessão</h4>
-            <div class="session-metric">04 <small>/ 12 faixas</small></div>
+            <div class="session-metric" id="listening-session-metric">0 <small>/ 0 trechos</small></div>
             <div class="session-progress-bar">
-              <b style="width: 33%;"></b>
+              <b id="listening-session-progress" style="width: 0%;"></b>
             </div>
             <div style="font-size: 11px; color: var(--muted); line-height: 1.6;">
               Um passo de cada vez.<br>Você está criando consistência.
@@ -2825,8 +2890,8 @@
       </div>
 
       <div style="border-top: 1px solid var(--line); margin-top: 28px; padding-top: 18px; display: flex; justify-content: space-between; font-size: 11px; color: var(--muted);">
-        <span><strong style="color: var(--cyan);">●</strong> &nbsp; Seu progresso, sempre conectado.</span>
-        <span>EN → PT-BR &nbsp; · &nbsp; Nível B1–B2</span>
+        <span><strong style="color: var(--cyan);">●</strong> &nbsp; O progresso do ditado é salvo neste navegador.</span>
+        <span>EN → PT-BR &nbsp; · &nbsp; Nível conforme o material escolhido</span>
       </div>
     </div>
   </section>
@@ -2866,25 +2931,7 @@
   </nav>
 
   <div id="toast-container"></div>
-  <!-- MOBILE BOTTOM NAVIGATION (IMAGE 1 REPLICA) -->
-  <nav class="bottom-nav" aria-label="Módulos mobile">
-    <button type="button" class="tab active" data-module="vocab" onclick="switchModule('vocab')">
-      <span class="nav-icon">▧</span>
-      <span>Vocabulário</span>
-    </button>
-    <button type="button" class="tab" data-module="listening" onclick="switchModule('listening')">
-      <span class="nav-icon">♫</span>
-      <span>Listening</span>
-    </button>
-    <button type="button" class="tab" data-module="anki" onclick="switchModule('anki')">
-      <span class="nav-icon">▣</span>
-      <span>Anki Hub</span>
-    </button>
-    <button type="button" class="tab" data-module="analytics" onclick="switchModule('analytics')">
-      <span class="nav-icon">▥</span>
-      <span>Analytics</span>
-    </button>
-  </nav>
+
 
 
   <!-- JAVASCRIPT LOGIC -->
@@ -4519,808 +4566,789 @@
     };
 
     function switchModule(moduleName) {
+      const target = document.getElementById('view-module-' + moduleName);
+      if (!target) return;
+      pauseListeningMedia();
       document.querySelectorAll('.module-view').forEach(view => {
-        const isTarget = view.id === 'view-module-' + moduleName;
-        view.style.display = isTarget ? 'block' : 'none';
-        view.classList.toggle('active', isTarget);
+        const active = view === target;
+        view.style.display = active ? 'block' : 'none';
+        view.classList.toggle('active', active);
       });
-
       document.querySelectorAll('.topbar .tab, .bottom-nav .tab').forEach(btn => {
         const active = btn.dataset.module === moduleName;
         btn.classList.toggle('active', active);
+        btn.setAttribute('aria-current', active ? 'page' : 'false');
       });
-
-      const info = moduleNamesMap[moduleName] || { name: moduleName, sub: "", color: "var(--text)" };
+      const info = moduleNamesMap[moduleName];
       const crumbMod = document.getElementById('breadcrumb-module-name');
       const crumbSub = document.getElementById('breadcrumb-subview');
-      if (crumbMod) {
-        crumbMod.textContent = info.name;
-        crumbMod.style.color = info.color;
-      }
-      if (crumbSub) {
-        crumbSub.textContent = info.sub;
-      }
-
+      if (crumbMod && info) { crumbMod.textContent = info.name; crumbMod.style.color = info.color; }
+      if (crumbSub && info) crumbSub.textContent = moduleName === 'listening' ? (selectedListeningSubmode === 'video' ? '/ Vídeo Ditado' : '/ Escuta às Cegas') : info.sub;
       if (moduleName === 'listening') {
-        initListeningWaveform();
+        initYouTubePlayer();
+        renderWordSlots(getCleanTargetTokens(document.getElementById('dictation-input').value));
       }
     }
 
-    // LISTENING STUDIO CONTROLS
-    let listeningPos = 4.0;
-    let listeningRate = 1.0;
-    let listeningPlaying = false;
-    let listeningTimer = null;
-    let audioCtx = null;
-    let audioOsc = null;
-
-    function initListeningWaveform() {
-      const container = document.getElementById('listening-waveform');
-      if (!container || container.children.length > 0) return;
-      for (let i = 0; i < 48; i++) {
-        const bar = document.createElement('i');
-        const h = Math.floor(10 + Math.abs(Math.sin(i * 1.9) * Math.cos(i * 0.32)) * 52);
-        bar.style.height = h + 'px';
-        if (i < 16) bar.classList.add('played');
-        container.appendChild(bar);
-      }
+    // Listening uses real local media; no synthesized placeholder sound.
+    const LISTENING_STORAGE = 'lexis_listening_v2';
+    function readListeningStore(key, fallback) {
+      try { return JSON.parse(localStorage.getItem(key)) || fallback; } catch (_) { return fallback; }
     }
-
-    function toggleListeningPlay() {
-      const btn = document.getElementById('listening-play-btn');
-      if (listeningPlaying) {
-        stopListeningAudio();
-        if (btn) btn.textContent = '▶';
-      } else {
-        startListeningAudio();
-        if (btn) btn.textContent = 'Ⅱ';
-      }
+    function writeListeningStore(key, value) {
+      try { localStorage.setItem(key, JSON.stringify(value)); return true; }
+      catch (_) { showToast('Não foi possível salvar neste navegador. Mantenha esta aba aberta.', false); return false; }
     }
-
-    function startListeningAudio() {
-      listeningPlaying = true;
-      try {
-        audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
-        audioCtx.resume();
-        audioOsc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        gain.gain.value = 0.02;
-        audioOsc.type = 'sine';
-        audioOsc.frequency.value = 240;
-        audioOsc.connect(gain);
-        gain.connect(audioCtx.destination);
-        audioOsc.start();
-      } catch (e) {}
-
-      listeningTimer = setInterval(() => {
-        listeningPos = Math.min(12, listeningPos + 0.1 * listeningRate);
-        updateListeningTime();
-        if (listeningPos >= 12) {
-          stopListeningAudio();
-          const btn = document.getElementById('listening-play-btn');
-          if (btn) btn.textContent = '▶';
-        }
-      }, 100);
-    }
-
-    function stopListeningAudio() {
-      listeningPlaying = false;
-      if (listeningTimer) clearInterval(listeningTimer);
-      if (audioOsc) {
-        try { audioOsc.stop(); } catch(e) {}
-        audioOsc = null;
-      }
-    }
-
-    function onListeningSeek(val) {
-      listeningPos = parseFloat(val);
-      updateListeningTime();
-    }
-
-    function seekListeningDelta(delta) {
-      listeningPos = Math.max(0, Math.min(12, listeningPos + delta));
-      updateListeningTime();
-    }
-
-    function updateListeningTime() {
-      const seek = document.getElementById('listening-seek');
-      const elapsed = document.getElementById('listening-elapsed');
-      if (seek) seek.value = listeningPos;
-      if (elapsed) elapsed.textContent = '00:' + Math.floor(listeningPos).toString().padStart(2, '0');
-
-      const bars = document.querySelectorAll('#listening-waveform i');
-      const ratio = listeningPos / 12;
-      const count = Math.floor(bars.length * ratio);
-      bars.forEach((bar, idx) => {
-        bar.classList.toggle('played', idx <= count);
-      });
-    }
-
-    function cycleListeningSpeed() {
-      listeningRate = listeningRate === 1.0 ? 1.25 : listeningRate === 1.25 ? 1.5 : listeningRate === 1.5 ? 0.75 : 1.0;
-      const btn = document.getElementById('listening-speed-btn');
-      if (btn) btn.textContent = listeningRate + '×';
-    }
-
-    function toggleListeningReveal() {
-      const box = document.getElementById('listening-transcript-box');
-      const btn = document.getElementById('btn-reveal-transcript');
-      if (!box || !btn) return;
-      const isHidden = box.style.display === 'none';
-      box.style.display = isHidden ? 'block' : 'none';
-      btn.textContent = isHidden ? '◉   Ocultar transcrição' : '◉   Revelar transcrição';
-      btn.style.borderColor = isHidden ? 'var(--cyan)' : '#7e679b';
-    }
-
-    function saveListeningToAnki() {
-      const btn = document.getElementById('btn-save-listening-anki');
-      if (btn) {
-        btn.textContent = '✓ Salvo no Anki Hub';
-        btn.disabled = true;
-        btn.style.color = 'var(--cyan)';
-        btn.style.borderColor = 'var(--cyan)';
-      }
-      showToast('Frase salva com sucesso no Anki Hub!');
-    }
-
-    function restartListeningSession() {
-      stopListeningAudio();
-      listeningPos = 0;
-      updateListeningTime();
-      const btn = document.getElementById('listening-play-btn');
-      if (btn) btn.textContent = '▶';
-      const box = document.getElementById('listening-transcript-box');
-      if (box) box.style.display = 'none';
-      const revBtn = document.getElementById('btn-reveal-transcript');
-      if (revBtn) revBtn.textContent = '◉   Revelar transcrição';
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      initListeningWaveform();
-    });
-
-    
-    // ==========================================
-    // VIDEO DICTATION LOGIC, WORD SLOTS & PLAYBACK CONTROLLER
-    // ==========================================
+    const listeningSessions = readListeningStore(LISTENING_STORAGE, {});
+    const pendingListening = readListeningStore(LISTENING_STORAGE + '_pending', {});
+    const sentListening = readListeningStore(LISTENING_STORAGE + '_sent', {});
+    const listeningSends = new Map();
+    let audioTracks = [], audioTrackIndex = 0, audioObjectURL = null, localObjectURL = null;
+    let listeningRate = 1, currentDictationSpeed = 1;
+    let currentSegmentIndex = 0, ytPlayer = null, ytReady = false, ytLoading = false;
+    let youtubeLoadTimeout = null;
+    let videoTimeCheckInterval = null, segmentUnlocked = false, segmentAssisted = false;
+    let selectedListeningSubmode = 'video', localVideoData = null, selectedYoutubeData = null;
+    let localMediaIdentity = '', currentSourceKey = '', sessionCompleted = false;
     const VIDEO_PRESETS = {
-      jobs: {
-        videoId: "UF8uR6Z6KLc",
-        title: "Steve Jobs · Discurso Stanford",
-        segments: [
-          { start: 23.5, end: 28.2, en: "I am honored to be with you today at your commencement.", pt: "Sinto-me honrado por estar com vocês hoje na sua formatura." },
-          { start: 28.4, end: 34.0, en: "from one of the finest universities in the world.", pt: "em uma das melhores universidades do mundo." },
-          { start: 34.2, end: 38.5, en: "I never graduated from college.", pt: "Eu nunca me formei na faculdade." }
-        ]
-      },
-      altman: {
-        videoId: "5qap5aO4i9A",
-        title: "Sam Altman · The Era of Intelligence",
-        segments: [
-          { start: 10.0, end: 14.5, en: "In the next few decades, we will be able to do things.", pt: "Nas próximas décadas, seremos capazes de fazer coisas." },
-          { start: 14.8, end: 19.2, en: "that would have seemed like magic to our grandparents.", pt: "que pareceriam mágicas para os nossos avós." },
-          { start: 19.5, end: 24.0, en: "This capability will be monumental.", pt: "Esta capacidade será monumental." }
-        ]
-      },
-      friends: {
-        videoId: "L0x_6hWbJ2w",
-        title: "Friends · Conversação Cotidiana",
-        segments: [
-          { start: 5.0, end: 8.8, en: "There's nothing to tell, he's just some guy I work with.", pt: "Não há nada para contar, ele é só um cara com quem trabalho." },
-          { start: 9.0, end: 13.0, en: "Come on, you're going out with the guy.", pt: "Qual é, você vai sair com o cara." },
-          { start: 13.2, end: 17.0, en: "There's gotta be something wrong with him.", pt: "Deve ter algo errado com ele." }
-        ]
-      }
+      jobs: { sessionId: 'preset:jobs', legacySessionKey: 'f3ccabbf', videoId: 'UF8uR6Z6KLc', title: 'Steve Jobs · Discurso Stanford', segments: [
+        { start: 25.8, end: 30.1, en: 'I am honored to be with you today for your commencement.', pt: 'Sinto-me honrado por estar com vocês hoje na sua formatura.' },
+        { start: 30.1, end: 35.2, en: 'from one of the finest universities in the world.', pt: 'em uma das melhores universidades do mundo.' },
+        { start: 37.3, end: 41.2, en: 'I never graduated from college.', pt: 'Eu nunca me formei na faculdade.' }
+      ] }
     };
-
-    let activeVideoData = VIDEO_PRESETS.jobs;
-    let currentSegmentIndex = 0;
-    let ytPlayer = null;
-    let videoTimeCheckInterval = null;
-    let segmentUnlocked = false;
-    let currentDictationSpeed = 1.0;
-
-    // Unified playback controller for YouTube and Local Video
+    let activeVideoData = structuredClone(VIDEO_PRESETS.jobs);
+    selectedYoutubeData = activeVideoData;
+    function listeningHash(text) {
+      let hash = 2166136261;
+      for (const char of text) hash = Math.imul(hash ^ char.charCodeAt(0), 16777619);
+      return (hash >>> 0).toString(16);
+    }
+    function mediaIdentity(file) { return [file.name, file.size, file.lastModified].join(':'); }
+    function sourceKey(data) {
+      if (data.sessionId) return data.sessionId;
+      return listeningHash(JSON.stringify([data.videoId || data.identity || data.title, data.segments]));
+    }
+    function currentSegment() { return activeVideoData.segments[currentSegmentIndex]; }
+    const dictationTimingOverrides = readListeningStore(LISTENING_STORAGE + '_timings', {});
+    function currentSegmentTiming() {
+      const segment = currentSegment();
+      if (!segment) return null;
+      const override = (dictationTimingOverrides[currentSourceKey] || {})[currentSegmentIndex];
+      return override && Number.isFinite(override.start) && Number.isFinite(override.end) && override.start >= 0 && override.end > override.start ? override : { start: segment.start, end: segment.end };
+    }
+    function updateDictationTimingLabels() {
+      const timing = currentSegmentTiming();
+      const start = document.getElementById('dictation-start-time');
+      const end = document.getElementById('dictation-end-time');
+      start.disabled = end.disabled = !timing;
+      if (!timing) { start.value = ''; end.value = ''; return; }
+      start.value = timing.start.toFixed(2);
+      end.value = timing.end.toFixed(2);
+      document.getElementById('dictation-time-label').textContent = 'Trecho: ' + formatTime(timing.start) + ' – ' + formatTime(timing.end);
+    }
+    function saveDictationTiming(start, end) {
+      if (!currentSegment() || !Number.isFinite(start) || !Number.isFinite(end) || start < 0 || end <= start) {
+        showToast('Informe um início válido e um fim maior que o início.', false); return false;
+      }
+      const duration = VideoController.isLocal ? document.getElementById('local-video-player').duration : ytReady && ytPlayer.getDuration ? ytPlayer.getDuration() : NaN;
+      if (Number.isFinite(duration) && duration > 0 && end > duration) {
+        showToast('O fim do trecho ultrapassa a duração do vídeo.', false); return false;
+      }
+      dictationTimingOverrides[currentSourceKey] = dictationTimingOverrides[currentSourceKey] || {};
+      dictationTimingOverrides[currentSourceKey][currentSegmentIndex] = { start, end };
+      writeListeningStore(LISTENING_STORAGE + '_timings', dictationTimingOverrides);
+      updateDictationTimingLabels();
+      return true;
+    }
+    function applyDictationTiming() {
+      const startText = document.getElementById('dictation-start-time').value;
+      const endText = document.getElementById('dictation-end-time').value;
+      if (!startText || !endText) return showToast('Preencha os dois tempos em segundos.', false);
+      if (saveDictationTiming(Number(startText), Number(endText))) {
+        stopVideoWatcher(); VideoController.pause();
+        showToast('Limites ajustados. Sua resposta foi mantida; repita o trecho para conferir.');
+      }
+    }
+    function resetDictationTiming() {
+      if (!currentSegment()) return;
+      if (dictationTimingOverrides[currentSourceKey]) delete dictationTimingOverrides[currentSourceKey][currentSegmentIndex];
+      writeListeningStore(LISTENING_STORAGE + '_timings', dictationTimingOverrides);
+      stopVideoWatcher(); VideoController.pause(); updateDictationTimingLabels();
+    }
+    function extendDictationSegment() {
+      const timing = currentSegmentTiming();
+      if (!timing) return;
+      const duration = VideoController.isLocal ? document.getElementById('local-video-player').duration : ytReady && ytPlayer.getDuration ? ytPlayer.getDuration() : NaN;
+      const end = Number.isFinite(duration) && duration > 0 ? Math.min(duration, timing.end + 2) : timing.end + 2;
+      if (end <= timing.end) return showToast('Este trecho já chega ao fim do vídeo.', false);
+      if (!saveDictationTiming(timing.start, end)) return;
+      // Continue from the prior boundary, with a small overlap, without resetting the answer.
+      VideoController.seekTo(Math.max(timing.start, timing.end - .3), true);
+      startVideoWatcher(); focusDictationInput();
+    }
+    function isListeningVisible() { return document.getElementById('view-module-listening').classList.contains('active'); }
+    function pauseListeningMedia() {
+      stopVideoWatcher();
+      const local = document.getElementById('local-video-player');
+      if (local) local.pause();
+      if (ytReady && ytPlayer && ytPlayer.pauseVideo) ytPlayer.pauseVideo();
+      stopListeningAudio();
+      if (currentSourceKey) persistDictationSession();
+    }
     const VideoController = {
       isLocal: false,
       play() {
+        if (!isListeningVisible() || selectedListeningSubmode !== 'video') return;
         if (this.isLocal) {
-          const vid = document.getElementById("local-video-player");
-          if (vid) {
-            vid.playbackRate = currentDictationSpeed;
-            vid.play().catch(() => {});
-          }
-        } else {
-          if (ytPlayer && ytPlayer.playVideo) {
-            if (ytPlayer.setPlaybackRate) ytPlayer.setPlaybackRate(currentDictationSpeed);
-            ytPlayer.playVideo();
-          }
-        }
+          const video = document.getElementById('local-video-player');
+          if (!video.src) return showToast('Escolha primeiro o vídeo local.', false);
+          video.playbackRate = currentDictationSpeed;
+          video.play().catch(() => { stopVideoWatcher(); showToast('Não foi possível reproduzir. Verifique o formato do arquivo.', false); });
+        } else if (ytReady) {
+          ytPlayer.setPlaybackRate(currentDictationSpeed);
+          ytPlayer.playVideo();
+        } else showToast('O player ainda está carregando. Tente novamente em instantes.', false);
       },
       pause() {
-        if (this.isLocal) {
-          const vid = document.getElementById("local-video-player");
-          if (vid) vid.pause();
-        } else {
-          if (ytPlayer && ytPlayer.pauseVideo) ytPlayer.pauseVideo();
-        }
+        if (this.isLocal) document.getElementById('local-video-player').pause();
+        else if (ytReady) ytPlayer.pauseVideo();
       },
-      // seekTo only plays if andPlay is explicitly true! Never auto-plays on boundary pauses.
       seekTo(seconds, andPlay = false) {
         if (this.isLocal) {
-          const vid = document.getElementById("local-video-player");
-          if (vid) {
-            vid.currentTime = Math.max(0, seconds);
-            if (andPlay) {
-              vid.playbackRate = currentDictationSpeed;
-              vid.play().catch(() => {});
-            }
-          }
-        } else {
-          if (ytPlayer && ytPlayer.seekTo) {
-            ytPlayer.seekTo(seconds, true);
-            if (andPlay) {
-              if (ytPlayer.setPlaybackRate) ytPlayer.setPlaybackRate(currentDictationSpeed);
-              ytPlayer.playVideo();
-            }
-          }
-        }
+          const video = document.getElementById('local-video-player');
+          if (!video.src || video.readyState < 1) return;
+          video.currentTime = Math.max(0, Math.min(seconds, Number.isFinite(video.duration) ? video.duration : seconds));
+        } else if (ytReady) ytPlayer.seekTo(Math.max(0, seconds), true);
+        if (!andPlay) this.pause();
+        if (andPlay) this.play();
       },
       getCurrentTime() {
-        if (this.isLocal) {
-          const vid = document.getElementById("local-video-player");
-          return vid ? vid.currentTime : 0;
-        } else {
-          return (ytPlayer && ytPlayer.getCurrentTime) ? ytPlayer.getCurrentTime() : 0;
-        }
+        return this.isLocal ? document.getElementById('local-video-player').currentTime : (ytReady ? ytPlayer.getCurrentTime() : 0);
       },
       setSpeed(speed) {
         currentDictationSpeed = speed;
-        if (this.isLocal) {
-          const vid = document.getElementById("local-video-player");
-          if (vid) vid.playbackRate = speed;
-        } else {
-          if (ytPlayer && ytPlayer.setPlaybackRate) {
-            ytPlayer.setPlaybackRate(speed);
-          }
-        }
-        const btn = document.getElementById("dictation-speed-toggle");
-        if (btn) btn.textContent = `⚡ ${speed}×`;
+        if (this.isLocal) document.getElementById('local-video-player').playbackRate = speed;
+        else if (ytReady) ytPlayer.setPlaybackRate(speed);
+        document.getElementById('dictation-speed-toggle').textContent = speed + '×';
       }
     };
-
     function toggleDictationSpeed() {
-      const nextSpeed = currentDictationSpeed === 1.0 ? 0.75 : (currentDictationSpeed === 0.75 ? 0.5 : 1.0);
-      VideoController.setSpeed(nextSpeed);
-      showToast(`Velocidade de reprodução: ${nextSpeed}×`);
-    }
-
-    function switchVideoSource(source) {
-      const isLoc = source === "local";
-      VideoController.isLocal = isLoc;
-      
-      document.getElementById("btn-src-yt").classList.toggle("active", !isLoc);
-      document.getElementById("btn-src-local").classList.toggle("active", isLoc);
-      
-      document.getElementById("yt-controls-wrap").style.display = isLoc ? "none" : "flex";
-      document.getElementById("local-controls-wrap").style.display = isLoc ? "flex" : "none";
-      
-      document.getElementById("yt-player-frame").style.display = isLoc ? "none" : "block";
-      document.getElementById("local-video-player").style.display = isLoc ? "block" : "none";
-
-      if (isLoc) {
-        if (ytPlayer && ytPlayer.pauseVideo) ytPlayer.pauseVideo();
-      } else {
-        const vid = document.getElementById("local-video-player");
-        if (vid) vid.pause();
+      let speeds = [1, .75, .5];
+      if (!VideoController.isLocal && ytReady && ytPlayer.getAvailablePlaybackRates) {
+        const available = ytPlayer.getAvailablePlaybackRates();
+        speeds = speeds.filter(speed => available.includes(speed));
       }
+      if (!speeds.length) speeds = [1];
+      VideoController.setSpeed(speeds[(speeds.indexOf(currentDictationSpeed) + 1) % speeds.length]);
     }
-
+    function switchListeningSubmode(submode) {
+      if (!['video', 'audio'].includes(submode)) return;
+      pauseListeningMedia();
+      selectedListeningSubmode = submode;
+      document.getElementById('submode-video-container').style.display = submode === 'video' ? 'block' : 'none';
+      document.getElementById('submode-audio-container').style.display = submode === 'audio' ? 'grid' : 'none';
+      for (const mode of ['video', 'audio']) {
+        const btn = document.getElementById('btn-mode-' + mode);
+        btn.classList.toggle('active', mode === submode);
+        btn.setAttribute('aria-pressed', String(mode === submode));
+      }
+      document.querySelector('.listening-title-row h2').textContent = submode === 'video' ? 'Vídeo Ditado Interativo' : 'Escuta às Cegas';
+      if (isListeningVisible()) document.getElementById('breadcrumb-subview').textContent = submode === 'video' ? '/ Vídeo Ditado' : '/ Escuta às Cegas';
+      document.getElementById('listening-submode-desc').textContent = submode === 'video'
+        ? 'Ouça o trecho, escreva sua hipótese e compare. Use pistas quando precisar.'
+        : 'Escolha um áudio real e, se quiser, importe a transcrição para treinar por trechos.';
+    }
+    function switchVideoSource(source) {
+      if (!['local', 'youtube'].includes(source)) return;
+      pauseListeningMedia();
+      const local = source === 'local';
+      VideoController.isLocal = local;
+      document.getElementById('btn-src-yt').classList.toggle('active', !local);
+      document.getElementById('btn-src-local').classList.toggle('active', local);
+      document.getElementById('yt-controls-wrap').style.display = local ? 'none' : 'flex';
+      document.getElementById('local-controls-wrap').style.display = local ? 'flex' : 'none';
+      document.getElementById('yt-player-frame').style.display = local ? 'none' : 'block';
+      document.getElementById('local-video-player').style.display = local ? 'block' : 'none';
+      document.getElementById('listening-player-status').textContent = '';
+      activeVideoData = local ? (localVideoData || { title: 'Vídeo local', segments: [] }) : selectedYoutubeData;
+      activateDictationData();
+      if (!local) initYouTubePlayer();
+    }
     function onLocalVideoSelected(event) {
       const file = event.target.files && event.target.files[0];
       if (!file) return;
-      const vidElem = document.getElementById("local-video-player");
-      vidElem.src = URL.createObjectURL(file);
-      vidElem.load();
-      
-      vidElem.onplay = () => startVideoWatcher();
-      vidElem.onpause = () => stopVideoWatcher();
-
-      document.getElementById("local-file-status").textContent = `Vídeo: ${file.name} | Agora selecione o arquivo .srt/.vtt`;
-      showToast(`Vídeo local "${file.name}" carregado.`);
+      pauseListeningMedia();
+      const video = document.getElementById('local-video-player');
+      if (localObjectURL) URL.revokeObjectURL(localObjectURL);
+      localObjectURL = URL.createObjectURL(file);
+      localMediaIdentity = mediaIdentity(file);
+      localVideoData = { title: file.name, identity: localMediaIdentity, isLocal: true, segments: [] };
+      activeVideoData = localVideoData;
+      video.src = localObjectURL;
+      video.onplay = startVideoWatcher;
+      video.onpause = stopVideoWatcher;
+      video.onended = stopVideoWatcher;
+      video.onerror = () => showToast('Não foi possível abrir o vídeo. Tente MP4 (H.264) ou WebM.', false);
+      video.onloadedmetadata = () => {
+        if (VideoController.isLocal && currentSegmentTiming()) VideoController.seekTo(currentSegmentTiming().start);
+      };
+      video.load();
+      activateDictationData();
+      document.getElementById('local-file-status').textContent = 'Vídeo: ' + file.name + ' · Importe a legenda correspondente.';
     }
-
-    function parseTimeStr(t) {
-      t = (t || "").trim().replace(",", ".");
-      const parts = t.split(":");
-      if (parts.length === 3) {
-        return parseFloat(parts[0]) * 3600 + parseFloat(parts[1]) * 60 + parseFloat(parts[2]);
-      } else if (parts.length === 2) {
-        return parseFloat(parts[0]) * 60 + parseFloat(parts[1]);
-      }
-      return parseFloat(t) || 0;
+    function parseTimeStr(text) {
+      const parts = String(text || '').trim().replace(',', '.').split(':').map(Number);
+      if (!parts.length || parts.length > 3 || parts.some(n => !Number.isFinite(n) || n < 0)) return NaN;
+      return parts.reduce((seconds, part) => seconds * 60 + part, 0);
     }
-
     function parseSRTorVTT(text) {
-      const lines = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n").split("\n");
+      const blocks = String(text || '').replace(/^\uFEFF/, '').replace(/\r\n?/g, '\n').split(/\n\s*\n/);
       const segments = [];
-      let cur = null;
-      const timeRegex = /((?:\d{2}:)?\d{2}:\d{2}[,.]\d{3})\s*-->\s*((?:\d{2}:)?\d{2}:\d{2}[,.]\d{3})/;
-
-      for (let line of lines) {
-        const trimmed = line.trim();
-        if (!trimmed) {
-          if (cur && cur.en) {
-            segments.push(cur);
-            cur = null;
-          }
-          continue;
-        }
-        const match = trimmed.match(timeRegex);
-        if (match) {
-          if (cur && cur.en) segments.push(cur);
-          cur = {
-            start: parseTimeStr(match[1]),
-            end: parseTimeStr(match[2]),
-            en: "",
-            pt: ""
-          };
-        } else if (cur) {
-          const cleanLine = trimmed.replace(/<[^>]+>/g, "");
-          if (cleanLine && !/^\d+$/.test(cleanLine)) {
-            cur.en = cur.en ? (cur.en + " " + cleanLine) : cleanLine;
-          }
-        }
+      const timestamp = /((?:\d{1,}:)?\d{2}:\d{2}[,.]\d{3})\s*-->\s*((?:\d{1,}:)?\d{2}:\d{2}[,.]\d{3})/;
+      for (const block of blocks) {
+        const lines = block.trim().split('\n');
+        if (/^(NOTE|STYLE|REGION)(\s|$)/.test(lines[0])) continue;
+        const i = lines.findIndex(line => timestamp.test(line));
+        if (i < 0) continue;
+        const match = lines[i].match(timestamp);
+        const start = parseTimeStr(match[1]), end = parseTimeStr(match[2]);
+        const en = lines.slice(i + 1).join(' ').replace(/<[^>]*>/g, '').replace(/\{\\[^}]*\}/g, '').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, ' ').trim();
+        if (Number.isFinite(start) && Number.isFinite(end) && start >= 0 && end > start && en) segments.push({ start, end, en, pt: '' });
       }
-      if (cur && cur.en) segments.push(cur);
-      return segments;
+      return segments.sort((a, b) => a.start - b.start);
     }
-
-    function onLocalSrtSelected(event) {
+    async function importListeningCaptions(event, source) {
       const file = event.target.files && event.target.files[0];
       if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function(evt) {
-        const text = evt.target.result;
-        const segs = parseSRTorVTT(text);
-        if (!segs || segs.length === 0) {
-          showToast("Nenhuma fala cronometrada encontrada no arquivo de legenda.");
-          return;
+      const data = source === 'local' ? localVideoData : selectedYoutubeData;
+      const audioAtStart = audioObjectURL;
+      if (source !== 'audio' && !data) return showToast('Escolha primeiro o vídeo.', false);
+      if (source === 'audio' && !audioObjectURL) return showToast('Escolha primeiro o áudio.', false);
+      try {
+        let segments = parseSRTorVTT(await file.text());
+        const media = source === 'audio' ? listeningAudio() : source === 'local' ? document.getElementById('local-video-player') : null;
+        if (media && Number.isFinite(media.duration)) segments = segments.filter(seg => seg.end <= media.duration + .1);
+        if (!segments.length) throw Error('A legenda não contém trechos válidos.');
+        if (source === 'audio') {
+          if (audioAtStart !== audioObjectURL) return;
+          audioTracks = segments;
+          audioTrackIndex = 0;
+          stopListeningAudio();
+          selectListeningTrack(0);
+        } else {
+          if (data !== (source === 'local' ? localVideoData : selectedYoutubeData)) return;
+          data.segments = segments;
+          delete data.sessionId; delete data.legacySessionKey;
+          if (VideoController.isLocal === (source === 'local')) {
+            pauseListeningMedia();
+            activeVideoData = data;
+            activateDictationData();
+          }
         }
-        activeVideoData = {
-          isLocal: true,
-          title: file.name.replace(/\.[^/.]+$/, ""),
-          segments: segs
-        };
-        document.getElementById("local-file-status").textContent = `Vídeo & Legenda carregados: ${file.name} (${segs.length} frases prontas)`;
-        loadSegment(0);
-        showToast(`Legenda carregada: ${segs.length} trechos prontos para treino.`);
-      };
-      reader.readAsText(file);
+        showToast(segments.length + ' trechos importados. Confira a sincronização com seu arquivo.');
+      } catch (error) { showToast(error.message || 'Não foi possível ler a legenda.', false); }
     }
-
-    function switchListeningSubmode(submode) {
-      document.getElementById("submode-video-container").style.display = submode === "video" ? "block" : "none";
-      document.getElementById("submode-audio-container").style.display = submode === "audio" ? "grid" : "none";
-      document.getElementById("btn-mode-video").classList.toggle("active", submode === "video");
-      document.getElementById("btn-mode-audio").classList.toggle("active", submode === "audio");
-      
-      const desc = document.getElementById("listening-submode-desc");
-      if (desc) {
-        desc.textContent = submode === "video" 
-          ? "O vídeo pausa sozinho a cada frase com legenda oculta. Digite o que ouviu para destravar o avanço."
-          : "Treine seu ouvido fonético puro com áudio nativo e revelação em dois tempos.";
-      }
-    }
-
+    function onLocalSrtSelected(event) { return importListeningCaptions(event, 'local'); }
+    function onYoutubeSrtSelected(event) { return importListeningCaptions(event, 'youtube'); }
+    function onListeningCaptionsSelected(event) { return importListeningCaptions(event, 'audio'); }
     function initYouTubePlayer() {
-      if (window.YT && window.YT.Player) {
-        setupYTInstance();
-      } else {
-        const tag = document.createElement("script");
-        tag.src = "https://www.youtube.com/iframe_api";
-        const firstScriptTag = document.getElementsByTagName("script")[0];
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-        window.onYouTubeIframeAPIReady = setupYTInstance;
-      }
+      if (ytPlayer || ytLoading || VideoController.isLocal) return;
+      if (window.YT && window.YT.Player) return setupYTInstance();
+      ytLoading = true;
+      document.getElementById('listening-player-status').textContent = 'Carregando player do YouTube…';
+      clearTimeout(youtubeLoadTimeout);
+      youtubeLoadTimeout = setTimeout(() => {
+        if (!ytReady && !VideoController.isLocal) document.getElementById('listening-player-status').textContent = 'O YouTube está demorando para responder. Verifique a conexão ou use um vídeo local.';
+      }, 12000);
+      const tag = document.createElement('script');
+      tag.src = 'https://www.youtube.com/iframe_api';
+      tag.id = 'lexis-youtube-api';
+      tag.onerror = () => { ytLoading = false; clearTimeout(youtubeLoadTimeout); tag.remove(); document.getElementById('listening-player-status').textContent = 'YouTube indisponível. Use um vídeo local ou entre novamente no módulo para tentar outra vez.'; };
+      window.onYouTubeIframeAPIReady = () => { ytLoading = false; if (!VideoController.isLocal) setupYTInstance(); };
+      document.head.appendChild(tag);
     }
-
     function setupYTInstance() {
-      ytPlayer = new YT.Player("yt-player-frame", {
-        height: "100%",
-        width: "100%",
-        videoId: activeVideoData.videoId,
-        playerVars: {
-          autoplay: 0,
-          controls: 1,
-          rel: 0,
-          modestbranding: 1,
-          cc_load_policy: 0,
-          iv_load_policy: 3
-        },
-        events: {
-          onReady: onPlayerReady,
-          onStateChange: onPlayerStateChange
-        }
+      if (ytPlayer) return;
+      ytPlayer = new YT.Player('yt-player-frame', {
+        height: '100%', width: '100%', videoId: selectedYoutubeData.videoId,
+        playerVars: { autoplay: 0, controls: 1, rel: 0, cc_load_policy: 0, playsinline: 1, origin: location.origin },
+        events: { onReady: onPlayerReady, onStateChange: onPlayerStateChange,
+          onPlaybackRateChange: event => { currentDictationSpeed = event.data; document.getElementById('dictation-speed-toggle').textContent = event.data + '×'; },
+          onError: () => { stopVideoWatcher(); document.getElementById('listening-player-status').textContent = 'O YouTube não conseguiu abrir este vídeo. Verifique o link e a permissão de reprodução ou escolha outro vídeo.'; } }
       });
     }
-
-    function onPlayerReady() {
-      loadSegment(0);
+    async function fetchYoutubeTranscript(videoId) {
+      if (!videoId) return false;
+      const statusEl = document.getElementById('listening-player-status');
+      if (statusEl) statusEl.textContent = 'Carregando frases completas do YouTube...';
+      try {
+        const resp = await fetch('/api/youtube-transcript?v=' + encodeURIComponent(videoId));
+        const data = await resp.json();
+        if (data && data.success && data.segments && data.segments.length > 0) {
+          activeVideoData.segments = data.segments;
+          if (selectedYoutubeData) selectedYoutubeData.segments = data.segments;
+          if (statusEl) statusEl.textContent = '';
+          activateDictationData();
+          showToast(`Sucesso! ${data.total} frases carregadas do vídeo.`);
+          return true;
+        } else if (statusEl) {
+          statusEl.textContent = data.error || '';
+        }
+      } catch (err) {
+        if (statusEl) statusEl.textContent = '';
+      }
+      return false;
     }
 
-    function onPlayerStateChange(event) {
-      if (event.data === YT.PlayerState.PLAYING) {
-        startVideoWatcher();
+    function prevDictationSegment() {
+      if (!activeVideoData || !activeVideoData.segments || activeVideoData.segments.length === 0) return;
+      if (currentSegmentIndex > 0) {
+        loadSegment(currentSegmentIndex - 1);
       } else {
-        stopVideoWatcher();
+        showToast('Você já está na primeira frase.');
       }
     }
 
-    // WATCHER: Pauses strictly once at segment end without looping
+    function skipToNextSegment() {
+      if (!activeVideoData || !activeVideoData.segments || activeVideoData.segments.length === 0) return;
+      if (currentSegmentIndex < activeVideoData.segments.length - 1) {
+        loadSegment(currentSegmentIndex + 1);
+      } else {
+        showToast('Você está na última frase do vídeo.');
+      }
+    }
+    function onPlayerReady() {
+      ytReady = true;
+      clearTimeout(youtubeLoadTimeout);
+      document.getElementById('listening-player-status').textContent = '';
+      if (VideoController.isLocal) { ytPlayer.pauseVideo(); return; }
+      ytPlayer.cueVideoById(selectedYoutubeData.videoId, currentSegmentTiming() ? currentSegmentTiming().start : 0);
+      if (selectedYoutubeData && selectedYoutubeData.videoId) {
+        fetchYoutubeTranscript(selectedYoutubeData.videoId);
+      }
+    }
+    function onPlayerStateChange(event) {
+      if (VideoController.isLocal) return;
+      if (event.data === YT.PlayerState.PLAYING) {
+        if (!isListeningVisible() || selectedListeningSubmode !== 'video') { ytPlayer.pauseVideo(); return; }
+        startVideoWatcher();
+      } else stopVideoWatcher();
+    }
     function startVideoWatcher() {
       stopVideoWatcher();
+      if (!currentSegment()) return;
       videoTimeCheckInterval = setInterval(() => {
-        const curTime = VideoController.getCurrentTime();
-        const seg = activeVideoData.segments[currentSegmentIndex];
-        if (seg && curTime >= seg.end) {
-          // STOP INTERVAL AND PAUSE ONCE. NO AUTO-REPLAY.
+        const seg = currentSegmentTiming();
+        if (!isListeningVisible() || selectedListeningSubmode !== 'video') return pauseListeningMedia();
+        if (seg && VideoController.getCurrentTime() >= seg.end) {
           stopVideoWatcher();
           VideoController.pause();
           VideoController.seekTo(seg.end, false);
           focusDictationInput();
         }
-      }, 70);
+      }, 50);
     }
-
-    function stopVideoWatcher() {
-      if (videoTimeCheckInterval) {
-        clearInterval(videoTimeCheckInterval);
-        videoTimeCheckInterval = null;
+    function stopVideoWatcher() { clearInterval(videoTimeCheckInterval); videoTimeCheckInterval = null; }
+    function activateDictationData() {
+      currentSourceKey = sourceKey(activeVideoData);
+      if (!listeningSessions[currentSourceKey] && activeVideoData.legacySessionKey && listeningSessions[activeVideoData.legacySessionKey]) {
+        listeningSessions[currentSourceKey] = structuredClone(listeningSessions[activeVideoData.legacySessionKey]);
+        writeListeningStore(LISTENING_STORAGE, listeningSessions);
       }
+      const stored = listeningSessions[currentSourceKey];
+      currentSegmentIndex = stored && Number.isInteger(stored.index) ? Math.max(0, Math.min(stored.index, activeVideoData.segments.length - 1)) : 0;
+      sessionCompleted = Boolean(stored && stored.completed);
+      loadSegment(currentSegmentIndex, false, true);
+      if (sessionCompleted) showDictationSummary();
     }
-
-    function loadSegment(index) {
-      currentSegmentIndex = index;
-      segmentUnlocked = false;
+    function persistDictationSession() {
+      if (!currentSourceKey || !currentSegment()) return;
+      const session = listeningSessions[currentSourceKey] || { outcomes: {} };
+      session.outcomes = session.outcomes || {};
+      Object.assign(session, { index: currentSegmentIndex, input: document.getElementById('dictation-input').value, assisted: segmentAssisted, unlocked: segmentUnlocked, completed: sessionCompleted });
+      listeningSessions[currentSourceKey] = session;
+      writeListeningStore(LISTENING_STORAGE, listeningSessions);
+    }
+    function loadSegment(index, andPlay = true, restore = false) {
+      stopVideoWatcher();
       const seg = activeVideoData.segments[index];
-      if (!seg) return;
-
-      document.getElementById("dictation-segment-label").textContent = `FRASE ${String(index + 1).padStart(2, "0")} / ${String(activeVideoData.segments.length).padStart(2, "0")}`;
-      document.getElementById("dictation-time-label").textContent = `Trecho: ${formatTime(seg.start)} - ${formatTime(seg.end)}`;
-      
-      const input = document.getElementById("dictation-input");
-      if (input) {
-        input.value = "";
-        input.className = "dictation-input-field";
-        input.disabled = false;
-      }
-      
-      document.getElementById("spelling-hint-box").style.display = "none";
-      document.getElementById("dictation-success-box").style.display = "none";
-
-      // Render initial blank word slots
-      renderWordSlots([]);
-
-      // Play the segment once
-      VideoController.seekTo(seg.start, true);
-      startVideoWatcher();
-      focusDictationInput();
+      currentSegmentIndex = seg ? index : 0;
+      segmentUnlocked = false; segmentAssisted = false;
+      const input = document.getElementById('dictation-input');
+      input.value = ''; input.disabled = !seg; input.readOnly = false; input.className = 'dictation-input-field';
+      document.getElementById('spelling-hint-box').style.display = 'none';
+      document.getElementById('dictation-success-box').style.display = 'none';
+      document.getElementById('dictation-summary').hidden = true;
+      document.getElementById('dictation-segment-label').textContent = seg ? 'FRASE ' + (index + 1) + ' / ' + activeVideoData.segments.length : 'SEM LEGENDA';
+      document.getElementById('dictation-time-label').textContent = seg ? 'Trecho: ' + formatTime(seg.start) + ' – ' + formatTime(seg.end) : 'Importe uma legenda sincronizada para começar.';
+      for (const btn of document.querySelectorAll('#submode-video-container .dictation-actions-row button')) btn.disabled = !seg;
+      document.getElementById('dictation-next-btn').textContent = index === activeVideoData.segments.length - 1 ? 'Concluir treino (Enter)' : 'Próxima frase (Enter)';
+      updateDictationTimingLabels();
+      if (!seg) { document.getElementById('dictation-word-slots').replaceChildren(); updateDictationStatus(); return; }
+      const stored = restore && listeningSessions[currentSourceKey];
+      if (stored) { input.value = stored.input || ''; segmentAssisted = Boolean(stored.assisted); }
+      renderWordSlots(getCleanTargetTokens(input.value));
+      if (stored && stored.unlocked && stored.outcomes && stored.outcomes[index]) handleSegmentSuccess(seg, stored.outcomes[index], true);
+      VideoController.seekTo(currentSegmentTiming().start, andPlay);
+      if (andPlay) { startVideoWatcher(); focusDictationInput(); }
+      updateDictationStatus(); persistDictationSession();
     }
-
     function replayCurrentSegment() {
-      const seg = activeVideoData.segments[currentSegmentIndex];
-      if (!seg) return;
-      VideoController.seekTo(seg.start, true);
-      startVideoWatcher();
-      focusDictationInput();
+      const seg = currentSegment();
+      if (!seg) return showToast('Importe uma legenda para treinar por trecho.', false);
+      VideoController.seekTo(currentSegmentTiming().start, true); startVideoWatcher(); focusDictationInput();
     }
-
     function focusDictationInput() {
-      const input = document.getElementById("dictation-input");
-      if (input) input.focus();
+      if (isListeningVisible() && selectedListeningSubmode === 'video') document.getElementById('dictation-input').focus({ preventScroll: true });
     }
-
-    function formatTime(sec) {
-      const m = Math.floor(sec / 60);
-      const s = Math.floor(sec % 60);
-      const ms = Math.floor((sec % 1) * 10);
-      return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}.${ms}`;
+    function formatTime(seconds) {
+      seconds = Math.max(0, Number(seconds) || 0);
+      const totalMs = Math.round(seconds * 1000);
+      return String(Math.floor(totalMs / 60000)).padStart(2, '0') + ':' + String(Math.floor(totalMs / 1000) % 60).padStart(2, '0') + '.' + String(totalMs % 1000).padStart(3, '0');
     }
-
-    // TEXT NORMALIZATION & CONTRACTIONS FLEXIBILITY
-    function normalizeDictationText(t) {
-      return (t || "")
-        .toLowerCase()
-        .replace(/[.,/#!$%^&*;:{}=\-_`~()?"'’]/g, "")
-        .replace(/\s+/g, " ")
-        .trim();
+    function normalizeDictationText(text) {
+      return String(text || '').toLowerCase().replace(/[’‘]/g, "'").replace(/[^\p{L}\p{N}'\s]/gu, ' ').replace(/\s+/g, ' ').trim();
     }
-
     const CONTRACTION_MAP = {
-      "dont": "do not", "cant": "cannot", "wont": "will not", "im": "i am",
-      "youre": "you are", "theyre": "they are", "were": "we are", "isnt": "is not",
-      "arent": "are not", "didnt": "did not", "doesnt": "does not", "couldnt": "could not",
-      "wouldnt": "would not", "shouldnt": "should not", "ive": "i have", "youve": "you have",
-      "theyve": "they have", "weve": "we have", "hes": "he is", "shes": "she is", "its": "it is",
-      "theres": "there is", "thats": "that is", "gonna": "going to", "wanna": "want to", "gotta": "got to"
+      "don't": 'do not', dont: 'do not', "can't": 'cannot', cant: 'cannot', "won't": 'will not', wont: 'will not',
+      "i'm": 'i am', im: 'i am', "you're": 'you are', youre: 'you are', "they're": 'they are', theyre: 'they are', "we're": 'we are',
+      "isn't": 'is not', isnt: 'is not', "aren't": 'are not', arent: 'are not', "didn't": 'did not', didnt: 'did not',
+      "doesn't": 'does not', doesnt: 'does not', "couldn't": 'could not', couldnt: 'could not', "wouldn't": 'would not', wouldnt: 'would not',
+      "shouldn't": 'should not', shouldnt: 'should not', "i've": 'i have', ive: 'i have', "you've": 'you have', youve: 'you have',
+      "they've": 'they have', theyve: 'they have', "we've": 'we have', weve: 'we have', "he's": 'he is', "she's": 'she is',
+      "it's": 'it is', "there's": 'there is', "that's": 'that is', gonna: 'going to', wanna: 'want to', gotta: 'got to',
+      "i'll": 'i will', "you'll": 'you will', "we'll": 'we will', "they'll": 'they will', "he'll": 'he will', "she'll": 'she will', "it'll": 'it will',
+      "i'd": 'i would', "you'd": 'you would', "we'd": 'we would', "they'd": 'they would', "he'd": 'he would', "she'd": 'she would', "it'd": 'it would'
     };
-
     function expandContractions(text) {
-      return text.split(" ").map(w => CONTRACTION_MAP[w] || w).join(" ");
+      return text.split(' ').map(word => CONTRACTION_MAP[word] || word).join(' ').replace(/\bcan not\b/g, 'cannot');
     }
-
-    function getCleanTargetTokens(text) {
-      const norm = expandContractions(normalizeDictationText(text));
-      return norm.split(" ").filter(Boolean);
+    function getCleanTargetTokens(text) { return expandContractions(normalizeDictationText(text)).split(' ').filter(Boolean); }
+    function dictationTokenVariants(text) {
+      let variants = [[]];
+      for (const word of normalizeDictationText(text).split(' ').filter(Boolean)) {
+        const ambiguous = word.match(/^(he|she|it|there|that)'s$|^(i|you|we|they|he|she|it)'d$/);
+        const choices = ambiguous ? (ambiguous[1] ? [ambiguous[1] + ' is', ambiguous[1] + ' has'] : [ambiguous[2] + ' would', ambiguous[2] + ' had']) : [expandContractions(word)];
+        variants = variants.flatMap(tokens => choices.map(choice => [...tokens, ...choice.split(' ')])).slice(0, 64);
+      }
+      return variants;
     }
-
+    function alignDictationTokens(value, reference) {
+      let best = null, bestScore = Infinity;
+      for (const user of dictationTokenVariants(value)) for (const target of dictationTokenVariants(reference)) {
+        const score = user.reduce((sum, word, i) => sum + (word === target[i] ? 0 : 1), 0) + Math.abs(target.length - user.length);
+        if (score < bestScore) { best = { user, target }; bestScore = score; }
+        if (score === 0) return best;
+      }
+      return best || { user: [], target: [] };
+    }
     function calcLevenshtein(a, b) {
-      const matrix = [];
-      for (let i = 0; i <= b.length; i++) matrix[i] = [i];
-      for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
-      for (let i = 1; i <= b.length; i++) {
-        for (let j = 1; j <= a.length; j++) {
-          if (b.charAt(i - 1) === a.charAt(j - 1)) {
-            matrix[i][j] = matrix[i - 1][j - 1];
-          } else {
-            matrix[i][j] = Math.min(
-              matrix[i - 1][j - 1] + 1,
-              matrix[i][j - 1] + 1,
-              matrix[i - 1][j] + 1
-            );
-          }
+      let row = Array.from({ length: b.length + 1 }, (_, i) => i);
+      for (let i = 1; i <= a.length; i++) {
+        const next = [i];
+        for (let j = 1; j <= b.length; j++) next[j] = Math.min(next[j - 1] + 1, row[j] + 1, row[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+        row = next;
+      }
+      return row[b.length];
+    }
+    function renderWordSlots(userTokens = [], activeTypo = null, targetOverride = null) {
+      const container = document.getElementById('dictation-word-slots');
+      container.replaceChildren();
+      const seg = currentSegment();
+      if (!seg) return false;
+      const targets = targetOverride || getCleanTargetTokens(seg.en);
+      targets.forEach((word, index) => {
+        const span = document.createElement('span');
+        const matched = userTokens[index] === word;
+        span.className = 'word-slot ' + (matched ? 'completed' : userTokens[index] ? 'typo' : index === userTokens.length ? 'current' : 'pending');
+        span.textContent = matched ? '✓ ' + word : userTokens[index] ? userTokens[index] : '_'.repeat(Math.max(2, Math.min(word.length, 18)));
+        if (!matched && userTokens[index]) span.title = 'Palavra a conferir';
+        container.appendChild(span);
+      });
+      if (userTokens.length > targets.length) {
+        const extra = document.createElement('span'); extra.className = 'word-slot typo'; extra.textContent = 'Palavras extras: ' + userTokens.slice(targets.length).join(' '); container.appendChild(extra);
+      }
+      return targets.length > 0 && targets.length === userTokens.length && targets.every((word, i) => userTokens[i] === word);
+    }
+    function onDictationInput(value) {
+      const seg = currentSegment();
+      if (!seg || segmentUnlocked) return;
+      const { user, target } = alignDictationTokens(value, seg.en);
+      const matched = renderWordSlots(user, null, target);
+      const input = document.getElementById('dictation-input');
+      const hint = document.getElementById('spelling-hint-box'); hint.style.display = 'none';
+      input.className = 'dictation-input-field';
+      // Avoid giving away a word while the learner is still typing its prefix.
+      const mismatch = user.findIndex((word, i) => word !== target[i]);
+      if (mismatch >= 0 && target[mismatch]) {
+        const word = user[mismatch], expected = target[mismatch];
+        const finished = mismatch < user.length - 1 || /\s$/.test(value);
+        if (finished && word.length >= 3 && expected.length >= 3 && calcLevenshtein(word, expected) <= 2) {
+          document.getElementById('spelling-hint-text').textContent = 'Confira a ortografia da palavra ' + (mismatch + 1) + '. Use uma pista se precisar.';
+          input.classList.add('almost'); hint.style.display = 'flex';
         }
       }
-      return matrix[b.length][a.length];
+      if (matched) handleSegmentSuccess(seg, segmentAssisted ? 'assisted' : 'correct');
+      persistDictationSession();
     }
-
-    // ==========================================
-    // WORD SLOTS RENDERING & VALIDATION
-    // ==========================================
-    function renderWordSlots(userTokens = [], activeTypo = null) {
-      const container = document.getElementById("dictation-word-slots");
-      if (!container) return;
-
-      const seg = activeVideoData.segments[currentSegmentIndex];
-      if (!seg) return;
-
-      const targetTokens = getCleanTargetTokens(seg.en);
-      const rawWords = (seg.en || "").trim().split(/\s+/).filter(Boolean);
-
-      let html = "";
-      let allMatched = true;
-
-      for (let i = 0; i < targetTokens.length; i++) {
-        const target = targetTokens[i];
-        const displayWord = rawWords[i] ? rawWords[i].replace(/[.,/#!$%^&*;:{}=\-_`~()?"'’]/g, "") : target;
-        const userWord = userTokens[i] || null;
-
-        if (userWord && userWord === target) {
-          // Correctly typed word
-          html += `<span class="word-slot completed">✓ ${displayWord}</span>`;
-        } else if (i === userTokens.length - 1 && userWord && activeTypo && activeTypo.targetIndex === i) {
-          // Typo on active word
-          allMatched = false;
-          html += `<span class="word-slot typo" title="Você digitou '${userWord}'">⚠️ ${userWord}</span>`;
-        } else if (i === userTokens.length) {
-          // Current expected word
-          allMatched = false;
-          html += `<span class="word-slot current">▶ ${"_".repeat(Math.max(2, displayWord.length))}</span>`;
-        } else {
-          // Future pending word
-          allMatched = false;
-          html += `<span class="word-slot pending">${"_".repeat(Math.max(2, displayWord.length))}</span>`;
-        }
-      }
-
-      container.innerHTML = html;
-      return allMatched && userTokens.length === targetTokens.length;
-    }
-
-    // REAL-TIME INPUT VALIDATION WITH WORD SLOTS & SPELLING HINTS
-    function onDictationInput(val) {
-      const seg = activeVideoData.segments[currentSegmentIndex];
-      if (!seg) return;
-
-      const userNorm = expandContractions(normalizeDictationText(val));
-      const targetNorm = expandContractions(normalizeDictationText(seg.en));
-      const userTokens = userNorm.split(" ").filter(Boolean);
-      const targetTokens = targetNorm.split(" ").filter(Boolean);
-
-      const inputField = document.getElementById("dictation-input");
-      const hintBox = document.getElementById("spelling-hint-box");
-      const hintText = document.getElementById("spelling-hint-text");
-
-      // Check for exact full match first
-      if (userNorm === targetNorm) {
-        renderWordSlots(targetTokens, null);
-        handleSegmentSuccess(seg);
-        return;
-      }
-
-      // Check token by token
-      let activeTypo = null;
-      let typoMsg = null;
-
-      for (let i = 0; i < userTokens.length; i++) {
-        const u = userTokens[i];
-        const t = targetTokens[i];
-        if (!t) break;
-
-        if (u !== t) {
-          // Check if it's a close typo (Levenshtein 1 or 2)
-          if (u.length >= 3 && t.length >= 3) {
-            const dist = calcLevenshtein(u, t);
-            if (dist <= 2) {
-              activeTypo = { targetIndex: i, typed: u, correct: t };
-              typoMsg = `Atenção à ortografia: você digitou <b>"${u}"</b>, a escrita correta é <b>"${t}"</b>.`;
-              break;
-            }
-          }
-        }
-      }
-
-      const isComplete = renderWordSlots(userTokens, activeTypo);
-
-      if (activeTypo) {
-        inputField.className = "dictation-input-field almost";
-        hintText.innerHTML = typoMsg;
-        hintBox.style.display = "flex";
-      } else {
-        inputField.className = "dictation-input-field";
-        hintBox.style.display = "none";
-      }
-
-      if (isComplete) {
-        handleSegmentSuccess(seg);
-      }
-    }
-
-    function handleSegmentSuccess(seg) {
+    function handleSegmentSuccess(seg, outcome = 'correct', restoring = false) {
       segmentUnlocked = true;
-      const inputField = document.getElementById("dictation-input");
-      inputField.className = "dictation-input-field correct";
-      
-      document.getElementById("spelling-hint-box").style.display = "none";
-      const successBox = document.getElementById("dictation-success-box");
-      document.getElementById("dictation-revealed-en").textContent = seg.en;
-      document.getElementById("dictation-revealed-pt").textContent = seg.pt || "Frase decodificada com sucesso.";
-      successBox.style.display = "flex";
-
-      showToast("Acertou! Avanço do vídeo liberado (Pressione Enter).");
+      document.getElementById('dictation-input').className = 'dictation-input-field correct';
+      document.getElementById('dictation-input').readOnly = true;
+      document.getElementById('spelling-hint-box').style.display = 'none';
+      document.getElementById('dictation-result-label').textContent = outcome === 'revealed' ? 'Frase revelada · ouça novamente e compare' : outcome === 'assisted' ? 'Concluída com ajuda' : 'Acertou sem pistas!';
+      document.getElementById('dictation-revealed-en').textContent = seg.en;
+      document.getElementById('dictation-revealed-pt').textContent = seg.pt || 'Tradução não fornecida para este trecho.';
+      document.getElementById('dictation-success-box').style.display = 'flex';
+      const session = listeningSessions[currentSourceKey] || { outcomes: {} };
+      session.outcomes = session.outcomes || {}; session.outcomes[currentSegmentIndex] = outcome;
+      listeningSessions[currentSourceKey] = session;
+      updateDictationStatus();
+      if (!restoring) persistDictationSession();
     }
-
     function nextDictationSegment() {
-      if (currentSegmentIndex < activeVideoData.segments.length - 1) {
-        loadSegment(currentSegmentIndex + 1);
-      } else {
-        showToast("Parabéns! Você concluiu todos os trechos deste vídeo.");
-        loadSegment(0);
-      }
+      if (!segmentUnlocked) return;
+      document.getElementById('dictation-input').readOnly = false;
+      if (currentSegmentIndex < activeVideoData.segments.length - 1) loadSegment(currentSegmentIndex + 1);
+      else { sessionCompleted = true; VideoController.pause(); stopVideoWatcher(); persistDictationSession(); showDictationSummary(); }
     }
-
-    function onDictationKey(e) {
-      if (e.key === "Tab") {
-        e.preventDefault();
-        replayCurrentSegment();
-      } else if (e.key === "Enter") {
-        if (segmentUnlocked) {
-          nextDictationSegment();
-        }
-      } else if (e.key === "h" && (e.ctrlKey || e.metaKey)) {
-        e.preventDefault();
-        showNextWordHint();
-      }
+    function updateDictationStatus() {
+      const outcomes = (listeningSessions[currentSourceKey] || {}).outcomes || {};
+      const completed = Object.keys(outcomes).length;
+      document.getElementById('dictation-session-status').textContent = activeVideoData.segments.length
+        ? completed + ' / ' + activeVideoData.segments.length + ' trechos conferidos · salvo neste navegador'
+        : 'Sem transcrição. Importe SRT/VTT correspondente ao vídeo; o app não inventa as falas.';
+      document.getElementById('dictation-save-btn').disabled = !currentSegment();
     }
-
-    // PISTA DA PALAVRA: Revela a próxima palavra pendente e preenche no input
+    function showDictationSummary() {
+      const outcomes = Object.values((listeningSessions[currentSourceKey] || {}).outcomes || {});
+      const summary = document.getElementById('dictation-summary');
+      summary.hidden = false;
+      summary.textContent = 'Treino concluído. Sem pistas: ' + outcomes.filter(x => x === 'correct').length + ' · Com ajuda: ' + outcomes.filter(x => x === 'assisted').length + ' · Reveladas: ' + outcomes.filter(x => x === 'revealed').length + '. Use “Recomeçar treino” para repetir.';
+    }
+    function restartDictationSession() {
+      if (!currentSegment()) return;
+      pauseListeningMedia();
+      delete listeningSessions[currentSourceKey]; sessionCompleted = false;
+      document.getElementById('dictation-input').readOnly = false;
+      loadSegment(0, false);
+    }
+    function onDictationKey(event) {
+      if (event.isComposing) return;
+      if (event.altKey && event.key.toLowerCase() === 'r') { event.preventDefault(); replayCurrentSegment(); }
+      else if (event.altKey && event.key.toLowerCase() === 'h') { event.preventDefault(); showNextWordHint(); }
+      else if (event.key === 'Enter' && segmentUnlocked) { event.preventDefault(); nextDictationSegment(); }
+    }
     function showNextWordHint() {
-      const seg = activeVideoData.segments[currentSegmentIndex];
-      if (!seg) return;
-
-      const input = document.getElementById("dictation-input");
-      const currentVal = (input.value || "").trim();
-      const userTokens = expandContractions(normalizeDictationText(currentVal)).split(" ").filter(Boolean);
-      const targetTokens = getCleanTargetTokens(seg.en);
-      const rawWords = (seg.en || "").trim().split(/\s+/).filter(Boolean);
-
-      const nextIdx = userTokens.length;
-      if (nextIdx < targetTokens.length) {
-        const nextWord = rawWords[nextIdx] ? rawWords[nextIdx].replace(/[.,/#!$%^&*;:{}=\-_`~()?"'’]/g, "") : targetTokens[nextIdx];
-        input.value = currentVal ? `${currentVal} ${nextWord} ` : `${nextWord} `;
-        onDictationInput(input.value);
-        showToast(`Pista: Palavra "${nextWord}" adicionada.`);
-      } else {
-        showToast("Todas as palavras já foram preenchidas!");
-      }
-      focusDictationInput();
+      const seg = currentSegment();
+      if (!seg || segmentUnlocked) return;
+      const input = document.getElementById('dictation-input');
+      const { user, target } = alignDictationTokens(input.value, seg.en);
+      let index = 0;
+      while (index < target.length && user[index] === target[index]) index++;
+      if (index >= target.length) return;
+      segmentAssisted = true;
+      // Replace the first mismatch, including incomplete words, without shifting contractions.
+      user[index] = target[index];
+      input.value = user.slice(0, Math.max(index + 1, user.length)).join(' ') + ' ';
+      onDictationInput(input.value); focusDictationInput();
     }
-
     function giveUpAndReveal() {
-      const seg = activeVideoData.segments[currentSegmentIndex];
-      if (!seg) return;
-      const targetTokens = getCleanTargetTokens(seg.en);
-      renderWordSlots(targetTokens, null);
-      handleSegmentSuccess(seg);
-      saveCurrentSegmentToAnki();
-      showToast("Frase revelada e adicionada à Fila do Anki.");
+      const seg = currentSegment();
+      if (!seg || segmentUnlocked) return;
+      segmentAssisted = true;
+      renderWordSlots(getCleanTargetTokens(seg.en));
+      handleSegmentSuccess(seg, 'revealed');
+      // Revealing never silently adds a card to the user's collection.
     }
-
-    async function saveCurrentSegmentToAnki() {
-      const seg = activeVideoData.segments[currentSegmentIndex];
-      if (!seg) return;
-      
-      const payload = {
-        id: "listening_" + Date.now(),
-        word: seg.en.split(" ").slice(0, 3).join(" ") + "...",
-        pos: "LISTENING",
-        subdeck: "listening-studio",
-        definition_en: "Frase de Listening: " + seg.en,
-        definition_pt: seg.pt || "Frase extraída do Listening Studio",
-        example_1: seg.en,
-        card_id: null,
-        status: "desconhecido"
-      };
-
-      try {
-        await fetch("/api/evaluate", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
-        const gapEl = document.getElementById("header-gap-count");
-        if (gapEl) {
-          const cur = parseInt(gapEl.innerText || "0", 10) + 1;
-          gapEl.innerText = cur;
-          gapEl.style.display = "inline-block";
-        }
-        showToast("Trecho enviado à Fila do Anki Hub com sucesso.");
-      } catch (err) {
-        showToast("Trecho gravado localmente.");
+    function updatePendingListening() {
+      const count = Object.keys(pendingListening).length;
+      document.getElementById('listening-pending-count').textContent = count ? '(' + count + ')' : '(0)';
+    }
+    async function sendListeningPayload(payload) {
+      const key = payload.id;
+      if (sentListening[key]) { showToast('Este trecho já está na fila do Anki Hub.'); return true; }
+      if (listeningSends.has(key)) return listeningSends.get(key);
+      const request = (async () => {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 15000);
+        try {
+          const response = await fetch('/api/evaluate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload), signal: controller.signal });
+          if (!response.ok) throw Error('HTTP ' + response.status);
+          const result = await response.json();
+          if (!result.success) throw Error(result.error || 'O servidor não confirmou o salvamento.');
+          sentListening[key] = true; delete pendingListening[key];
+          writeListeningStore(LISTENING_STORAGE + '_sent', sentListening);
+          writeListeningStore(LISTENING_STORAGE + '_pending', pendingListening);
+          updatePendingListening();
+          showToast('Trecho adicionado à fila do Anki Hub. A criação do cartão ocorre no envio da fila.');
+          fetchStatus();
+          return true;
+        } catch (error) {
+          pendingListening[key] = payload;
+          const saved = writeListeningStore(LISTENING_STORAGE + '_pending', pendingListening);
+          updatePendingListening();
+          showToast(saved ? 'Envio não confirmado. Trecho salvo neste navegador para reenvio.' : 'Envio não confirmado. Pendência mantida apenas nesta aba.', false);
+          return false;
+        } finally { clearTimeout(timeout); listeningSends.delete(key); }
+      })();
+      listeningSends.set(key, request);
+      return request;
+    }
+    function saveListeningSegment(seg, source) {
+      if (!seg || !seg.en) return Promise.resolve(false);
+      return sendListeningPayload({ id: 'listening_' + listeningHash(JSON.stringify([source, seg.start, seg.end, seg.en])),
+        word: seg.en, pos: 'LISTENING', subdeck: 'listening-studio', definition_en: 'Frase de Listening: ' + seg.en,
+        definition_pt: seg.pt || '', example_1: seg.en, card_id: null, status: 'desconhecido' });
+    }
+    function saveCurrentSegmentToAnki() { return saveListeningSegment(currentSegment(), activeVideoData.videoId || activeVideoData.identity || activeVideoData.title); }
+    async function retryPendingListening() {
+      const pending = Object.values(pendingListening);
+      if (!pending.length) return showToast('Nenhum envio pendente.');
+      for (const payload of pending) await sendListeningPayload(payload);
+    }
+    function onSelectVideoPreset(key) {
+      if (!VIDEO_PRESETS[key]) return showToast('Este treino aguarda validação da fonte e das legendas.', false);
+      pauseListeningMedia(); selectedYoutubeData = structuredClone(VIDEO_PRESETS[key]);
+      if (VideoController.isLocal) switchVideoSource('youtube');
+      else { activeVideoData = selectedYoutubeData; activateDictationData(); }
+      if (ytReady) ytPlayer.cueVideoById(activeVideoData.videoId);
+      else initYouTubePlayer();
+      if (activeVideoData && activeVideoData.videoId) {
+        fetchYoutubeTranscript(activeVideoData.videoId);
       }
     }
-
-    function onSelectVideoPreset(presetKey) {
-      if (!VIDEO_PRESETS[presetKey]) return;
-      activeVideoData = VIDEO_PRESETS[presetKey];
-      if (ytPlayer && ytPlayer.loadVideoById) {
-        ytPlayer.loadVideoById(activeVideoData.videoId);
-      }
-      loadSegment(0);
-    }
-
     function loadVideoFromInput() {
-      const val = (document.getElementById("yt-url-input").value || "").trim();
-      if (!val) {
-        showToast("Cole uma URL do YouTube ou use os treinos prontos.");
-        return;
+      let url;
+      try { url = new URL(document.getElementById('yt-url-input').value.trim()); }
+      catch (_) { return showToast('Cole uma URL válida do YouTube.', false); }
+      const host = url.hostname.toLowerCase();
+      let id = null;
+      if (['youtu.be', 'www.youtu.be'].includes(host)) id = url.pathname.split('/')[1];
+      if (['youtube.com', 'www.youtube.com', 'm.youtube.com', 'www.youtube-nocookie.com'].includes(host)) {
+        id = url.searchParams.get('v') || (/^\/(embed|shorts|live)\//.test(url.pathname) ? url.pathname.split('/')[2] : null);
       }
-      const match = val.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
-      if (match && match[1]) {
-        const id = match[1];
-        activeVideoData = {
-          videoId: id,
-          title: "Vídeo Personalizado",
-          segments: [
-            { start: 0, end: 5.0, en: "Listen closely to the first words.", pt: "Ouça com atenção as primeiras palavras." },
-            { start: 5.1, end: 10.0, en: "Practice makes progress every single day.", pt: "A prática gera progresso todos os dias." }
-          ]
-        };
-        if (ytPlayer && ytPlayer.loadVideoById) {
-          ytPlayer.loadVideoById(id);
-        }
-        loadSegment(0);
-        showToast("Vídeo do YouTube carregado.");
-      } else {
-        showToast("URL do YouTube inválida.");
-      }
+      if (!['http:', 'https:'].includes(url.protocol) || !/^[\w-]{11}$/.test(id || '')) return showToast('Link do YouTube inválido.', false);
+      pauseListeningMedia();
+      selectedYoutubeData = { videoId: id, title: 'Vídeo personalizado', segments: [] };
+      if (VideoController.isLocal) switchVideoSource('youtube');
+      else { activeVideoData = selectedYoutubeData; activateDictationData(); }
+      if (ytReady) ytPlayer.cueVideoById(id); else initYouTubePlayer();
+      showToast('Vídeo selecionado. Carregando legendas do YouTube...');
+      fetchYoutubeTranscript(id);
     }
 
-    // Auto-init YouTube API on page load
+    // Real audio-only practice with optional time-aligned transcript.
+    function listeningAudio() { return document.getElementById('listening-audio'); }
+    function initListeningWaveform() {
+      const container = document.getElementById('listening-waveform');
+      if (container.children.length) return;
+      for (let i = 0; i < 48; i++) { const bar = document.createElement('i'); bar.style.height = (10 + Math.abs(Math.sin(i * 1.9) * Math.cos(i * .32)) * 52) + 'px'; container.appendChild(bar); }
+    }
+    function onListeningAudioSelected(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      stopListeningAudio();
+      if (audioObjectURL) URL.revokeObjectURL(audioObjectURL);
+      audioObjectURL = URL.createObjectURL(file);
+      audioTracks = []; audioTrackIndex = 0;
+      const audio = listeningAudio(); audio.src = audioObjectURL; audio.load();
+      document.getElementById('listening-file-status').textContent = file.name + ' · Importe a transcrição se quiser comparar por trecho.';
+      hideListeningTranscript(); updateListeningTime();
+    }
+    function toggleListeningPlay() { listeningAudio().paused ? startListeningAudio() : stopListeningAudio(); }
+    function startListeningAudio() {
+      const audio = listeningAudio();
+      if (!audio.src) return showToast('Escolha primeiro um arquivo de áudio ou vídeo.', false);
+      const track = audioTracks[audioTrackIndex];
+      if (audio.ended || (track && (audio.currentTime >= track.end || audio.currentTime < track.start))) audio.currentTime = track ? track.start : 0;
+      audio.playbackRate = listeningRate;
+      audio.play().catch(() => showToast('Não foi possível reproduzir este áudio. Verifique o formato.', false));
+    }
+    function stopListeningAudio() {
+      const audio = listeningAudio();
+      if (audio) audio.pause();
+      const btn = document.getElementById('listening-play-btn');
+      if (btn) { btn.textContent = '▶'; btn.setAttribute('aria-label', 'Reproduzir áudio'); }
+    }
+    function onListeningSeek(value) {
+      const audio = listeningAudio(), seconds = Number(value);
+      if (!Number.isFinite(audio.duration) || !Number.isFinite(seconds)) return;
+      const track = audioTracks[audioTrackIndex];
+      audio.currentTime = track ? Math.max(track.start, Math.min(track.end, seconds)) : Math.max(0, Math.min(audio.duration, seconds));
+      updateListeningTime();
+    }
+    function seekListeningDelta(delta) { onListeningSeek(listeningAudio().currentTime + delta); }
+    function updateListeningTime() {
+      const audio = listeningAudio();
+      const duration = Number.isFinite(audio.duration) ? audio.duration : 0;
+      const seek = document.getElementById('listening-seek');
+      seek.max = duration; seek.value = audio.currentTime || 0;
+      const clock = seconds => { const n = Math.floor(seconds || 0); return String(Math.floor(n / 60)).padStart(2, '0') + ':' + String(n % 60).padStart(2, '0'); };
+      document.getElementById('listening-elapsed').textContent = clock(audio.currentTime);
+      document.getElementById('listening-total').textContent = clock(duration);
+      const bars = document.querySelectorAll('#listening-waveform i');
+      bars.forEach((bar, i) => bar.classList.toggle('played', duration > 0 && i < bars.length * audio.currentTime / duration));
+      document.getElementById('listening-track-label').textContent = audioTracks.length ? 'TRECHO ' + (audioTrackIndex + 1) + ' / ' + audioTracks.length : 'ARQUIVO LOCAL';
+      document.getElementById('listening-session-metric').textContent = audioTracks.length ? (audioTrackIndex + 1) + ' / ' + audioTracks.length + ' trechos' : 'Sem legenda';
+      document.getElementById('listening-session-progress').style.width = audioTracks.length ? ((audioTrackIndex + 1) / audioTracks.length * 100) + '%' : '0%';
+      const track = audioTracks[audioTrackIndex];
+      if (track && audio.currentTime >= track.end && !audio.paused) stopListeningAudio();
+    }
+    function cycleListeningSpeed() {
+      listeningRate = listeningRate === 1 ? 1.25 : listeningRate === 1.25 ? 1.5 : listeningRate === 1.5 ? .75 : 1;
+      listeningAudio().playbackRate = listeningRate;
+      document.getElementById('listening-speed-btn').textContent = listeningRate + '×';
+    }
+    function hideListeningTranscript() {
+      document.getElementById('listening-transcript-box').style.display = 'none';
+      document.getElementById('btn-reveal-transcript').textContent = 'Revelar transcrição';
+      document.getElementById('btn-reveal-transcript').setAttribute('aria-expanded', 'false');
+      document.getElementById('btn-save-listening-anki').disabled = !audioTracks[audioTrackIndex];
+    }
+    function toggleListeningReveal() {
+      const track = audioTracks[audioTrackIndex];
+      if (!track) return showToast('Importe uma transcrição SRT/VTT para este áudio.', false);
+      const box = document.getElementById('listening-transcript-box');
+      const reveal = box.style.display === 'none';
+      box.style.display = reveal ? 'block' : 'none';
+      document.getElementById('listening-sentence-en').textContent = track.en;
+      document.getElementById('listening-sentence-pt').textContent = track.pt || '';
+      const btn = document.getElementById('btn-reveal-transcript');
+      btn.textContent = reveal ? 'Ocultar transcrição' : 'Revelar transcrição'; btn.setAttribute('aria-expanded', String(reveal));
+    }
+    function saveListeningToAnki() { return saveListeningSegment(audioTracks[audioTrackIndex], document.getElementById('listening-file-status').textContent); }
+    function selectListeningTrack(index) {
+      const track = audioTracks[index];
+      if (!track) return;
+      stopListeningAudio(); audioTrackIndex = index;
+      const audio = listeningAudio();
+      if (audio.readyState >= 1) audio.currentTime = track.start;
+      hideListeningTranscript(); updateListeningTime();
+    }
+    function stepListeningTrack(delta) { selectListeningTrack(audioTrackIndex + delta); }
+    function restartListeningSession() {
+      stopListeningAudio();
+      if (audioTracks.length) selectListeningTrack(0); else if (listeningAudio().readyState >= 1) listeningAudio().currentTime = 0;
+      hideListeningTranscript(); updateListeningTime();
+    }
     window.addEventListener('DOMContentLoaded', () => {
-      initYouTubePlayer();
+      initListeningWaveform(); updatePendingListening(); activateDictationData();
+      const audio = listeningAudio();
+      audio.addEventListener('timeupdate', updateListeningTime);
+      audio.addEventListener('loadedmetadata', updateListeningTime);
+      audio.addEventListener('ended', stopListeningAudio);
+      audio.addEventListener('pause', stopListeningAudio);
+      audio.addEventListener('play', () => {
+        const btn = document.getElementById('listening-play-btn'); btn.textContent = 'Ⅱ'; btn.setAttribute('aria-label', 'Pausar áudio');
+      });
+      audio.addEventListener('error', () => { stopListeningAudio(); showToast('O navegador não conseguiu abrir este áudio.', false); });
+      updateListeningTime();
     });
+    document.addEventListener('visibilitychange', () => { if (document.hidden) pauseListeningMedia(); });
+    window.addEventListener('pagehide', pauseListeningMedia);
+
 
     function switchView(mode) {
       document.getElementById("view-focus").style.display = mode === "focus" ? "flex" : "none";

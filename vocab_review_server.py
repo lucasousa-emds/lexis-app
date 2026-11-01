@@ -1833,6 +1833,8 @@ class RequestHandler(BaseHTTPRequestHandler):
             self.handle_api_gaps()
         elif path == "/api/export-knowledge-map":
             self.send_json(KNOWLEDGE_MAP)
+        elif path == "/api/youtube-transcript":
+            self.handle_api_youtube_transcript(query)
         elif path.startswith("/media/"):
             self.serve_media(path)
         elif path == "/favicon.ico":
@@ -2828,6 +2830,72 @@ class RequestHandler(BaseHTTPRequestHandler):
         save_knowledge_map_memory()
         print(f"🚩 Palavra intrusa '{intruder}' registrada como Gap I+1!")
         self.send_json({"success": True, "intruder": intruder, "target_word": target_word, "stats": KNOWLEDGE_MAP.get("estatisticas")})
+
+    def handle_api_youtube_transcript(self, query):
+        video_id = ""
+        raw_val = query.get("v", [""])[0] or query.get("videoId", [""])[0] or query.get("url", [""])[0]
+        raw_val = raw_val.strip()
+
+        match = re.search(r"(?:youtu\.be/|youtube\.com/(?:embed/|v/|watch\?v=|watch\?.+&v=))([\w-]{11})", raw_val)
+        if match:
+            video_id = match.group(1)
+        elif len(raw_val) == 11 and re.match(r"^[\w-]+$", raw_val):
+            video_id = raw_val
+
+        if not video_id:
+            self.send_json({"success": False, "error": "ID ou URL do YouTube inválida."}, 400)
+            return
+
+        try:
+            from youtube_transcript_api import YouTubeTranscriptApi
+            api = YouTubeTranscriptApi()
+            raw_cues = api.fetch(video_id)
+
+            segments = []
+            cur_seg = None
+
+            for cue in raw_cues:
+                text = (getattr(cue, "text", "") or "").replace("\n", " ").strip()
+                if not text:
+                    continue
+                start = round(float(getattr(cue, "start", 0.0)), 2)
+                duration = round(float(getattr(cue, "duration", 0.0)), 2)
+                end = round(start + duration, 2)
+
+                if cur_seg:
+                    time_gap = start - cur_seg["end"]
+                    cur_text = cur_seg["en"]
+                    ends_punct = cur_text and cur_text[-1] in ".?!;"
+
+                    if time_gap < 1.2 and not ends_punct and len(cur_text.split()) < 12:
+                        cur_seg["en"] = f"{cur_text} {text}"
+                        cur_seg["end"] = end
+                        continue
+                    else:
+                        segments.append(cur_seg)
+                        cur_seg = None
+
+                cur_seg = {
+                    "start": start,
+                    "end": end,
+                    "en": text,
+                    "pt": ""
+                }
+
+            if cur_seg:
+                segments.append(cur_seg)
+
+            self.send_json({
+                "success": True,
+                "videoId": video_id,
+                "total": len(segments),
+                "segments": segments
+            })
+        except Exception as e:
+            self.send_json({
+                "success": False,
+                "error": f"Não foi possível obter a legenda do YouTube: {str(e)}"
+            }, 500)
 
     def handle_api_gaps(self):
         gaps = []

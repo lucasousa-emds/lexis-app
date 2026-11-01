@@ -28307,14 +28307,32 @@
       ],
       "collocations": [],
       "observacoes": "Classificado via Web Reviewer"
+    },
+    "i am honored to be with you today for your commencement.": {
+      "termo": "I am honored to be with you today for your commencement.",
+      "status_geral": "desconhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "listening_33834745",
+          "pos": "LISTENING",
+          "definicao": "Frase de Listening: I am honored to be with you today for your commencement.",
+          "definicao_pt": "Sinto-me honrado por estar com vocês hoje na sua formatura.",
+          "status": "desconhecido",
+          "frase_exemplo": "I am honored to be with you today for your commencement.",
+          "frase_i1": "I am honored to be with you today for your commencement.",
+          "confirmado_em": "2026-11-01T13:44:44.735742"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer"
     }
   },
   "estatisticas": {
-    "total_termos": 1506,
+    "total_termos": 1507,
     "acepcoes_conhecidas": 1170,
     "acepcoes_em_estudo": 48,
-    "acepcoes_desconhecidas": 247,
+    "acepcoes_desconhecidas": 248,
     "acepcoes_duvida": 102
   },
-  "ultima_atualizacao": "2026-11-01T12:02:35.249868"
+  "ultima_atualizacao": "2026-11-01T13:44:44.736249"
 }
