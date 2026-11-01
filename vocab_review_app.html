@@ -1635,135 +1635,514 @@
       }
     }
 
-    /* One global navigation adapts to desktop and mobile without duplicate IDs. */
-    .module-nav {
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-      padding: 12px 24px;
-      background: var(--bg-surface);
-      border-bottom: 1px solid var(--border-subtle);
+    
+    /* ==========================================================================
+       LEXIS SUITE DESIGN SYSTEM (MOCKUP REPLICA - IMAGE 1)
+       ========================================================================== */
+    :root {
+      --bg: #080c12;
+      --surface: #101720;
+      --line: #25303d;
+      --text: #eff4fa;
+      --muted: #8593a5;
+      --cyan: #65e1d8;
+      --purple: #b19aff;
+      --amber: #edc579;
+      --blue: #80b8ff;
     }
-    .module-nav-button {
+
+    body {
+      background: radial-gradient(ellipse at 50% 0, #18252d 0, transparent 58%), #080c12 !important;
+      color: var(--text) !important;
+      font-family: var(--font-body) !important;
+      min-height: 100vh;
+    }
+
+    /* TOPBAR (IMAGE 1 REPLICA) */
+    .topbar {
+      height: 70px;
+      border-bottom: 1px solid var(--line);
+      background: #080c12;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      position: sticky;
+      top: 0;
+      z-index: 500;
+    }
+
+    .topbar .brand {
+      font-size: 22px;
+      font-weight: 750;
+      letter-spacing: -0.8px;
+      white-space: nowrap;
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      cursor: pointer;
+    }
+    .topbar .brand b {
+      color: var(--cyan);
+      font-weight: 800;
+    }
+    .topbar .brand small {
+      font-size: 9px;
+      letter-spacing: 2px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .topbar .nav {
+      display: flex;
+      align-self: stretch;
+      gap: 24px;
+      margin: 0 auto;
+    }
+
+    .topbar .tab {
+      background: none;
+      border: none;
+      color: var(--muted);
+      padding: 0 2px;
+      font-size: 12px;
+      font-weight: 500;
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      transition: all 0.15s ease;
+    }
+    .topbar .tab[data-module="vocab"] { --tab: var(--cyan); }
+    .topbar .tab[data-module="listening"] { --tab: var(--purple); }
+    .topbar .tab[data-module="anki"] { --tab: var(--amber); }
+    .topbar .tab[data-module="analytics"] { --tab: var(--blue); }
+
+    .topbar .tab:hover {
+      color: var(--text);
+    }
+    .topbar .tab.active {
+      color: var(--tab);
+      border-color: var(--tab);
+      font-weight: 600;
+    }
+    .topbar .tab span.dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      background: var(--tab);
+      border-radius: 2px;
+      margin-right: 7px;
+    }
+
+    .avatar {
+      background: #283a3f;
+      border: 1px solid #44615f;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      color: #c4e4dc;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    /* BREADCRUMB */
+    .breadcrumb-bar {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 16px 24px 0;
+      font-size: 11px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .breadcrumb-bar span.active-crumb {
+      color: var(--purple);
+      font-weight: 500;
+    }
+
+    /* LISTENING STUDIO STYLES */
+    .listening-stage {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 12px 24px 48px;
+    }
+    .listening-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .listening-pill {
+      font-size: 9px;
+      border: 1px solid #3d3658;
+      color: #c5b6fc;
+      background: #211c32;
+      padding: 4px 8px;
+      border-radius: 5px;
+      letter-spacing: 1px;
+      font-weight: 600;
+      display: inline-block;
+      margin-bottom: 6px;
+    }
+    .listening-title-row h2 {
+      font-size: 26px;
+      letter-spacing: -0.8px;
+      color: var(--text);
+      font-family: var(--font-heading);
+      margin: 0;
+    }
+    .listening-subtext {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+    .listening-restart-btn {
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #131c26;
+      color: var(--text);
+      padding: 8px 14px;
+      font-size: 11px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .listening-restart-btn:hover {
+      background: #1a2533;
+    }
+
+    .listening-workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 280px;
+      gap: 20px;
+      align-items: start;
+    }
+    .player-card {
+      padding: 24px;
+      border: 1px solid #303446;
+      border-radius: 14px;
+      background: radial-gradient(ellipse at 50% 0, #29203b66, transparent 70%), #111720;
+    }
+    .player-top-line {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .audio-art-icon {
+      margin: 24px auto 16px;
+      width: 58px;
+      height: 58px;
+      display: grid;
+      place-items: center;
+      background: rgba(177, 154, 255, 0.08);
+      border: 1px solid rgba(177, 154, 255, 0.25);
+      border-radius: 16px;
+      color: var(--purple);
+      font-size: 24px;
+    }
+    .player-card h3 {
+      text-align: center;
+      font-size: 18px;
+      letter-spacing: -0.3px;
+      margin: 0 0 6px;
+      color: var(--text);
+    }
+    .player-card .player-sub {
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .wave-visualizer {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 9px;
-      min-height: 48px;
-      padding: 10px 18px;
-      border: 1px solid transparent;
-      border-radius: var(--radius-sm);
-      background: transparent;
-      color: var(--text-muted);
-      font: 600 13px var(--font-body);
+      gap: 4px;
+      height: 74px;
+      margin: 20px 0 6px;
+    }
+    .wave-visualizer i {
+      width: 3px;
+      min-width: 2px;
+      border-radius: 4px;
+      background: #364152;
+      transition: height 0.15s ease;
+    }
+    .wave-visualizer i.played {
+      background: var(--purple);
+    }
+    .seek-bar {
+      width: 100%;
+      height: 4px;
+      accent-color: var(--purple);
+      cursor: pointer;
+      margin: 4px 0 8px;
+    }
+    .time-readout {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 11px;
+    }
+    .player-controls-row {
+      display: flex;
+      justify-content: center;
+      gap: 18px;
+      align-items: center;
+      margin: 20px 0;
+    }
+    .player-btn-circle {
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      background: var(--purple);
+      color: #171022;
+      border: none;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      font-size: 18px;
+      box-shadow: 0 0 25px rgba(177, 154, 255, 0.25);
+      transition: transform 0.1s ease;
+    }
+    .player-btn-circle:hover {
+      transform: scale(1.05);
+    }
+    .player-btn-sec {
+      background: none;
+      border: none;
+      color: #b2bdca;
+      font-size: 18px;
+      cursor: pointer;
+      padding: 6px;
+    }
+    .player-btn-speed {
+      font-size: 11px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 5px 8px;
+      background: #18202b;
+      color: var(--text);
       cursor: pointer;
     }
-    .module-nav-button svg { width: 22px; height: 22px; flex-shrink: 0; }
-    .module-nav-button:hover { color: var(--text-main); background: var(--bg-card-hover); }
-    .module-nav-button.active {
-      color: var(--accent-cyan);
-      border-color: var(--border-focus);
-      background: linear-gradient(120deg, rgba(0, 242, 254, .1), rgba(147, 51, 234, .14));
+    .btn-reveal-transcript {
+      display: block;
+      width: 100%;
+      padding: 13px;
+      border-radius: 8px;
+      background: rgba(177, 154, 255, 0.08);
+      border: 1px solid #7e679b;
+      color: #d2c4ff;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s ease;
     }
-    .module-view.active { flex: 1; }
-    .module-placeholder {
-      max-width: 960px;
-      margin: 32px auto;
-      padding: 32px;
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      background: var(--bg-surface);
+    .btn-reveal-transcript:hover {
+      background: rgba(177, 154, 255, 0.16);
     }
-    .module-placeholder h2 { font-family: var(--font-heading); margin-bottom: 12px; }
-    .module-placeholder p { color: var(--text-muted); }
-    @media (max-width: 767px) {
-      body { padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px)); }
-      .module-nav {
+    .transcript-hint {
+      text-align: center;
+      font-size: 10px;
+      color: #748295;
+      margin-top: 10px;
+    }
+    .transcript-box {
+      border-top: 1px solid var(--line);
+      padding: 16px 0 0;
+      margin-top: 16px;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #dce7ee;
+    }
+    .transcript-box small {
+      display: block;
+      color: var(--muted);
+      margin-top: 6px;
+      font-size: 12px;
+    }
+
+    .listening-sidecard {
+      border: 1px solid var(--line);
+      background: #101720;
+      border-radius: 12px;
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+    .listening-sidecard h4 {
+      margin: 0 0 14px;
+      font-size: 12px;
+      color: var(--text);
+    }
+    .session-metric {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -1px;
+      color: var(--text);
+    }
+    .session-metric small {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 400;
+    }
+    .session-progress-bar {
+      height: 4px;
+      border-radius: 3px;
+      background: #29313d;
+      margin: 12px 0;
+      overflow: hidden;
+    }
+    .session-progress-bar b {
+      display: block;
+      background: var(--cyan);
+      height: 100%;
+      width: 33%;
+      border-radius: 3px;
+    }
+    .listening-steps {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      counter-reset: step;
+    }
+    .listening-steps li {
+      counter-increment: step;
+      font-size: 11px;
+      color: var(--muted);
+      margin: 14px 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .listening-steps li:before {
+      content: counter(step);
+      border: 1px solid #384353;
+      border-radius: 50%;
+      height: 22px;
+      width: 22px;
+      display: grid;
+      place-items: center;
+      font-size: 10px;
+      flex-shrink: 0;
+    }
+    .listening-steps li.active {
+      color: var(--purple);
+    }
+    .listening-steps li.active:before {
+      border-color: #786394;
+      background: rgba(177, 154, 255, 0.12);
+      color: var(--purple);
+    }
+
+    /* MOBILE BOTTOM NAVIGATION */
+    .bottom-nav {
+      display: none;
+    }
+    @media (max-width: 768px) {
+      body {
+        padding-bottom: calc(85px + env(safe-area-inset-bottom, 0px)) !important;
+      }
+      .topbar .nav {
+        display: none !important;
+      }
+      .bottom-nav {
         position: fixed;
         bottom: 0;
         left: 0;
         right: 0;
+        height: 72px;
+        background: #121923f5;
+        border-top: 1px solid #2b3442;
+        display: flex;
+        justify-content: space-around;
+        padding: 8px 8px calc(8px + env(safe-area-inset-bottom, 0px));
+        backdrop-filter: blur(12px);
         z-index: 9999;
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 4px;
-        padding: 8px 6px calc(8px + env(safe-area-inset-bottom, 0px));
-        border-top: 1px solid var(--border-subtle);
-        border-bottom: 0;
-        box-shadow: 0 -8px 24px rgba(0, 0, 0, .25);
       }
-      .module-nav-button {
-        flex-direction: column;
-        gap: 5px;
-        min-width: 0;
-        min-height: 72px;
-        padding: 6px 2px;
+      .bottom-nav .tab {
+        background: none;
+        border: none;
+        color: var(--muted);
         font-size: 10px;
-        line-height: 1.3;
-        overflow-wrap: anywhere;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        border-radius: 8px;
+        cursor: pointer;
       }
-      .module-placeholder { margin: 20px 12px; padding: 24px; }
-      #toast-container { bottom: calc(112px + env(safe-area-inset-bottom, 0px)); }
+      .bottom-nav .tab .nav-icon {
+        font-size: 18px;
+      }
+      .bottom-nav .tab.active {
+        color: var(--purple);
+        background: rgba(177, 154, 255, 0.08);
+      }
+      .listening-workspace {
+        grid-template-columns: 1fr;
+      }
     }
+
   </style>
 </head>
 <body>
 
-  <!-- TOP HEADER -->
-  <header>
-    <div class="brand">
-      <div class="brand-icon">⚡</div>
-      <div class="brand-text">
-        <h1>Lexis</h1>
-        <span>Ecossistema de Idiomas • Triagem & Anki</span>
-      </div>
+  <!-- TOPBAR (IMAGE 1 REPLICA) -->
+  <header class="topbar">
+    <div class="brand" onclick="switchModule('vocab')">
+      lexis<b>✦</b><small>SUITE</small>
     </div>
 
-    <!-- KPI STATS -->
-    <div class="kpi-container">
-      <div class="kpi-chip known" title="Palavras conhecidas">
-        <span class="kpi-dot"></span>
-        <span class="kpi-label">Conhecidos:</span>
-        <span class="val" id="stat-known">0</span>
-      </div>
-      <div class="kpi-chip unknown" title="Gaps de Ouro identificados para envio ao Anki">
-        <span class="kpi-dot"></span>
-        <span class="kpi-label">Gaps:</span>
-        <span class="val" id="stat-unknown">0</span>
-      </div>
-      <div class="kpi-chip doubt" title="Palavras com dúvida">
-        <span class="kpi-dot"></span>
-        <span class="kpi-label">Dúvidas:</span>
-        <span class="val" id="stat-doubt">0</span>
-      </div>
-      <button class="kpi-chip" id="btn-header-sync" onclick="syncWithCloud()" title="Sincronizar bidirecionalmente com Google Cloud Run" style="cursor: pointer; border-color: rgba(0, 242, 254, 0.35); color: var(--accent-cyan); background: rgba(0, 242, 254, 0.08);">
-        <span class="kpi-label">Sync</span>
-        <span class="val" id="sync-status-label" style="font-size: 12px;">Nuvem</span>
+    <nav class="nav" aria-label="Módulos desktop">
+      <button type="button" class="tab active" data-module="vocab" onclick="switchModule('vocab')">
+        <span class="dot"></span>Vocabulário
       </button>
-    </div>
+      <button type="button" class="tab" data-module="listening" onclick="switchModule('listening')">
+        <span class="dot"></span>Listening Studio
+      </button>
+      <button type="button" class="tab" data-module="anki" onclick="switchModule('anki')">
+        <span class="dot"></span>Anki Hub
+      </button>
+      <button type="button" class="tab" data-module="analytics" onclick="switchModule('analytics')">
+        <span class="dot"></span>Analytics
+      </button>
+    </nav>
 
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <div id="btn-header-sync" onclick="syncWithCloud()" title="Sincronizar bidirecionalmente com Google Cloud Run" style="cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 11px; padding: 6px 12px; border-radius: 20px; border: 1px solid var(--line); background: var(--surface); color: var(--muted); transition: all 0.2s;">
+        <span style="width: 7px; height: 7px; border-radius: 50%; background: var(--cyan); display: inline-block;"></span>
+        <span id="sync-status-label">Nuvem</span>
+      </div>
+      <div class="avatar" title="Lucas (Usuário Ativo)">LC</div>
+    </div>
   </header>
 
-  <nav class="module-nav" aria-label="MÃ³dulos do Lexis Suite">
-    <button type="button" id="nav-module-vocab" class="module-nav-button active" data-module="vocab" aria-controls="view-module-vocab" aria-current="page" onclick="switchModule('vocab')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 4h7a3 3 0 0 1 3 3v14a4 4 0 0 0-4-2H3zM21 4h-5a3 3 0 0 0-3 3v14a4 4 0 0 1 4-2h4z"/></svg>
-      <span>VocabulÃ¡rio & Chunks</span>
-    </button>
-    <button type="button" id="nav-module-listening" class="module-nav-button" data-module="listening" aria-controls="view-module-listening" aria-current="false" onclick="switchModule('listening')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 14v-3a9 9 0 0 1 18 0v3M3 13h4v8H3zM17 13h4v8h-4z"/></svg>
-      <span>Listening Studio</span>
-    </button>
-    <button type="button" id="nav-module-anki" class="module-nav-button" data-module="anki" aria-controls="view-module-anki" aria-current="false" onclick="switchModule('anki')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="6" y="6" width="15" height="15" rx="2"/><path d="M17 3H5a2 2 0 0 0-2 2v12M10 13h7M13.5 9.5v7"/></svg>
-      <span>Anki Hub</span>
-    </button>
-    <button type="button" id="nav-module-analytics" class="module-nav-button" data-module="analytics" aria-controls="view-module-analytics" aria-current="false" onclick="switchModule('analytics')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 3v18h17M9 17v-5M14 17V7M19 17V4"/></svg>
-      <span>Analytics & MÃ©tricas</span>
-    </button>
-  </nav>
+  <!-- BREADCRUMB BAR -->
+  <div class="breadcrumb-bar" id="global-breadcrumb">
+    Workspace &nbsp; / &nbsp; <span id="breadcrumb-module-name" class="active-crumb">Vocabulário</span> &nbsp; <span id="breadcrumb-subview" style="color: var(--muted);">/ Triagem &amp; Chunks</span>
+  </div>
 
-  <section id="view-module-vocab" class="module-view active" aria-label="VocabulÃ¡rio &amp; Chunks">
+  <section id="view-module-vocab" class="module-view active" aria-label="Vocabulário & Chunks">
+  <div style="max-width: 1200px; margin: 10px auto 0; padding: 0 24px; display: flex; justify-content: flex-end; gap: 8px;">
+    <div class="kpi-chip known" title="Palavras conhecidas" style="padding: 4px 10px; font-size: 11px;">
+      <span class="kpi-dot"></span><span class="kpi-label">Conhecidos:</span> <span class="val" id="stat-known">0</span>
+    </div>
+    <div class="kpi-chip unknown" title="Gaps de Ouro identificados para envio ao Anki" style="padding: 4px 10px; font-size: 11px;">
+      <span class="kpi-dot"></span><span class="kpi-label">Gaps:</span> <span class="val" id="stat-unknown">0</span>
+    </div>
+    <div class="kpi-chip doubt" title="Palavras com dúvida" style="padding: 4px 10px; font-size: 11px;">
+      <span class="kpi-dot"></span><span class="kpi-label">Dúvidas:</span> <span class="val" id="stat-doubt">0</span>
+    </div>
+  </div>
 
   <!-- CONTROL TOOLBAR (MINIMALISTA) -->
   <div class="toolbar">
@@ -2067,28 +2446,155 @@
   </main>
   </section>
 
-  <section id="view-module-listening" class="module-view" style="display:none;" aria-labelledby="heading-module-listening">
-    <div id="listening-studio-container" class="module-placeholder">
-      <h2 id="heading-module-listening">Listening Studio</h2>
-      <p>Em breve no Lexis Suite.</p>
+  <section id="view-module-listening" class="module-view" style="display:none;" aria-label="Listening Studio">
+    <div class="listening-stage">
+      <div class="listening-title-row">
+        <div>
+          <span class="listening-pill">LISTENING STUDIO</span>
+          <h2>Escuta às Cegas</h2>
+        </div>
+        <button type="button" class="listening-restart-btn" onclick="restartListeningSession()">
+          <span>↺</span> Reiniciar
+        </button>
+      </div>
+      <p class="listening-subtext">Treine seu ouvido. Confie na sua percepção.</p>
+
+      <div class="listening-workspace">
+        <!-- PLAYER CENTRAL (REPLICA IMAGE 1) -->
+        <section class="player-card" aria-label="Player de Escuta">
+          <div class="player-top-line">
+            <span id="listening-track-label">FAIXA 04 / 12</span>
+            <span style="color: var(--cyan); display: flex; align-items: center; gap: 5px;">
+              <span style="width: 6px; height: 6px; border-radius: 50%; background: var(--cyan); display: inline-block;"></span>
+              Áudio de exemplo
+            </span>
+          </div>
+
+          <div class="audio-art-icon">♫</div>
+          <h3 id="listening-player-title">Primeiro, apenas ouça.</h3>
+          <div class="player-sub" id="listening-player-sub">Encontre o sentido antes das palavras.</div>
+
+          <div class="wave-visualizer" id="listening-waveform" aria-hidden="true"></div>
+
+          <input class="seek-bar" id="listening-seek" type="range" min="0" max="12" value="4" step="0.1" aria-label="Posição do áudio" oninput="onListeningSeek(this.value)">
+          <div class="time-readout">
+            <span id="listening-elapsed">00:04</span>
+            <span id="listening-total">00:12</span>
+          </div>
+
+          <div class="player-controls-row">
+            <button type="button" class="player-btn-sec" onclick="seekListeningDelta(-5)" title="Voltar 5 segundos" aria-label="Voltar 5 segundos">↺</button>
+            <button type="button" class="player-btn-circle" id="listening-play-btn" onclick="toggleListeningPlay()" aria-label="Reproduzir áudio">▶</button>
+            <button type="button" class="player-btn-sec" onclick="seekListeningDelta(5)" title="Avançar 5 segundos" aria-label="Avançar 5 segundos">↻</button>
+            <button type="button" class="player-btn-speed" id="listening-speed-btn" onclick="cycleListeningSpeed()">1×</button>
+          </div>
+
+          <button type="button" class="btn-reveal-transcript" id="btn-reveal-transcript" onclick="toggleListeningReveal()">
+            ◉ &nbsp; Revelar transcrição
+          </button>
+          <div class="transcript-hint">Ouça. Formule sua hipótese. Só então revele.</div>
+
+          <div class="transcript-box" id="listening-transcript-box" style="display:none;">
+            <div id="listening-sentence-en" style="font-size: 15px; font-weight: 600; color: #eff4fa;">A colleague of mine will be speaking at the conference.</div>
+            <small id="listening-sentence-pt" style="color: var(--muted); font-size: 13px;">Um colega meu falará na conferência.</small>
+            <button type="button" id="btn-save-listening-anki" class="listening-restart-btn" style="margin-top: 14px; border-color: rgba(177, 154, 255, 0.4); color: var(--purple); background: rgba(177, 154, 255, 0.08);" onclick="saveListeningToAnki()">
+              + Salvar no Anki Hub
+            </button>
+          </div>
+        </section>
+
+        <!-- SIDEBAR DE SESSÃO -->
+        <aside>
+          <div class="listening-sidecard">
+            <h4>Sua sessão</h4>
+            <div class="session-metric">04 <small>/ 12 faixas</small></div>
+            <div class="session-progress-bar">
+              <b style="width: 33%;"></b>
+            </div>
+            <div style="font-size: 11px; color: var(--muted); line-height: 1.6;">
+              Um passo de cada vez.<br>Você está criando consistência.
+            </div>
+          </div>
+
+          <div class="listening-sidecard">
+            <h4>Como funciona</h4>
+            <ol class="listening-steps">
+              <li class="active">Ouça com atenção</li>
+              <li>Imagine o significado</li>
+              <li>Revele e compare</li>
+              <li>Leve para o Anki</li>
+            </ol>
+          </div>
+
+          <div class="listening-sidecard" style="display: flex; align-items: center; gap: 8px;">
+            <span style="color: var(--cyan); font-size: 16px;">↗</span>
+            <span style="font-size: 11px; color: var(--muted); line-height: 1.5;">Cada escuta conta.<br>Continue no seu ritmo.</span>
+          </div>
+        </aside>
+      </div>
+
+      <div style="border-top: 1px solid var(--line); margin-top: 28px; padding-top: 18px; display: flex; justify-content: space-between; font-size: 11px; color: var(--muted);">
+        <span><strong style="color: var(--cyan);">●</strong> &nbsp; Seu progresso, sempre conectado.</span>
+        <span>EN → PT-BR &nbsp; · &nbsp; Nível B1–B2</span>
+      </div>
     </div>
   </section>
 
-  <section id="view-module-anki" class="module-view" style="display:none;" aria-labelledby="heading-module-anki">
-    <div id="anki-studio-container" class="module-placeholder">
-      <h2 id="heading-module-anki">Anki Hub</h2>
-      <p>Em breve no Lexis Suite.</p>
+  <section id="view-module-anki" class="module-view" style="display:none;" aria-label="Anki Hub">
+    <div style="max-width: 1200px; margin: 24px auto; padding: 32px 24px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface);">
+      <h2 style="font-family: var(--font-heading); margin-bottom: 8px;">Anki Hub</h2>
+      <p style="color: var(--muted); font-size: 13px;">Central de injeção e monitoramento dos cartões gerados pelo Lexis.</p>
     </div>
   </section>
 
-  <section id="view-module-analytics" class="module-view" style="display:none;" aria-labelledby="heading-module-analytics">
-    <div id="analytics-studio-container" class="module-placeholder">
-      <h2 id="heading-module-analytics">Analytics &amp; MÃ©tricas</h2>
-      <p>Em breve no Lexis Suite.</p>
+  <section id="view-module-analytics" class="module-view" style="display:none;" aria-label="Analytics & Métricas">
+    <div style="max-width: 1200px; margin: 24px auto; padding: 32px 24px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface);">
+      <h2 style="font-family: var(--font-heading); margin-bottom: 8px;">Analytics & Métricas</h2>
+      <p style="color: var(--muted); font-size: 13px;">Radar de cobertura CEFR (A1 a C2) e taxa de retenção.</p>
     </div>
   </section>
+
+  <!-- MOBILE BOTTOM NAVIGATION (IMAGE 1 REPLICA) -->
+  <nav class="bottom-nav" aria-label="Módulos mobile">
+    <button type="button" class="tab active" data-module="vocab" onclick="switchModule('vocab')">
+      <span class="nav-icon">▧</span>
+      <span>Vocabulário</span>
+    </button>
+    <button type="button" class="tab" data-module="listening" onclick="switchModule('listening')">
+      <span class="nav-icon">♫</span>
+      <span>Listening</span>
+    </button>
+    <button type="button" class="tab" data-module="anki" onclick="switchModule('anki')">
+      <span class="nav-icon">▣</span>
+      <span>Anki Hub</span>
+    </button>
+    <button type="button" class="tab" data-module="analytics" onclick="switchModule('analytics')">
+      <span class="nav-icon">▥</span>
+      <span>Analytics</span>
+    </button>
+  </nav>
 
   <div id="toast-container"></div>
+  <!-- MOBILE BOTTOM NAVIGATION (IMAGE 1 REPLICA) -->
+  <nav class="bottom-nav" aria-label="Módulos mobile">
+    <button type="button" class="tab active" data-module="vocab" onclick="switchModule('vocab')">
+      <span class="nav-icon">▧</span>
+      <span>Vocabulário</span>
+    </button>
+    <button type="button" class="tab" data-module="listening" onclick="switchModule('listening')">
+      <span class="nav-icon">♫</span>
+      <span>Listening</span>
+    </button>
+    <button type="button" class="tab" data-module="anki" onclick="switchModule('anki')">
+      <span class="nav-icon">▣</span>
+      <span>Anki Hub</span>
+    </button>
+    <button type="button" class="tab" data-module="analytics" onclick="switchModule('analytics')">
+      <span class="nav-icon">▥</span>
+      <span>Analytics</span>
+    </button>
+  </nav>
+
 
   <!-- JAVASCRIPT LOGIC -->
   <script>
@@ -3705,21 +4211,182 @@
     // ==========================================
     // CONTROLE DE TELAS (SWITCH VIEW)
     // ==========================================
-    function switchModule(moduleName) {
-      const target = document.getElementById('view-module-' + moduleName);
-      if (!target || !target.classList.contains('module-view')) return;
+    
+    // ==========================================
+    // LEXIS SUITE - MODULES & LISTENING STUDIO LOGIC
+    // ==========================================
+    
 
-      document.querySelectorAll('.module-view').forEach((view) => {
-        const active = view === target;
-        view.classList.toggle('active', active);
-        view.style.display = active ? 'block' : 'none';
+    // ==========================================
+    // LEXIS SUITE - MODULES & LISTENING STUDIO LOGIC (IMAGE 1 REPLICA)
+    // ==========================================
+    const moduleNamesMap = {
+      vocab: { name: "Vocabulário", sub: "/ Triagem & Chunks", color: "var(--cyan)" },
+      listening: { name: "Listening Studio", sub: "/ Escuta às Cegas", color: "var(--purple)" },
+      anki: { name: "Anki Hub", sub: "/ Fila & Injeção", color: "var(--amber)" },
+      analytics: { name: "Analytics", sub: "/ Métricas CEFR", color: "var(--blue)" }
+    };
+
+    function switchModule(moduleName) {
+      document.querySelectorAll('.module-view').forEach(view => {
+        const isTarget = view.id === 'view-module-' + moduleName;
+        view.style.display = isTarget ? 'block' : 'none';
+        view.classList.toggle('active', isTarget);
       });
-      document.querySelectorAll('.module-nav-button').forEach((button) => {
-        const active = button.dataset.module === moduleName;
-        button.classList.toggle('active', active);
-        button.setAttribute('aria-current', active ? 'page' : 'false');
+
+      document.querySelectorAll('.topbar .tab, .bottom-nav .tab').forEach(btn => {
+        const active = btn.dataset.module === moduleName;
+        btn.classList.toggle('active', active);
+      });
+
+      const info = moduleNamesMap[moduleName] || { name: moduleName, sub: "", color: "var(--text)" };
+      const crumbMod = document.getElementById('breadcrumb-module-name');
+      const crumbSub = document.getElementById('breadcrumb-subview');
+      if (crumbMod) {
+        crumbMod.textContent = info.name;
+        crumbMod.style.color = info.color;
+      }
+      if (crumbSub) {
+        crumbSub.textContent = info.sub;
+      }
+
+      if (moduleName === 'listening') {
+        initListeningWaveform();
+      }
+    }
+
+    // LISTENING STUDIO CONTROLS
+    let listeningPos = 4.0;
+    let listeningRate = 1.0;
+    let listeningPlaying = false;
+    let listeningTimer = null;
+    let audioCtx = null;
+    let audioOsc = null;
+
+    function initListeningWaveform() {
+      const container = document.getElementById('listening-waveform');
+      if (!container || container.children.length > 0) return;
+      for (let i = 0; i < 48; i++) {
+        const bar = document.createElement('i');
+        const h = Math.floor(10 + Math.abs(Math.sin(i * 1.9) * Math.cos(i * 0.32)) * 52);
+        bar.style.height = h + 'px';
+        if (i < 16) bar.classList.add('played');
+        container.appendChild(bar);
+      }
+    }
+
+    function toggleListeningPlay() {
+      const btn = document.getElementById('listening-play-btn');
+      if (listeningPlaying) {
+        stopListeningAudio();
+        if (btn) btn.textContent = '▶';
+      } else {
+        startListeningAudio();
+        if (btn) btn.textContent = 'Ⅱ';
+      }
+    }
+
+    function startListeningAudio() {
+      listeningPlaying = true;
+      try {
+        audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+        audioCtx.resume();
+        audioOsc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        gain.gain.value = 0.02;
+        audioOsc.type = 'sine';
+        audioOsc.frequency.value = 240;
+        audioOsc.connect(gain);
+        gain.connect(audioCtx.destination);
+        audioOsc.start();
+      } catch (e) {}
+
+      listeningTimer = setInterval(() => {
+        listeningPos = Math.min(12, listeningPos + 0.1 * listeningRate);
+        updateListeningTime();
+        if (listeningPos >= 12) {
+          stopListeningAudio();
+          const btn = document.getElementById('listening-play-btn');
+          if (btn) btn.textContent = '▶';
+        }
+      }, 100);
+    }
+
+    function stopListeningAudio() {
+      listeningPlaying = false;
+      if (listeningTimer) clearInterval(listeningTimer);
+      if (audioOsc) {
+        try { audioOsc.stop(); } catch(e) {}
+        audioOsc = null;
+      }
+    }
+
+    function onListeningSeek(val) {
+      listeningPos = parseFloat(val);
+      updateListeningTime();
+    }
+
+    function seekListeningDelta(delta) {
+      listeningPos = Math.max(0, Math.min(12, listeningPos + delta));
+      updateListeningTime();
+    }
+
+    function updateListeningTime() {
+      const seek = document.getElementById('listening-seek');
+      const elapsed = document.getElementById('listening-elapsed');
+      if (seek) seek.value = listeningPos;
+      if (elapsed) elapsed.textContent = '00:' + Math.floor(listeningPos).toString().padStart(2, '0');
+
+      const bars = document.querySelectorAll('#listening-waveform i');
+      const ratio = listeningPos / 12;
+      const count = Math.floor(bars.length * ratio);
+      bars.forEach((bar, idx) => {
+        bar.classList.toggle('played', idx <= count);
       });
     }
+
+    function cycleListeningSpeed() {
+      listeningRate = listeningRate === 1.0 ? 1.25 : listeningRate === 1.25 ? 1.5 : listeningRate === 1.5 ? 0.75 : 1.0;
+      const btn = document.getElementById('listening-speed-btn');
+      if (btn) btn.textContent = listeningRate + '×';
+    }
+
+    function toggleListeningReveal() {
+      const box = document.getElementById('listening-transcript-box');
+      const btn = document.getElementById('btn-reveal-transcript');
+      if (!box || !btn) return;
+      const isHidden = box.style.display === 'none';
+      box.style.display = isHidden ? 'block' : 'none';
+      btn.textContent = isHidden ? '◉   Ocultar transcrição' : '◉   Revelar transcrição';
+      btn.style.borderColor = isHidden ? 'var(--cyan)' : '#7e679b';
+    }
+
+    function saveListeningToAnki() {
+      const btn = document.getElementById('btn-save-listening-anki');
+      if (btn) {
+        btn.textContent = '✓ Salvo no Anki Hub';
+        btn.disabled = true;
+        btn.style.color = 'var(--cyan)';
+        btn.style.borderColor = 'var(--cyan)';
+      }
+      showToast('Frase salva com sucesso no Anki Hub!');
+    }
+
+    function restartListeningSession() {
+      stopListeningAudio();
+      listeningPos = 0;
+      updateListeningTime();
+      const btn = document.getElementById('listening-play-btn');
+      if (btn) btn.textContent = '▶';
+      const box = document.getElementById('listening-transcript-box');
+      if (box) box.style.display = 'none';
+      const revBtn = document.getElementById('btn-reveal-transcript');
+      if (revBtn) revBtn.textContent = '◉   Revelar transcrição';
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      initListeningWaveform();
+    });
 
     function switchView(mode) {
       document.getElementById("view-focus").style.display = mode === "focus" ? "flex" : "none";
