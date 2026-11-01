@@ -135,3 +135,21 @@ from one of the finest universities in the world.
     assert segs[0]["en"] == "I am honored to be with you today."
     assert segs[1]["start"] == 28.4
     assert segs[1]["end"] == 34.0
+
+
+
+def test_word_slots_matching():
+    target = "I am honored to be with you today."
+    target_tokens = [w for w in expand_contractions(normalize_dictation_text(target)).split(" ") if w]
+    user_input = "i am honord to be"
+    user_tokens = [w for w in expand_contractions(normalize_dictation_text(user_input)).split(" ") if w]
+    
+    assert target_tokens == ["i", "am", "honored", "to", "be", "with", "you", "today"]
+    assert user_tokens == ["i", "am", "honord", "to", "be"]
+    
+    # Matching tokens
+    matches = [user_tokens[i] == target_tokens[i] for i in range(len(user_tokens))]
+    assert matches == [True, True, False, True, True]
+    
+    # Typos
+    assert calc_levenshtein(user_tokens[2], target_tokens[2]) == 1  # 'honord' vs 'honored'

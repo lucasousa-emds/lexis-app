@@ -2140,6 +2140,53 @@
       color: var(--muted);
       margin-bottom: 12px;
     }
+    .word-slots-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: rgba(16, 23, 32, 0.75);
+      border: 1px solid var(--line);
+      min-height: 48px;
+      align-items: center;
+    }
+    .word-slot {
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: var(--font-body);
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      letter-spacing: 0.3px;
+    }
+    .word-slot.pending {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px dashed rgba(255, 255, 255, 0.15);
+      color: rgba(255, 255, 255, 0.25);
+      letter-spacing: 2px;
+    }
+    .word-slot.current {
+      background: rgba(177, 154, 255, 0.12);
+      border: 1px solid var(--purple);
+      color: var(--purple);
+      box-shadow: 0 0 12px rgba(177, 154, 255, 0.25);
+    }
+    .word-slot.completed {
+      background: rgba(16, 185, 129, 0.14);
+      border: 1px solid #10b981;
+      color: #34d399;
+    }
+    .word-slot.typo {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid #f59e0b;
+      color: #fbbf24;
+      animation: pulse 1s infinite;
+    }
     .dictation-input-field {
       width: 100%;
       padding: 16px 20px;
@@ -2664,13 +2711,19 @@
         <div class="dictation-interactive-box">
           <div class="dictation-header-info">
             <span id="dictation-segment-label">FRASE 01 / 03</span>
-            <span style="color: var(--cyan); display: flex; align-items: center; gap: 6px;">
-              <span style="width: 7px; height: 7px; border-radius: 50%; background: var(--cyan); display: inline-block;"></span>
-              <span id="dictation-time-label">Trecho: 00:03.200 - 00:06.800</span>
-            </span>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <button type="button" class="dictation-btn" id="dictation-speed-toggle" onclick="toggleDictationSpeed()" style="padding: 3px 8px; font-size: 11px; height: 26px;" title="Alternar velocidade de reprodução">⚡ 1.0×</button>
+              <span style="color: var(--cyan); display: flex; align-items: center; gap: 6px;">
+                <span style="width: 7px; height: 7px; border-radius: 50%; background: var(--cyan); display: inline-block;"></span>
+                <span id="dictation-time-label">Trecho: 00:23.5 - 00:28.2</span>
+              </span>
+            </div>
           </div>
 
-          <input type="text" id="dictation-input" class="dictation-input-field" placeholder="Ouça o trecho e digite exatamente o que escutou..." autocomplete="off" spellcheck="false" oninput="onDictationInput(this.value)" onkeydown="onDictationKey(event)">
+          <!-- SLOTS VISUAIS DE PALAVRAS EM TEMPO REAL -->
+          <div id="dictation-word-slots" class="word-slots-container"></div>
+
+          <input type="text" id="dictation-input" class="dictation-input-field" placeholder="Ouça o trecho e digite o que escutou..." autocomplete="off" spellcheck="false" oninput="onDictationInput(this.value)" onkeydown="onDictationKey(event)">
 
           <!-- DICA ORTOGRÁFICA INTELIGENTE -->
           <div id="spelling-hint-box" class="spelling-hint-box" style="display: none;">
@@ -2690,7 +2743,7 @@
 
           <div class="dictation-actions-row">
             <button type="button" class="dictation-btn" onclick="replayCurrentSegment()" title="Atalho: Tab">↺ Repetir Trecho (Tab)</button>
-            <button type="button" class="dictation-btn" onclick="showDictationHint()" title="Atalho: Ctrl+H">💡 Dica</button>
+            <button type="button" class="dictation-btn" onclick="showNextWordHint()" title="Atalho: Ctrl+H">💡 Pista da Palavra (Ctrl+H)</button>
             <button type="button" class="dictation-btn" onclick="giveUpAndReveal()">👁️ Revelar Frase</button>
             <button type="button" class="dictation-btn" onclick="saveCurrentSegmentToAnki()" style="margin-left: auto; color: var(--purple); border-color: rgba(177, 154, 255, 0.3);">+ Enviar Trecho para o Anki</button>
           </div>
@@ -4628,7 +4681,7 @@
 
     
     // ==========================================
-    // VIDEO DICTATION LOGIC, LOCAL FILES & INTELLIGENT SPELLING HINTS
+    // VIDEO DICTATION LOGIC, WORD SLOTS & PLAYBACK CONTROLLER
     // ==========================================
     const VIDEO_PRESETS = {
       jobs: {
@@ -4665,16 +4718,23 @@
     let ytPlayer = null;
     let videoTimeCheckInterval = null;
     let segmentUnlocked = false;
+    let currentDictationSpeed = 1.0;
 
-    // Unified controller for both YouTube IFrame and HTML5 Local Video
+    // Unified playback controller for YouTube and Local Video
     const VideoController = {
       isLocal: false,
       play() {
         if (this.isLocal) {
           const vid = document.getElementById("local-video-player");
-          if (vid) vid.play().catch(() => {});
+          if (vid) {
+            vid.playbackRate = currentDictationSpeed;
+            vid.play().catch(() => {});
+          }
         } else {
-          if (ytPlayer && ytPlayer.playVideo) ytPlayer.playVideo();
+          if (ytPlayer && ytPlayer.playVideo) {
+            if (ytPlayer.setPlaybackRate) ytPlayer.setPlaybackRate(currentDictationSpeed);
+            ytPlayer.playVideo();
+          }
         }
       },
       pause() {
@@ -4685,17 +4745,24 @@
           if (ytPlayer && ytPlayer.pauseVideo) ytPlayer.pauseVideo();
         }
       },
-      seekTo(seconds) {
+      // seekTo only plays if andPlay is explicitly true! Never auto-plays on boundary pauses.
+      seekTo(seconds, andPlay = false) {
         if (this.isLocal) {
           const vid = document.getElementById("local-video-player");
           if (vid) {
             vid.currentTime = Math.max(0, seconds);
-            vid.play().catch(() => {});
+            if (andPlay) {
+              vid.playbackRate = currentDictationSpeed;
+              vid.play().catch(() => {});
+            }
           }
         } else {
           if (ytPlayer && ytPlayer.seekTo) {
             ytPlayer.seekTo(seconds, true);
-            ytPlayer.playVideo();
+            if (andPlay) {
+              if (ytPlayer.setPlaybackRate) ytPlayer.setPlaybackRate(currentDictationSpeed);
+              ytPlayer.playVideo();
+            }
           }
         }
       },
@@ -4706,8 +4773,27 @@
         } else {
           return (ytPlayer && ytPlayer.getCurrentTime) ? ytPlayer.getCurrentTime() : 0;
         }
+      },
+      setSpeed(speed) {
+        currentDictationSpeed = speed;
+        if (this.isLocal) {
+          const vid = document.getElementById("local-video-player");
+          if (vid) vid.playbackRate = speed;
+        } else {
+          if (ytPlayer && ytPlayer.setPlaybackRate) {
+            ytPlayer.setPlaybackRate(speed);
+          }
+        }
+        const btn = document.getElementById("dictation-speed-toggle");
+        if (btn) btn.textContent = `⚡ ${speed}×`;
       }
     };
+
+    function toggleDictationSpeed() {
+      const nextSpeed = currentDictationSpeed === 1.0 ? 0.75 : (currentDictationSpeed === 0.75 ? 0.5 : 1.0);
+      VideoController.setSpeed(nextSpeed);
+      showToast(`Velocidade de reprodução: ${nextSpeed}×`);
+    }
 
     function switchVideoSource(source) {
       const isLoc = source === "local";
@@ -4741,7 +4827,7 @@
       vidElem.onpause = () => stopVideoWatcher();
 
       document.getElementById("local-file-status").textContent = `Vídeo: ${file.name} | Agora selecione o arquivo .srt/.vtt`;
-      showToast(`Vídeo local "${file.name}" carregado com sucesso.`);
+      showToast(`Vídeo local "${file.name}" carregado.`);
     }
 
     function parseTimeStr(t) {
@@ -4808,7 +4894,7 @@
         };
         document.getElementById("local-file-status").textContent = `Vídeo & Legenda carregados: ${file.name} (${segs.length} frases prontas)`;
         loadSegment(0);
-        showToast(`Legenda carregada: ${segs.length} trechos identificados para treino.`);
+        showToast(`Legenda carregada: ${segs.length} trechos prontos para treino.`);
       };
       reader.readAsText(file);
     }
@@ -4871,19 +4957,20 @@
       }
     }
 
+    // WATCHER: Pauses strictly once at segment end without looping
     function startVideoWatcher() {
       stopVideoWatcher();
       videoTimeCheckInterval = setInterval(() => {
         const curTime = VideoController.getCurrentTime();
         const seg = activeVideoData.segments[currentSegmentIndex];
         if (seg && curTime >= seg.end) {
-          if (!segmentUnlocked) {
-            VideoController.pause();
-            VideoController.seekTo(seg.end);
-            focusDictationInput();
-          }
+          // STOP INTERVAL AND PAUSE ONCE. NO AUTO-REPLAY.
+          stopVideoWatcher();
+          VideoController.pause();
+          VideoController.seekTo(seg.end, false);
+          focusDictationInput();
         }
-      }, 100);
+      }, 70);
     }
 
     function stopVideoWatcher() {
@@ -4912,14 +4999,20 @@
       document.getElementById("spelling-hint-box").style.display = "none";
       document.getElementById("dictation-success-box").style.display = "none";
 
-      VideoController.seekTo(seg.start);
+      // Render initial blank word slots
+      renderWordSlots([]);
+
+      // Play the segment once
+      VideoController.seekTo(seg.start, true);
+      startVideoWatcher();
       focusDictationInput();
     }
 
     function replayCurrentSegment() {
       const seg = activeVideoData.segments[currentSegmentIndex];
       if (!seg) return;
-      VideoController.seekTo(seg.start);
+      VideoController.seekTo(seg.start, true);
+      startVideoWatcher();
       focusDictationInput();
     }
 
@@ -4944,16 +5037,22 @@
         .trim();
     }
 
+    const CONTRACTION_MAP = {
+      "dont": "do not", "cant": "cannot", "wont": "will not", "im": "i am",
+      "youre": "you are", "theyre": "they are", "were": "we are", "isnt": "is not",
+      "arent": "are not", "didnt": "did not", "doesnt": "does not", "couldnt": "could not",
+      "wouldnt": "would not", "shouldnt": "should not", "ive": "i have", "youve": "you have",
+      "theyve": "they have", "weve": "we have", "hes": "he is", "shes": "she is", "its": "it is",
+      "theres": "there is", "thats": "that is", "gonna": "going to", "wanna": "want to", "gotta": "got to"
+    };
+
     function expandContractions(text) {
-      const map = {
-        "dont": "do not", "cant": "cannot", "wont": "will not", "im": "i am",
-        "youre": "you are", "theyre": "they are", "were": "we are", "isnt": "is not",
-        "arent": "are not", "didnt": "did not", "doesnt": "does not", "couldnt": "could not",
-        "wouldnt": "would not", "shouldnt": "should not", "ive": "i have", "youve": "you have",
-        "theyve": "they have", "weve": "we have", "hes": "he is", "shes": "she is", "its": "it is",
-        "theres": "there is", "thats": "that is", "gonna": "going to", "wanna": "want to", "gotta": "got to"
-      };
-      return text.split(" ").map(w => map[w] || w).join(" ");
+      return text.split(" ").map(w => CONTRACTION_MAP[w] || w).join(" ");
+    }
+
+    function getCleanTargetTokens(text) {
+      const norm = expandContractions(normalizeDictationText(text));
+      return norm.split(" ").filter(Boolean);
     }
 
     function calcLevenshtein(a, b) {
@@ -4976,57 +5075,105 @@
       return matrix[b.length][a.length];
     }
 
-    // VALIDATION LOOP WITH INTELLIGENT SPELLING HINTS
+    // ==========================================
+    // WORD SLOTS RENDERING & VALIDATION
+    // ==========================================
+    function renderWordSlots(userTokens = [], activeTypo = null) {
+      const container = document.getElementById("dictation-word-slots");
+      if (!container) return;
+
+      const seg = activeVideoData.segments[currentSegmentIndex];
+      if (!seg) return;
+
+      const targetTokens = getCleanTargetTokens(seg.en);
+      const rawWords = (seg.en || "").trim().split(/\s+/).filter(Boolean);
+
+      let html = "";
+      let allMatched = true;
+
+      for (let i = 0; i < targetTokens.length; i++) {
+        const target = targetTokens[i];
+        const displayWord = rawWords[i] ? rawWords[i].replace(/[.,/#!$%^&*;:{}=\-_`~()?"'’]/g, "") : target;
+        const userWord = userTokens[i] || null;
+
+        if (userWord && userWord === target) {
+          // Correctly typed word
+          html += `<span class="word-slot completed">✓ ${displayWord}</span>`;
+        } else if (i === userTokens.length - 1 && userWord && activeTypo && activeTypo.targetIndex === i) {
+          // Typo on active word
+          allMatched = false;
+          html += `<span class="word-slot typo" title="Você digitou '${userWord}'">⚠️ ${userWord}</span>`;
+        } else if (i === userTokens.length) {
+          // Current expected word
+          allMatched = false;
+          html += `<span class="word-slot current">▶ ${"_".repeat(Math.max(2, displayWord.length))}</span>`;
+        } else {
+          // Future pending word
+          allMatched = false;
+          html += `<span class="word-slot pending">${"_".repeat(Math.max(2, displayWord.length))}</span>`;
+        }
+      }
+
+      container.innerHTML = html;
+      return allMatched && userTokens.length === targetTokens.length;
+    }
+
+    // REAL-TIME INPUT VALIDATION WITH WORD SLOTS & SPELLING HINTS
     function onDictationInput(val) {
       const seg = activeVideoData.segments[currentSegmentIndex];
       if (!seg) return;
 
       const userNorm = expandContractions(normalizeDictationText(val));
       const targetNorm = expandContractions(normalizeDictationText(seg.en));
+      const userTokens = userNorm.split(" ").filter(Boolean);
+      const targetTokens = targetNorm.split(" ").filter(Boolean);
+
       const inputField = document.getElementById("dictation-input");
       const hintBox = document.getElementById("spelling-hint-box");
       const hintText = document.getElementById("spelling-hint-text");
 
+      // Check for exact full match first
       if (userNorm === targetNorm) {
+        renderWordSlots(targetTokens, null);
         handleSegmentSuccess(seg);
         return;
       }
 
-      // Detect spelling approximations & close phonetic typos
-      const uWords = userNorm.split(" ").filter(Boolean);
-      const tWords = targetNorm.split(" ").filter(Boolean);
-      const hints = [];
+      // Check token by token
+      let activeTypo = null;
+      let typoMsg = null;
 
-      for (let i = 0; i < uWords.length; i++) {
-        const u = uWords[i];
-        if (tWords.includes(u)) continue;
+      for (let i = 0; i < userTokens.length; i++) {
+        const u = userTokens[i];
+        const t = targetTokens[i];
+        if (!t) break;
 
-        let bestMatch = null;
-        let minDistance = 999;
-
-        for (let t of tWords) {
+        if (u !== t) {
+          // Check if it's a close typo (Levenshtein 1 or 2)
           if (u.length >= 3 && t.length >= 3) {
             const dist = calcLevenshtein(u, t);
-            if (dist < minDistance && dist <= 2) {
-              minDistance = dist;
-              bestMatch = t;
+            if (dist <= 2) {
+              activeTypo = { targetIndex: i, typed: u, correct: t };
+              typoMsg = `Atenção à ortografia: você digitou <b>"${u}"</b>, a escrita correta é <b>"${t}"</b>.`;
+              break;
             }
           }
         }
-
-        if (bestMatch && minDistance <= 2) {
-          hints.push({ typed: u, correct: bestMatch });
-        }
       }
 
-      if (hints.length > 0) {
+      const isComplete = renderWordSlots(userTokens, activeTypo);
+
+      if (activeTypo) {
         inputField.className = "dictation-input-field almost";
-        const hintList = hints.map(h => `você digitou <b>"${h.typed}"</b>, a escrita correta é <b>"${h.correct}"</b>`).join(" | ");
-        hintText.innerHTML = `Atenção à ortografia: ${hintList}.`;
+        hintText.innerHTML = typoMsg;
         hintBox.style.display = "flex";
       } else {
         inputField.className = "dictation-input-field";
         hintBox.style.display = "none";
+      }
+
+      if (isComplete) {
+        handleSegmentSuccess(seg);
       }
     }
 
@@ -5041,7 +5188,7 @@
       document.getElementById("dictation-revealed-pt").textContent = seg.pt || "Frase decodificada com sucesso.";
       successBox.style.display = "flex";
 
-      showToast("Acertou! Avanço do vídeo liberado.");
+      showToast("Acertou! Avanço do vídeo liberado (Pressione Enter).");
     }
 
     function nextDictationSegment() {
@@ -5063,27 +5210,41 @@
         }
       } else if (e.key === "h" && (e.ctrlKey || e.metaKey)) {
         e.preventDefault();
-        showDictationHint();
+        showNextWordHint();
       }
     }
 
-    function showDictationHint() {
+    // PISTA DA PALAVRA: Revela a próxima palavra pendente e preenche no input
+    function showNextWordHint() {
       const seg = activeVideoData.segments[currentSegmentIndex];
       if (!seg) return;
-      const words = seg.en.split(" ");
-      const hintPattern = words.map(w => w.charAt(0) + "_".repeat(Math.max(1, w.length - 1))).join(" ");
-      const hintBox = document.getElementById("spelling-hint-box");
-      const hintText = document.getElementById("spelling-hint-text");
-      hintText.innerHTML = `Dica de iniciais: <code style="color:var(--cyan);">${hintPattern}</code>`;
-      hintBox.style.display = "flex";
+
+      const input = document.getElementById("dictation-input");
+      const currentVal = (input.value || "").trim();
+      const userTokens = expandContractions(normalizeDictationText(currentVal)).split(" ").filter(Boolean);
+      const targetTokens = getCleanTargetTokens(seg.en);
+      const rawWords = (seg.en || "").trim().split(/\s+/).filter(Boolean);
+
+      const nextIdx = userTokens.length;
+      if (nextIdx < targetTokens.length) {
+        const nextWord = rawWords[nextIdx] ? rawWords[nextIdx].replace(/[.,/#!$%^&*;:{}=\-_`~()?"'’]/g, "") : targetTokens[nextIdx];
+        input.value = currentVal ? `${currentVal} ${nextWord} ` : `${nextWord} `;
+        onDictationInput(input.value);
+        showToast(`Pista: Palavra "${nextWord}" adicionada.`);
+      } else {
+        showToast("Todas as palavras já foram preenchidas!");
+      }
+      focusDictationInput();
     }
 
     function giveUpAndReveal() {
       const seg = activeVideoData.segments[currentSegmentIndex];
       if (!seg) return;
+      const targetTokens = getCleanTargetTokens(seg.en);
+      renderWordSlots(targetTokens, null);
       handleSegmentSuccess(seg);
       saveCurrentSegmentToAnki();
-      showToast("Frase revelada e adicionada à Fila do Anki. Treine o ouvido na repetição.");
+      showToast("Frase revelada e adicionada à Fila do Anki.");
     }
 
     async function saveCurrentSegmentToAnki() {
@@ -5114,9 +5275,9 @@
           gapEl.innerText = cur;
           gapEl.style.display = "inline-block";
         }
-        showToast(`Trecho enviado à Fila do Anki Hub com sucesso.`);
+        showToast("Trecho enviado à Fila do Anki Hub com sucesso.");
       } catch (err) {
-        showToast(`Trecho gravado localmente.`);
+        showToast("Trecho gravado localmente.");
       }
     }
 
@@ -5150,7 +5311,7 @@
           ytPlayer.loadVideoById(id);
         }
         loadSegment(0);
-        showToast("Vídeo do YouTube carregado com sucesso.");
+        showToast("Vídeo do YouTube carregado.");
       } else {
         showToast("URL do YouTube inválida.");
       }
