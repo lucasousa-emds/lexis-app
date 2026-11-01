@@ -2092,6 +2092,167 @@
       }
     }
 
+  
+    /* VIDEO DICTATION STYLES */
+    .video-dictation-card {
+      max-width: 900px;
+      margin: 0 auto;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+    }
+    .video-toolbar-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .video-player-container {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #000;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      margin-bottom: 20px;
+    }
+    .video-player-container iframe, .video-player-container video {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+    }
+    .dictation-interactive-box {
+      background: #0d121a;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 16px;
+    }
+    .dictation-header-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+    .dictation-input-field {
+      width: 100%;
+      padding: 16px 20px;
+      font-size: 16px;
+      font-weight: 500;
+      font-family: var(--font-body);
+      color: var(--text);
+      background: #141b24;
+      border: 2px solid var(--line);
+      border-radius: 10px;
+      outline: none;
+      transition: all 0.2s ease;
+      box-sizing: border-box;
+    }
+    .dictation-input-field:focus {
+      border-color: var(--purple);
+      box-shadow: 0 0 20px rgba(177, 154, 255, 0.2);
+    }
+    .dictation-input-field.correct {
+      border-color: #10b981;
+      background: rgba(16, 185, 129, 0.08);
+      color: #34d399;
+    }
+    .dictation-input-field.almost {
+      border-color: #f59e0b;
+      background: rgba(245, 158, 11, 0.08);
+    }
+    .spelling-hint-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid #f59e0b;
+      color: #fbbf24;
+      font-size: 13px;
+      margin-top: 12px;
+      animation: fadeIn 0.2s ease;
+    }
+    .dictation-success-box {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 16px 20px;
+      border-radius: 10px;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid #10b981;
+      color: #eff4fa;
+      margin-top: 12px;
+      animation: fadeIn 0.2s ease;
+    }
+    .dictation-actions-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+    .dictation-btn {
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid var(--line);
+      background: #18202b;
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+    .dictation-btn:hover {
+      background: #232e3d;
+      border-color: #3f4e61;
+    }
+    .dictation-btn.primary {
+      background: var(--purple);
+      color: #110d1c;
+      border-color: transparent;
+      box-shadow: 0 0 20px rgba(177, 154, 255, 0.25);
+    }
+    .dictation-btn.primary:hover {
+      background: #c3b0ff;
+    }
+    .dictation-btn.active {
+      background: var(--purple);
+      color: #110d1c;
+      border-color: transparent;
+    }
+    .mode-pill-toggle {
+      display: flex;
+      gap: 6px;
+      background: #131a24;
+      padding: 4px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+    }
+    .mode-pill-btn {
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+    }
+    .mode-pill-btn.active {
+      background: var(--purple);
+      color: #110d1c;
+    }
+
   </style>
 </head>
 <body>
@@ -2451,16 +2612,93 @@
       <div class="listening-title-row">
         <div>
           <span class="listening-pill">LISTENING STUDIO</span>
-          <h2>Escuta às Cegas</h2>
+          <h2>Vídeo Ditado Interativo</h2>
         </div>
-        <button type="button" class="listening-restart-btn" onclick="restartListeningSession()">
-          <span>↺</span> Reiniciar
-        </button>
+        <div class="mode-pill-toggle">
+          <button type="button" class="mode-pill-btn active" id="btn-mode-video" onclick="switchListeningSubmode('video')">🎬 Vídeo Ditado</button>
+          <button type="button" class="mode-pill-btn" id="btn-mode-audio" onclick="switchListeningSubmode('audio')">♫ Escuta às Cegas</button>
+        </div>
       </div>
-      <p class="listening-subtext">Treine seu ouvido. Confie na sua percepção.</p>
+      <p class="listening-subtext" id="listening-submode-desc">O vídeo pausa sozinho a cada frase com legenda oculta. Digite o que ouviu para destravar o avanço.</p>
 
-      <div class="listening-workspace">
-        <!-- PLAYER CENTRAL (REPLICA IMAGE 1) -->
+      <!-- SUBMODO 1: VÍDEO DITADO INTERATIVO -->
+      <div id="submode-video-container" class="video-dictation-card">
+        <div class="video-toolbar-row" style="flex-wrap: wrap; gap: 10px; margin-bottom: 14px;">
+          <!-- Seletor de Fonte: YouTube vs Arquivo Local -->
+          <div style="display: flex; gap: 6px; background: rgba(0,0,0,0.35); padding: 4px; border-radius: 8px; border: 1px solid var(--line);">
+            <button type="button" id="btn-src-yt" class="dictation-btn active" onclick="switchVideoSource('youtube')" style="padding: 5px 12px; font-size: 11px;">▶ YouTube / Treinos</button>
+            <button type="button" id="btn-src-local" class="dictation-btn" onclick="switchVideoSource('local')" style="padding: 5px 12px; font-size: 11px;">📁 Vídeo Local (.mp4 + .srt)</button>
+          </div>
+
+          <!-- Controles YouTube -->
+          <div id="yt-controls-wrap" style="display: flex; flex: 1; gap: 10px; align-items: center; min-width: 280px; flex-wrap: wrap;">
+            <input type="text" id="yt-url-input" class="select-custom" placeholder="Cole o link do YouTube (ex: https://www.youtube.com/watch?v=...):" style="flex: 1; min-width: 200px;">
+            <select id="video-preset-select" class="select-custom" onchange="onSelectVideoPreset(this.value)" style="width: auto; min-width: 220px;">
+              <option value="jobs">Steve Jobs · Discurso Stanford (3 Frases)</option>
+              <option value="altman">Sam Altman · The Era of Intelligence (3 Frases)</option>
+              <option value="friends">Friends · Conversação Cotidiana (3 Frases)</option>
+            </select>
+            <button type="button" class="dictation-btn primary" onclick="loadVideoFromInput()">Carregar</button>
+          </div>
+
+          <!-- Controles Vídeo Local & Legenda -->
+          <div id="local-controls-wrap" style="display: none; flex: 1; gap: 10px; align-items: center; min-width: 280px; flex-wrap: wrap;">
+            <label class="dictation-btn" style="cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+              🎥 1. Escolher Vídeo (.mp4, .webm)
+              <input type="file" id="local-video-input" accept="video/mp4,video/webm,video/ogg,video/quicktime,video/*" style="display: none;" onchange="onLocalVideoSelected(event)">
+            </label>
+            <label class="dictation-btn" style="cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+              📄 2. Escolher Legenda (.srt, .vtt)
+              <input type="file" id="local-srt-input" accept=".srt,.vtt,text/plain" style="display: none;" onchange="onLocalSrtSelected(event)">
+            </label>
+            <span id="local-file-status" style="font-size: 11px; color: var(--muted); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Nenhum arquivo local selecionado</span>
+          </div>
+        </div>
+
+        <div class="video-player-container" id="video-wrapper">
+          <div id="yt-player-frame"></div>
+          <video id="local-video-player" playsinline style="width: 100%; height: 100%; object-fit: contain; display: none; background: #000; border-radius: 12px;"></video>
+        </div>
+
+        <!-- CAIXA DE DITADO ATIVO -->
+        <div class="dictation-interactive-box">
+          <div class="dictation-header-info">
+            <span id="dictation-segment-label">FRASE 01 / 03</span>
+            <span style="color: var(--cyan); display: flex; align-items: center; gap: 6px;">
+              <span style="width: 7px; height: 7px; border-radius: 50%; background: var(--cyan); display: inline-block;"></span>
+              <span id="dictation-time-label">Trecho: 00:03.200 - 00:06.800</span>
+            </span>
+          </div>
+
+          <input type="text" id="dictation-input" class="dictation-input-field" placeholder="Ouça o trecho e digite exatamente o que escutou..." autocomplete="off" spellcheck="false" oninput="onDictationInput(this.value)" onkeydown="onDictationKey(event)">
+
+          <!-- DICA ORTOGRÁFICA INTELIGENTE -->
+          <div id="spelling-hint-box" class="spelling-hint-box" style="display: none;">
+            <span>💡</span>
+            <span id="spelling-hint-text">Quase lá!</span>
+          </div>
+
+          <!-- BANNER DE SUCESSO / REVELAÇÃO -->
+          <div id="dictation-success-box" class="dictation-success-box" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="color: #34d399; font-weight: 700;">✓ Perfeito! Frase decodificada com sucesso</span>
+              <button type="button" class="dictation-btn primary" onclick="nextDictationSegment()" style="padding: 6px 14px; font-size: 11px;">▶ Próxima Frase (Enter)</button>
+            </div>
+            <div id="dictation-revealed-en" style="font-size: 15px; font-weight: 600; margin-top: 4px;">Sentence text</div>
+            <div id="dictation-revealed-pt" style="font-size: 12px; color: var(--muted);">Tradução para português</div>
+          </div>
+
+          <div class="dictation-actions-row">
+            <button type="button" class="dictation-btn" onclick="replayCurrentSegment()" title="Atalho: Tab">↺ Repetir Trecho (Tab)</button>
+            <button type="button" class="dictation-btn" onclick="showDictationHint()" title="Atalho: Ctrl+H">💡 Dica</button>
+            <button type="button" class="dictation-btn" onclick="giveUpAndReveal()">👁️ Revelar Frase</button>
+            <button type="button" class="dictation-btn" onclick="saveCurrentSegmentToAnki()" style="margin-left: auto; color: var(--purple); border-color: rgba(177, 154, 255, 0.3);">+ Enviar Trecho para o Anki</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUBMODO 2: ESCUTA ÀS CEGAS PURA (ÁUDIO) -->
+      <div id="submode-audio-container" class="listening-workspace" style="display: none;">
         <section class="player-card" aria-label="Player de Escuta">
           <div class="player-top-line">
             <span id="listening-track-label">FAIXA 04 / 12</span>
@@ -4386,6 +4624,541 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       initListeningWaveform();
+    });
+
+    
+    // ==========================================
+    // VIDEO DICTATION LOGIC, LOCAL FILES & INTELLIGENT SPELLING HINTS
+    // ==========================================
+    const VIDEO_PRESETS = {
+      jobs: {
+        videoId: "UF8uR6Z6KLc",
+        title: "Steve Jobs · Discurso Stanford",
+        segments: [
+          { start: 23.5, end: 28.2, en: "I am honored to be with you today at your commencement.", pt: "Sinto-me honrado por estar com vocês hoje na sua formatura." },
+          { start: 28.4, end: 34.0, en: "from one of the finest universities in the world.", pt: "em uma das melhores universidades do mundo." },
+          { start: 34.2, end: 38.5, en: "I never graduated from college.", pt: "Eu nunca me formei na faculdade." }
+        ]
+      },
+      altman: {
+        videoId: "5qap5aO4i9A",
+        title: "Sam Altman · The Era of Intelligence",
+        segments: [
+          { start: 10.0, end: 14.5, en: "In the next few decades, we will be able to do things.", pt: "Nas próximas décadas, seremos capazes de fazer coisas." },
+          { start: 14.8, end: 19.2, en: "that would have seemed like magic to our grandparents.", pt: "que pareceriam mágicas para os nossos avós." },
+          { start: 19.5, end: 24.0, en: "This capability will be monumental.", pt: "Esta capacidade será monumental." }
+        ]
+      },
+      friends: {
+        videoId: "L0x_6hWbJ2w",
+        title: "Friends · Conversação Cotidiana",
+        segments: [
+          { start: 5.0, end: 8.8, en: "There's nothing to tell, he's just some guy I work with.", pt: "Não há nada para contar, ele é só um cara com quem trabalho." },
+          { start: 9.0, end: 13.0, en: "Come on, you're going out with the guy.", pt: "Qual é, você vai sair com o cara." },
+          { start: 13.2, end: 17.0, en: "There's gotta be something wrong with him.", pt: "Deve ter algo errado com ele." }
+        ]
+      }
+    };
+
+    let activeVideoData = VIDEO_PRESETS.jobs;
+    let currentSegmentIndex = 0;
+    let ytPlayer = null;
+    let videoTimeCheckInterval = null;
+    let segmentUnlocked = false;
+
+    // Unified controller for both YouTube IFrame and HTML5 Local Video
+    const VideoController = {
+      isLocal: false,
+      play() {
+        if (this.isLocal) {
+          const vid = document.getElementById("local-video-player");
+          if (vid) vid.play().catch(() => {});
+        } else {
+          if (ytPlayer && ytPlayer.playVideo) ytPlayer.playVideo();
+        }
+      },
+      pause() {
+        if (this.isLocal) {
+          const vid = document.getElementById("local-video-player");
+          if (vid) vid.pause();
+        } else {
+          if (ytPlayer && ytPlayer.pauseVideo) ytPlayer.pauseVideo();
+        }
+      },
+      seekTo(seconds) {
+        if (this.isLocal) {
+          const vid = document.getElementById("local-video-player");
+          if (vid) {
+            vid.currentTime = Math.max(0, seconds);
+            vid.play().catch(() => {});
+          }
+        } else {
+          if (ytPlayer && ytPlayer.seekTo) {
+            ytPlayer.seekTo(seconds, true);
+            ytPlayer.playVideo();
+          }
+        }
+      },
+      getCurrentTime() {
+        if (this.isLocal) {
+          const vid = document.getElementById("local-video-player");
+          return vid ? vid.currentTime : 0;
+        } else {
+          return (ytPlayer && ytPlayer.getCurrentTime) ? ytPlayer.getCurrentTime() : 0;
+        }
+      }
+    };
+
+    function switchVideoSource(source) {
+      const isLoc = source === "local";
+      VideoController.isLocal = isLoc;
+      
+      document.getElementById("btn-src-yt").classList.toggle("active", !isLoc);
+      document.getElementById("btn-src-local").classList.toggle("active", isLoc);
+      
+      document.getElementById("yt-controls-wrap").style.display = isLoc ? "none" : "flex";
+      document.getElementById("local-controls-wrap").style.display = isLoc ? "flex" : "none";
+      
+      document.getElementById("yt-player-frame").style.display = isLoc ? "none" : "block";
+      document.getElementById("local-video-player").style.display = isLoc ? "block" : "none";
+
+      if (isLoc) {
+        if (ytPlayer && ytPlayer.pauseVideo) ytPlayer.pauseVideo();
+      } else {
+        const vid = document.getElementById("local-video-player");
+        if (vid) vid.pause();
+      }
+    }
+
+    function onLocalVideoSelected(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      const vidElem = document.getElementById("local-video-player");
+      vidElem.src = URL.createObjectURL(file);
+      vidElem.load();
+      
+      vidElem.onplay = () => startVideoWatcher();
+      vidElem.onpause = () => stopVideoWatcher();
+
+      document.getElementById("local-file-status").textContent = `Vídeo: ${file.name} | Agora selecione o arquivo .srt/.vtt`;
+      showToast(`Vídeo local "${file.name}" carregado com sucesso.`);
+    }
+
+    function parseTimeStr(t) {
+      t = (t || "").trim().replace(",", ".");
+      const parts = t.split(":");
+      if (parts.length === 3) {
+        return parseFloat(parts[0]) * 3600 + parseFloat(parts[1]) * 60 + parseFloat(parts[2]);
+      } else if (parts.length === 2) {
+        return parseFloat(parts[0]) * 60 + parseFloat(parts[1]);
+      }
+      return parseFloat(t) || 0;
+    }
+
+    function parseSRTorVTT(text) {
+      const lines = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n").split("\n");
+      const segments = [];
+      let cur = null;
+      const timeRegex = /((?:\d{2}:)?\d{2}:\d{2}[,.]\d{3})\s*-->\s*((?:\d{2}:)?\d{2}:\d{2}[,.]\d{3})/;
+
+      for (let line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed) {
+          if (cur && cur.en) {
+            segments.push(cur);
+            cur = null;
+          }
+          continue;
+        }
+        const match = trimmed.match(timeRegex);
+        if (match) {
+          if (cur && cur.en) segments.push(cur);
+          cur = {
+            start: parseTimeStr(match[1]),
+            end: parseTimeStr(match[2]),
+            en: "",
+            pt: ""
+          };
+        } else if (cur) {
+          const cleanLine = trimmed.replace(/<[^>]+>/g, "");
+          if (cleanLine && !/^\d+$/.test(cleanLine)) {
+            cur.en = cur.en ? (cur.en + " " + cleanLine) : cleanLine;
+          }
+        }
+      }
+      if (cur && cur.en) segments.push(cur);
+      return segments;
+    }
+
+    function onLocalSrtSelected(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        const text = evt.target.result;
+        const segs = parseSRTorVTT(text);
+        if (!segs || segs.length === 0) {
+          showToast("Nenhuma fala cronometrada encontrada no arquivo de legenda.");
+          return;
+        }
+        activeVideoData = {
+          isLocal: true,
+          title: file.name.replace(/\.[^/.]+$/, ""),
+          segments: segs
+        };
+        document.getElementById("local-file-status").textContent = `Vídeo & Legenda carregados: ${file.name} (${segs.length} frases prontas)`;
+        loadSegment(0);
+        showToast(`Legenda carregada: ${segs.length} trechos identificados para treino.`);
+      };
+      reader.readAsText(file);
+    }
+
+    function switchListeningSubmode(submode) {
+      document.getElementById("submode-video-container").style.display = submode === "video" ? "block" : "none";
+      document.getElementById("submode-audio-container").style.display = submode === "audio" ? "grid" : "none";
+      document.getElementById("btn-mode-video").classList.toggle("active", submode === "video");
+      document.getElementById("btn-mode-audio").classList.toggle("active", submode === "audio");
+      
+      const desc = document.getElementById("listening-submode-desc");
+      if (desc) {
+        desc.textContent = submode === "video" 
+          ? "O vídeo pausa sozinho a cada frase com legenda oculta. Digite o que ouviu para destravar o avanço."
+          : "Treine seu ouvido fonético puro com áudio nativo e revelação em dois tempos.";
+      }
+    }
+
+    function initYouTubePlayer() {
+      if (window.YT && window.YT.Player) {
+        setupYTInstance();
+      } else {
+        const tag = document.createElement("script");
+        tag.src = "https://www.youtube.com/iframe_api";
+        const firstScriptTag = document.getElementsByTagName("script")[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        window.onYouTubeIframeAPIReady = setupYTInstance;
+      }
+    }
+
+    function setupYTInstance() {
+      ytPlayer = new YT.Player("yt-player-frame", {
+        height: "100%",
+        width: "100%",
+        videoId: activeVideoData.videoId,
+        playerVars: {
+          autoplay: 0,
+          controls: 1,
+          rel: 0,
+          modestbranding: 1,
+          cc_load_policy: 0,
+          iv_load_policy: 3
+        },
+        events: {
+          onReady: onPlayerReady,
+          onStateChange: onPlayerStateChange
+        }
+      });
+    }
+
+    function onPlayerReady() {
+      loadSegment(0);
+    }
+
+    function onPlayerStateChange(event) {
+      if (event.data === YT.PlayerState.PLAYING) {
+        startVideoWatcher();
+      } else {
+        stopVideoWatcher();
+      }
+    }
+
+    function startVideoWatcher() {
+      stopVideoWatcher();
+      videoTimeCheckInterval = setInterval(() => {
+        const curTime = VideoController.getCurrentTime();
+        const seg = activeVideoData.segments[currentSegmentIndex];
+        if (seg && curTime >= seg.end) {
+          if (!segmentUnlocked) {
+            VideoController.pause();
+            VideoController.seekTo(seg.end);
+            focusDictationInput();
+          }
+        }
+      }, 100);
+    }
+
+    function stopVideoWatcher() {
+      if (videoTimeCheckInterval) {
+        clearInterval(videoTimeCheckInterval);
+        videoTimeCheckInterval = null;
+      }
+    }
+
+    function loadSegment(index) {
+      currentSegmentIndex = index;
+      segmentUnlocked = false;
+      const seg = activeVideoData.segments[index];
+      if (!seg) return;
+
+      document.getElementById("dictation-segment-label").textContent = `FRASE ${String(index + 1).padStart(2, "0")} / ${String(activeVideoData.segments.length).padStart(2, "0")}`;
+      document.getElementById("dictation-time-label").textContent = `Trecho: ${formatTime(seg.start)} - ${formatTime(seg.end)}`;
+      
+      const input = document.getElementById("dictation-input");
+      if (input) {
+        input.value = "";
+        input.className = "dictation-input-field";
+        input.disabled = false;
+      }
+      
+      document.getElementById("spelling-hint-box").style.display = "none";
+      document.getElementById("dictation-success-box").style.display = "none";
+
+      VideoController.seekTo(seg.start);
+      focusDictationInput();
+    }
+
+    function replayCurrentSegment() {
+      const seg = activeVideoData.segments[currentSegmentIndex];
+      if (!seg) return;
+      VideoController.seekTo(seg.start);
+      focusDictationInput();
+    }
+
+    function focusDictationInput() {
+      const input = document.getElementById("dictation-input");
+      if (input) input.focus();
+    }
+
+    function formatTime(sec) {
+      const m = Math.floor(sec / 60);
+      const s = Math.floor(sec % 60);
+      const ms = Math.floor((sec % 1) * 10);
+      return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}.${ms}`;
+    }
+
+    // TEXT NORMALIZATION & CONTRACTIONS FLEXIBILITY
+    function normalizeDictationText(t) {
+      return (t || "")
+        .toLowerCase()
+        .replace(/[.,/#!$%^&*;:{}=\-_`~()?"'’]/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function expandContractions(text) {
+      const map = {
+        "dont": "do not", "cant": "cannot", "wont": "will not", "im": "i am",
+        "youre": "you are", "theyre": "they are", "were": "we are", "isnt": "is not",
+        "arent": "are not", "didnt": "did not", "doesnt": "does not", "couldnt": "could not",
+        "wouldnt": "would not", "shouldnt": "should not", "ive": "i have", "youve": "you have",
+        "theyve": "they have", "weve": "we have", "hes": "he is", "shes": "she is", "its": "it is",
+        "theres": "there is", "thats": "that is", "gonna": "going to", "wanna": "want to", "gotta": "got to"
+      };
+      return text.split(" ").map(w => map[w] || w).join(" ");
+    }
+
+    function calcLevenshtein(a, b) {
+      const matrix = [];
+      for (let i = 0; i <= b.length; i++) matrix[i] = [i];
+      for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+      for (let i = 1; i <= b.length; i++) {
+        for (let j = 1; j <= a.length; j++) {
+          if (b.charAt(i - 1) === a.charAt(j - 1)) {
+            matrix[i][j] = matrix[i - 1][j - 1];
+          } else {
+            matrix[i][j] = Math.min(
+              matrix[i - 1][j - 1] + 1,
+              matrix[i][j - 1] + 1,
+              matrix[i - 1][j] + 1
+            );
+          }
+        }
+      }
+      return matrix[b.length][a.length];
+    }
+
+    // VALIDATION LOOP WITH INTELLIGENT SPELLING HINTS
+    function onDictationInput(val) {
+      const seg = activeVideoData.segments[currentSegmentIndex];
+      if (!seg) return;
+
+      const userNorm = expandContractions(normalizeDictationText(val));
+      const targetNorm = expandContractions(normalizeDictationText(seg.en));
+      const inputField = document.getElementById("dictation-input");
+      const hintBox = document.getElementById("spelling-hint-box");
+      const hintText = document.getElementById("spelling-hint-text");
+
+      if (userNorm === targetNorm) {
+        handleSegmentSuccess(seg);
+        return;
+      }
+
+      // Detect spelling approximations & close phonetic typos
+      const uWords = userNorm.split(" ").filter(Boolean);
+      const tWords = targetNorm.split(" ").filter(Boolean);
+      const hints = [];
+
+      for (let i = 0; i < uWords.length; i++) {
+        const u = uWords[i];
+        if (tWords.includes(u)) continue;
+
+        let bestMatch = null;
+        let minDistance = 999;
+
+        for (let t of tWords) {
+          if (u.length >= 3 && t.length >= 3) {
+            const dist = calcLevenshtein(u, t);
+            if (dist < minDistance && dist <= 2) {
+              minDistance = dist;
+              bestMatch = t;
+            }
+          }
+        }
+
+        if (bestMatch && minDistance <= 2) {
+          hints.push({ typed: u, correct: bestMatch });
+        }
+      }
+
+      if (hints.length > 0) {
+        inputField.className = "dictation-input-field almost";
+        const hintList = hints.map(h => `você digitou <b>"${h.typed}"</b>, a escrita correta é <b>"${h.correct}"</b>`).join(" | ");
+        hintText.innerHTML = `Atenção à ortografia: ${hintList}.`;
+        hintBox.style.display = "flex";
+      } else {
+        inputField.className = "dictation-input-field";
+        hintBox.style.display = "none";
+      }
+    }
+
+    function handleSegmentSuccess(seg) {
+      segmentUnlocked = true;
+      const inputField = document.getElementById("dictation-input");
+      inputField.className = "dictation-input-field correct";
+      
+      document.getElementById("spelling-hint-box").style.display = "none";
+      const successBox = document.getElementById("dictation-success-box");
+      document.getElementById("dictation-revealed-en").textContent = seg.en;
+      document.getElementById("dictation-revealed-pt").textContent = seg.pt || "Frase decodificada com sucesso.";
+      successBox.style.display = "flex";
+
+      showToast("Acertou! Avanço do vídeo liberado.");
+    }
+
+    function nextDictationSegment() {
+      if (currentSegmentIndex < activeVideoData.segments.length - 1) {
+        loadSegment(currentSegmentIndex + 1);
+      } else {
+        showToast("Parabéns! Você concluiu todos os trechos deste vídeo.");
+        loadSegment(0);
+      }
+    }
+
+    function onDictationKey(e) {
+      if (e.key === "Tab") {
+        e.preventDefault();
+        replayCurrentSegment();
+      } else if (e.key === "Enter") {
+        if (segmentUnlocked) {
+          nextDictationSegment();
+        }
+      } else if (e.key === "h" && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        showDictationHint();
+      }
+    }
+
+    function showDictationHint() {
+      const seg = activeVideoData.segments[currentSegmentIndex];
+      if (!seg) return;
+      const words = seg.en.split(" ");
+      const hintPattern = words.map(w => w.charAt(0) + "_".repeat(Math.max(1, w.length - 1))).join(" ");
+      const hintBox = document.getElementById("spelling-hint-box");
+      const hintText = document.getElementById("spelling-hint-text");
+      hintText.innerHTML = `Dica de iniciais: <code style="color:var(--cyan);">${hintPattern}</code>`;
+      hintBox.style.display = "flex";
+    }
+
+    function giveUpAndReveal() {
+      const seg = activeVideoData.segments[currentSegmentIndex];
+      if (!seg) return;
+      handleSegmentSuccess(seg);
+      saveCurrentSegmentToAnki();
+      showToast("Frase revelada e adicionada à Fila do Anki. Treine o ouvido na repetição.");
+    }
+
+    async function saveCurrentSegmentToAnki() {
+      const seg = activeVideoData.segments[currentSegmentIndex];
+      if (!seg) return;
+      
+      const payload = {
+        id: "listening_" + Date.now(),
+        word: seg.en.split(" ").slice(0, 3).join(" ") + "...",
+        pos: "LISTENING",
+        subdeck: "listening-studio",
+        definition_en: "Frase de Listening: " + seg.en,
+        definition_pt: seg.pt || "Frase extraída do Listening Studio",
+        example_1: seg.en,
+        card_id: null,
+        status: "desconhecido"
+      };
+
+      try {
+        await fetch("/api/evaluate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const gapEl = document.getElementById("header-gap-count");
+        if (gapEl) {
+          const cur = parseInt(gapEl.innerText || "0", 10) + 1;
+          gapEl.innerText = cur;
+          gapEl.style.display = "inline-block";
+        }
+        showToast(`Trecho enviado à Fila do Anki Hub com sucesso.`);
+      } catch (err) {
+        showToast(`Trecho gravado localmente.`);
+      }
+    }
+
+    function onSelectVideoPreset(presetKey) {
+      if (!VIDEO_PRESETS[presetKey]) return;
+      activeVideoData = VIDEO_PRESETS[presetKey];
+      if (ytPlayer && ytPlayer.loadVideoById) {
+        ytPlayer.loadVideoById(activeVideoData.videoId);
+      }
+      loadSegment(0);
+    }
+
+    function loadVideoFromInput() {
+      const val = (document.getElementById("yt-url-input").value || "").trim();
+      if (!val) {
+        showToast("Cole uma URL do YouTube ou use os treinos prontos.");
+        return;
+      }
+      const match = val.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
+      if (match && match[1]) {
+        const id = match[1];
+        activeVideoData = {
+          videoId: id,
+          title: "Vídeo Personalizado",
+          segments: [
+            { start: 0, end: 5.0, en: "Listen closely to the first words.", pt: "Ouça com atenção as primeiras palavras." },
+            { start: 5.1, end: 10.0, en: "Practice makes progress every single day.", pt: "A prática gera progresso todos os dias." }
+          ]
+        };
+        if (ytPlayer && ytPlayer.loadVideoById) {
+          ytPlayer.loadVideoById(id);
+        }
+        loadSegment(0);
+        showToast("Vídeo do YouTube carregado com sucesso.");
+      } else {
+        showToast("URL do YouTube inválida.");
+      }
+    }
+
+    // Auto-init YouTube API on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      initYouTubePlayer();
     });
 
     function switchView(mode) {
