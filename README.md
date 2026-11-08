@@ -1,29 +1,54 @@
-# ⚡ Lexis App — Ecossistema de Aquisição de Idiomas & Vocabulário Ativo
+# Lexis Suite — Ecossistema de Aquisicao de Idiomas & Vocabulario Ativo
 
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/lucasousa-emds/lexis-app)
-
-Plataforma inteligente de alta performance para triagem rápida de vocabulário, comprehensible input ($i+1$), absorção de estruturas nativas (Phrasal Verbs, Collocations, Idioms) e recuperação espaçada no Anki.
+Plataforma web modular para triagem acelerada de vocabulario em ingles (MWLD 01k-10k), absorcao de estruturas nativas (Phrasal Verbs, Collocations, Idioms), treino auditivo (Listening Studio: Ditado Interativo com Video e Escuta as Cegas), curadoria cognitiva com TypeSafe Jev e injecao direta no Anki Desktop via AnkiConnect.
 
 ---
 
-## 🚀 Como Colocar no Ar no Render (Passo Único)
+## Arquitetura de Modulos
 
-1. Clique no botão acima **"Deploy to Render"** (ou acesse [dashboard.render.com](https://dashboard.render.com)).
-2. Conecte sua conta GitHub e selecione o repositório **`lucasousa-emds/lexis-app`**.
-3. O Render lerá o arquivo `render.yaml` automaticamente.
-4. Adicione a variável de ambiente:
-   * `TYPESAFE_API_KEY`: *(Sua chave da TypeSafe para o Jev)*
-5. Clique em **Apply** / **Create Web Service**.
-6. Pronto! Sua URL definitiva e permanente estará ativa (ex: `https://lexis-app.onrender.com`).
+1. **Vocabulario & Chunks (`vocab_review_app.html` + `vocab_review_server.py`):**
+   - Base indexada: 66.332 acepcoes MWLD + 13.531 estruturas/chunks + 14.212 sentencas Mairo Vergara.
+   - Modo Foco 1-por-1 e Modo Grade com deteccao preventiva de falsos cognatos e curadoria automatica de frases $i+1$ via TypeSafe Jev (`typesafe-sdk`).
+2. **Listening Studio:**
+   - Ditado Ativo com Video: suporte a YouTube (`/api/youtube-transcript` com fusao sintatica de micro-legendas) e arquivos locais (`.mp4`/`.webm` + `.srt`/`.vtt`), Word Slots em tempo real, dicas ortograficas (Levenshtein) e controle de velocidade.
+   - Escuta as Cegas (Blind Listening): reproducao auditiva com revelacao em dois estagios (transcricao EN -> traducao PT).
+3. **Anki Hub & Sincronizacao Bidirecional:**
+   - Fila qualificada de Gaps com salvaguarda $i+1$ e injecao via AnkiConnect (`http://127.0.0.1:8765`).
+   - Sincronizacao bidirecional com Google Cloud Run (`/api/sync-cloud` e `/api/import-knowledge-map`).
 
 ---
 
-## 🔄 Sincronização com o Anki Desktop
+## Execucao Local (Ambiente Isolado `.venv`)
 
-Quando você fizer revisões ou triagens no celular (via link da nuvem), basta sincronizar os novos Gaps para o seu Anki Desktop no computador com um comando:
-
-```bash
-python3 "/home/lucas-sousa/anki cards/sync_from_cloud.py" https://SEU-APP.onrender.com
+```powershell
+# Windows (PowerShell)
+python -m venv .venv
+.\.venv\Scripts\pip install -r requirements.txt pytest
+.\.venv\Scripts\python vocab_review_server.py
 ```
 
-O script puxa todas as avaliações da nuvem, consolida o mapa local e injeta os flashcards prontos no baralho `🇬🇧 Inglês::🎯 Meu Estudo Ativo`.
+```bash
+# Linux / macOS
+python3 -m venv .venv
+./.venv/bin/pip install -r requirements.txt pytest
+./.venv/bin/python vocab_review_server.py
+```
+
+- **Interface Local:** `http://127.0.0.1:5050`
+- **Variaveis de Ambiente (`.env`):**
+  - `TYPESAFE_API_KEY`: Chave da API TypeSafe para julgamentos do modelo Jev.
+  - `LEXIS_CLOUD_URL`: URL da instancia Google Cloud Run para sync bidirecional.
+
+---
+
+## Testes Automatizados
+
+```powershell
+.\.venv\Scripts\pytest tests/
+```
+
+---
+
+## Deploy em Container (Google Cloud Run)
+
+O repositorio contem `Dockerfile` e `.dockerignore` prontos para build limpo (excluindo `.env`, `.venv`, `.git`, caches e artefatos de documentacao/testes).

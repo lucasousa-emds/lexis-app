@@ -1,7 +1,9 @@
+.venv/
 __pycache__/
+.pytest_cache/
 *.pyc
 *.pyo
 .env
 *.log
 *.tmp
-.git
+*.bak*

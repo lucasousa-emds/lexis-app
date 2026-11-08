@@ -28320,7 +28320,9 @@
           "status": "desconhecido",
           "frase_exemplo": "I am honored to be with you today for your commencement.",
           "frase_i1": "I am honored to be with you today for your commencement.",
-          "confirmado_em": "2026-11-01T13:44:44.735742"
+          "confirmado_em": "2026-11-01T13:44:44.735742",
+          "card_id": 1793741066470,
+          "injetado_em": "2026-11-03T18:24:26.518236"
         }
       ],
       "collocations": [],
@@ -28334,5 +28336,5 @@
     "acepcoes_desconhecidas": 248,
     "acepcoes_duvida": 102
   },
-  "ultima_atualizacao": "2026-11-01T13:44:44.736249"
+  "ultima_atualizacao": "2026-11-03T18:24:26.518458"
 }

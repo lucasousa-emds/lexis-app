@@ -1,2 +1,2 @@
-typesafe-ai>=0.1.0
-youtube-transcript-api>=0.6.2
+typesafe-sdk>=0.1.0
+youtube-transcript-api>=1.2.4
