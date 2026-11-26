@@ -32,7 +32,9 @@ if hasattr(sys.stdout, "reconfigure"):
 
 PORT = int(os.environ.get("PORT", 5050))
 WORKSPACE_DIR = os.path.dirname(os.path.abspath(__file__))
-MAP_FILE = os.path.join(WORKSPACE_DIR, "knowledge_map_english.json")
+PERSISTENT_DATA_DIR = os.environ.get("LEXIS_DATA_DIR", "").strip()
+SEED_MAP_FILE = os.path.join(WORKSPACE_DIR, "knowledge_map_english.json")
+MAP_FILE = os.path.join(PERSISTENT_DATA_DIR, "knowledge_map_english.json") if PERSISTENT_DATA_DIR else SEED_MAP_FILE
 MWLD_FILE = os.path.join(WORKSPACE_DIR, "mwld_source", "notes.csv")
 TRANS_CACHE_FILE = os.path.join(WORKSPACE_DIR, "mwld_source", "translations_cache.json")
 JEV_CACHE_FILE = os.path.join(WORKSPACE_DIR, "mwld_source", "jev_cache.json")
@@ -386,11 +388,32 @@ def translation_worker():
 
 def load_knowledge_map():
     global KNOWLEDGE_MAP
-    if not os.path.exists(MAP_FILE):
+    if PERSISTENT_DATA_DIR:
+        os.makedirs(PERSISTENT_DATA_DIR, exist_ok=True)
+        if not os.path.exists(MAP_FILE) and os.path.exists(SEED_MAP_FILE):
+            try:
+                with open(SEED_MAP_FILE, "r", encoding="utf-8") as src_f:
+                    seed_payload = src_f.read()
+                tmp_seed = MAP_FILE + ".seed.tmp"
+                with open(tmp_seed, "w", encoding="utf-8") as dst_f:
+                    dst_f.write(seed_payload)
+                os.replace(tmp_seed, MAP_FILE)
+            except Exception as e_seed:
+                print(f"[AVISO] Falha ao inicializar seed em LEXIS_DATA_DIR: {e_seed}")
+    target_path = MAP_FILE if os.path.exists(MAP_FILE) else SEED_MAP_FILE
+    if not os.path.exists(target_path):
         KNOWLEDGE_MAP = {"usuario": "Lucas", "mapa_vocabulario": {}, "estatisticas": {}}
         return
-    with open(MAP_FILE, "r", encoding="utf-8") as f:
+    with open(target_path, "r", encoding="utf-8") as f:
         KNOWLEDGE_MAP = json.load(f)
+    if PERSISTENT_DATA_DIR and os.path.exists(MAP_FILE) and os.path.exists(SEED_MAP_FILE) and os.path.abspath(MAP_FILE) != os.path.abspath(SEED_MAP_FILE):
+        try:
+            with open(SEED_MAP_FILE, "r", encoding="utf-8") as sf:
+                seed_data = json.load(sf)
+            if merge_vocabulary_maps(KNOWLEDGE_MAP.setdefault("mapa_vocabulario", {}), seed_data.get("mapa_vocabulario", {})) > 0:
+                save_knowledge_map_memory()
+        except Exception:
+            pass
 
 def save_knowledge_map_memory():
     """Atualiza as estatísticas em memória instantaneamente (0.02ms) e marca para flush em disco."""
@@ -1831,6 +1854,12 @@ class RequestHandler(BaseHTTPRequestHandler):
             self.handle_api_subdecks()
         elif path == "/api/gaps":
             self.handle_api_gaps()
+        elif path == "/api/analytics":
+            self.handle_api_analytics()
+        elif path == "/api/anki-hub":
+            self.handle_api_anki_hub()
+        elif path == "/api/immersion-playlist":
+            self.handle_api_immersion_playlist(query)
         elif path == "/api/export-knowledge-map":
             self.send_json(KNOWLEDGE_MAP)
         elif path == "/api/youtube-transcript":
@@ -2992,6 +3021,406 @@ class RequestHandler(BaseHTTPRequestHandler):
             "ready_count": ready_count,
             "waiting_count": waiting_count,
             "injected_count": injected_count
+        })
+
+    def handle_api_analytics(self):
+        vocab_map = KNOWLEDGE_MAP.get("mapa_vocabulario", {})
+        user_lvl = get_user_cefr_status()
+
+        total_known = 0
+        total_gaps = 0
+        total_doubts = 0
+        total_in_study = 0
+        injected_cards = 0
+        ready_i1 = 0
+        waiting_i1 = 0
+        pos_counts = {"verb": 0, "noun": 0, "adjective": 0, "adverb": 0, "chunk": 0, "other": 0}
+        daily_counts = {}
+
+        for termo, t_data in vocab_map.items():
+            st_gen = t_data.get("status_geral", "")
+            acs = t_data.get("acepcoes", [])
+            if not acs and st_gen:
+                if st_gen == "conhecido":
+                    total_known += 1
+                elif st_gen == "desconhecido":
+                    total_gaps += 1
+                elif st_gen == "duvida":
+                    total_doubts += 1
+                elif st_gen == "em_estudo":
+                    total_in_study += 1
+
+            for ac in acs:
+                st = ac.get("status", "")
+                if st == "conhecido":
+                    total_known += 1
+                elif st == "desconhecido":
+                    total_gaps += 1
+                elif st == "duvida":
+                    total_doubts += 1
+                elif st == "em_estudo":
+                    total_in_study += 1
+
+                if ac.get("card_id") or ac.get("injetado_em"):
+                    injected_cards += 1
+                elif st in ("desconhecido", "duvida"):
+                    frase = ac.get("frase_i1") or ac.get("frase_exemplo") or ""
+                    def_en = ac.get("definicao") or ""
+                    if is_valid_i1_sentence(frase, termo) and is_valid_definition(def_en):
+                        ready_i1 += 1
+                    else:
+                        waiting_i1 += 1
+
+                pos_raw = (ac.get("pos") or "").lower()
+                if " " in termo.strip() or "phrasal" in pos_raw or "idiom" in pos_raw or "collocation" in pos_raw:
+                    pos_counts["chunk"] += 1
+                elif "verb" in pos_raw:
+                    pos_counts["verb"] += 1
+                elif "noun" in pos_raw:
+                    pos_counts["noun"] += 1
+                elif "adj" in pos_raw:
+                    pos_counts["adjective"] += 1
+                elif "adv" in pos_raw:
+                    pos_counts["adverb"] += 1
+                else:
+                    pos_counts["other"] += 1
+
+                conf_dt = (ac.get("confirmado_em") or "")[:10]
+                if len(conf_dt) == 10 and conf_dt[4] == "-":
+                    daily_counts[conf_dt] = daily_counts.get(conf_dt, 0) + 1
+
+        def compute_band_metrics(subdeck_list):
+            bands = []
+            for s in subdeck_list:
+                entries = MWLD_BY_SUBDECK.get(s, [])
+                cefr = CEFR_INFO.get(s, {"code": "B1", "label": s, "desc": ""})
+                seen = set()
+                b_known = 0
+                b_gaps = 0
+                b_doubts = 0
+                b_injected = 0
+                for e in entries:
+                    w_low = e["word"].lower().strip()
+                    if w_low in PURE_FUNCTION_WORDS or w_low.startswith("-") or w_low.endswith("-"):
+                        continue
+                    pos_low = e.get("pos", "").lower()
+                    if "prefix" in pos_low or "suffix" in pos_low or "combining form" in pos_low:
+                        continue
+                    if w_low in seen:
+                        continue
+                    seen.add(w_low)
+                    if w_low in vocab_map:
+                        td = vocab_map[w_low]
+                        st = td.get("status_geral")
+                        has_inj = any(a.get("card_id") or a.get("injetado_em") for a in td.get("acepcoes", []))
+                        if has_inj:
+                            b_injected += 1
+                        if st == "conhecido":
+                            b_known += 1
+                        elif st == "desconhecido":
+                            b_gaps += 1
+                        elif st == "duvida":
+                            b_doubts += 1
+                        elif st == "em_estudo":
+                            b_known += 1
+                tot = len(seen)
+                eval_cnt = b_known + b_gaps + b_doubts
+                rem = max(0, tot - eval_cnt)
+                pct = round((eval_cnt / tot * 100), 1) if tot > 0 else 0.0
+                mastery_pct = round((b_known / eval_cnt * 100), 1) if eval_cnt > 0 else 0.0
+                bands.append({
+                    "subdeck": s,
+                    "cefr_code": cefr.get("code", ""),
+                    "label": cefr.get("label", s),
+                    "desc": cefr.get("desc", ""),
+                    "total": tot,
+                    "evaluated": eval_cnt,
+                    "known": b_known,
+                    "gaps": b_gaps,
+                    "doubts": b_doubts,
+                    "injected": b_injected,
+                    "remaining": rem,
+                    "percent": pct,
+                    "mastery_percent": mastery_pct
+                })
+            return bands
+
+        cefr_bands = compute_band_metrics(["01k", "02k", "03k", "04k", "05k", "06k", "07k", "08k", "09k", "10k"])
+        structures_bands = compute_band_metrics(["pv-top150", "pv-all", "collocations", "idioms"])
+
+        jev_total = len(JEV_CACHE)
+        jev_false_friends = sum(
+            1 for v in JEV_CACHE.values()
+            if isinstance(v, dict) and (v.get("cognate_type") == "false_friend" or (v.get("confusion_risk") or 0) >= 0.70)
+        )
+
+        sorted_days = sorted(daily_counts.items(), key=lambda x: x[0])[-14:]
+        timeline = [{"date": d, "count": c} for d, c in sorted_days]
+
+        total_eval_senses = total_known + total_gaps + total_doubts + total_in_study
+        mastery_rate = round((total_known / total_eval_senses * 100), 1) if total_eval_senses > 0 else 0.0
+
+        self.send_json({
+            "success": True,
+            "user_level": user_lvl,
+            "totals": {
+                "mapped_terms": len(vocab_map),
+                "evaluated_senses": total_eval_senses,
+                "known": total_known,
+                "gaps": total_gaps,
+                "doubts": total_doubts,
+                "in_study": total_in_study,
+                "injected_cards": injected_cards,
+                "ready_i1": ready_i1,
+                "waiting_i1": waiting_i1,
+                "mastery_rate": mastery_rate,
+                "total_indexed_mwld": len(MWLD_ENTRIES),
+                "jev_analyzed": jev_total,
+                "jev_false_friends": jev_false_friends + len(FALSE_COGNATES)
+            },
+            "cefr_bands": cefr_bands,
+            "structures_bands": structures_bands,
+            "pos_breakdown": pos_counts,
+            "daily_timeline": timeline
+        })
+
+    def handle_api_anki_hub(self):
+        anki_connected = False
+        anki_version = None
+        deck_card_count = None
+        target_deck = "\U0001f1ec\U0001f1e7 Ingl\u00eas::\U0001f3af Meu Estudo Ativo"
+
+        try:
+            req = urllib.request.Request(
+                ANKI_URL,
+                json.dumps({"action": "version", "version": 6, "params": {}}).encode("utf-8"),
+                {"Content-Type": "application/json"}
+            )
+            with urllib.request.urlopen(req, timeout=1.2) as res:
+                out = json.loads(res.read().decode("utf-8"))
+                if not out.get("error"):
+                    anki_connected = True
+                    anki_version = out.get("result")
+        except Exception:
+            anki_connected = False
+
+        if anki_connected:
+            try:
+                cards = invoke_anki("findCards", query=f'"deck:{target_deck}"')
+                deck_card_count = len(cards) if isinstance(cards, list) else 0
+            except Exception:
+                deck_card_count = None
+
+        known_set, unknown_set = get_user_vocab_profile()
+        ready_items = []
+        waiting_items = []
+        injected_items = []
+
+        for termo, data in KNOWLEDGE_MAP.get("mapa_vocabulario", {}).items():
+            w_disp = data.get("termo", termo)
+            for ac in data.get("acepcoes", []):
+                st = ac.get("status")
+                card_id = ac.get("card_id")
+                inj_at = ac.get("injetado_em")
+                frase = ac.get("frase_i1") or ac.get("frase_exemplo") or ""
+                def_en = ac.get("definicao") or ""
+                def_pt = ac.get("definicao_pt") or ""
+                prio, idx, s_name = get_term_importance(termo)
+
+                mwld_matches = MWLD_BY_WORD.get(termo.lower(), [])
+                audio_url = ac.get("audio_url") or (mwld_matches[0].get("audio_url", "") if mwld_matches else "")
+                if ac.get("mairo_audio"):
+                    audio_url = f"/media/{urllib.parse.quote(ac['mairo_audio'])}"
+
+                clean_frase = re.sub(r"<[^>]+>", "", frase).strip()
+                item_obj = {
+                    "termo": termo,
+                    "termo_display": w_disp,
+                    "pos": ac.get("pos", ""),
+                    "subdeck": s_name,
+                    "prio": prio,
+                    "idx": idx,
+                    "status": st,
+                    "definicao": def_en,
+                    "definicao_pt": def_pt,
+                    "frase": clean_frase,
+                    "card_id": card_id,
+                    "injetado_em": inj_at,
+                    "confirmado_em": ac.get("confirmado_em"),
+                    "audio_url": audio_url
+                }
+
+                if card_id or inj_at:
+                    injected_items.append(item_obj)
+                elif st in ("desconhecido", "duvida"):
+                    _, _, is_strict = evaluate_sentence_i1(frase, termo, known_set, unknown_set)
+                    if is_strict and is_valid_definition(def_en):
+                        ready_items.append(item_obj)
+                    else:
+                        waiting_items.append(item_obj)
+
+        ready_items.sort(key=lambda x: (x["prio"], x["idx"]))
+        waiting_items.sort(key=lambda x: (x["prio"], x["idx"]))
+        injected_items.sort(key=lambda x: x.get("injetado_em") or x.get("confirmado_em") or "", reverse=True)
+
+        self.send_json({
+            "success": True,
+            "anki_connected": anki_connected,
+            "anki_version": anki_version,
+            "target_deck": "Ingles :: Meu Estudo Ativo",
+            "deck_card_count": deck_card_count,
+            "cloud_url": DEFAULT_CLOUD_URL,
+            "last_map_update": KNOWLEDGE_MAP.get("ultima_atualizacao", ""),
+            "pipeline": {
+                "ready_count": len(ready_items),
+                "waiting_count": len(waiting_items),
+                "injected_count": len(injected_items),
+                "total_queue": len(ready_items) + len(waiting_items)
+            },
+            "top_ready": ready_items[:40],
+            "top_waiting": waiting_items[:25],
+            "recent_injected": injected_items[:25]
+        })
+
+    def handle_api_immersion_playlist(self, query):
+        source = (query.get("source", ["gaps"])[0] or "gaps").strip().lower()
+        subdeck_filter = (query.get("subdeck", ["01k"])[0] or "01k").strip()
+        try:
+            limit = max(1, min(120, int(query.get("limit", [40])[0])))
+        except ValueError:
+            limit = 40
+
+        tracks = []
+        seen_sentences = set()
+        vocab_map = KNOWLEDGE_MAP.get("mapa_vocabulario", {})
+
+        def resolve_track_for_word(termo_key, w_display, ac_obj, fallback_subdeck="01k"):
+            w_low = termo_key.lower().strip()
+            frase_raw = ""
+            frase_pt = ""
+            def_en = ""
+            def_pt = ""
+            pos = ""
+            ipa = ""
+            audio_url = ""
+            audio_type = "tts"
+
+            if ac_obj:
+                frase_raw = ac_obj.get("frase_i1") or ac_obj.get("frase_exemplo") or ""
+                frase_pt = ac_obj.get("frase_pt") or ""
+                def_en = ac_obj.get("definicao") or ""
+                def_pt = ac_obj.get("definicao_pt") or ""
+                pos = ac_obj.get("pos") or ""
+                ipa = ac_obj.get("ipa") or ""
+                if ac_obj.get("mairo_audio"):
+                    audio_url = f"/media/{urllib.parse.quote(ac_obj['mairo_audio'])}"
+                    audio_type = "sentence_native"
+                elif ac_obj.get("audio_url"):
+                    audio_url = ac_obj["audio_url"]
+                    audio_type = "word_native"
+
+            mairo_list = MAIRO_SENTENCES_BY_KEYWORD.get(w_low, []) or MAIRO_SENTENCES_BY_WORD.get(w_low, [])
+            if mairo_list:
+                m0 = mairo_list[0]
+                if not frase_raw and m0.get("en"):
+                    frase_raw = m0["en"]
+                    frase_pt = m0.get("pt", frase_pt)
+                if m0.get("audio") and audio_type != "sentence_native":
+                    audio_url = f"/media/{urllib.parse.quote(m0['audio'])}"
+                    audio_type = "sentence_native"
+                    if m0.get("en"):
+                        frase_raw = m0["en"]
+                        frase_pt = m0.get("pt", frase_pt)
+
+            mwld_list = MWLD_BY_WORD.get(w_low, [])
+            if mwld_list:
+                mw0 = mwld_list[0]
+                if not frase_raw:
+                    frase_raw = mw0.get("example_1") or mw0.get("example_2") or ""
+                if not def_en:
+                    def_en = mw0.get("definition_en") or ""
+                if not pos:
+                    pos = mw0.get("pos") or ""
+                if not ipa:
+                    ipa = mw0.get("ipa") or ""
+                if not audio_url and mw0.get("audio_url"):
+                    audio_url = mw0["audio_url"]
+                    audio_type = "word_native"
+                if fallback_subdeck == "01k" and mw0.get("subdeck"):
+                    fallback_subdeck = mw0["subdeck"]
+
+            clean_en = re.sub(r"<[^>]+>", "", frase_raw or "").strip()
+            if not clean_en or len(clean_en.split()) < 3:
+                return None
+
+            if not frase_pt:
+                tagged = tag_sentence_for_translation(frase_raw, w_display)
+                cached_pt = TRANSLATIONS_CACHE.get(tagged) or TRANSLATIONS_CACHE.get(clean_en) or ""
+                frase_pt = re.sub(r"<[^>]+>", "", cached_pt).strip()
+            else:
+                frase_pt = re.sub(r"<[^>]+>", "", frase_pt).strip()
+
+            if not def_pt and def_en in TRANSLATIONS_CACHE:
+                def_pt = TRANSLATIONS_CACHE[def_en]
+
+            return {
+                "id": f"imm_{w_low}_{len(tracks)}",
+                "word": w_display,
+                "ipa": ipa,
+                "pos": pos or "term",
+                "subdeck": fallback_subdeck,
+                "status": ac_obj.get("status", "pending") if ac_obj else "pending",
+                "en": clean_en,
+                "pt": frase_pt or def_pt or "",
+                "def_en": def_en,
+                "audio_url": audio_url,
+                "audio_type": audio_type
+            }
+
+        if source in ("gaps", "known", "all"):
+            candidates = []
+            for termo, t_data in vocab_map.items():
+                w_disp = t_data.get("termo", termo)
+                prio, idx, s_name = get_term_importance(termo)
+                for ac in t_data.get("acepcoes", []):
+                    st = ac.get("status", "")
+                    if source == "gaps" and st not in ("desconhecido", "duvida", "em_estudo"):
+                        continue
+                    if source == "known" and st != "conhecido":
+                        continue
+                    candidates.append((0 if st in ("desconhecido", "duvida") else 1, prio, idx, termo, w_disp, ac, s_name))
+
+            candidates.sort(key=lambda x: (x[0], x[1], x[2]))
+            for _, _, _, termo, w_disp, ac, s_name in candidates:
+                tr = resolve_track_for_word(termo, w_disp, ac, s_name)
+                if tr and tr["en"].lower() not in seen_sentences:
+                    seen_sentences.add(tr["en"].lower())
+                    tracks.append(tr)
+                    if len(tracks) >= limit:
+                        break
+
+        if len(tracks) < limit:
+            deck_entries = MWLD_ENTRIES if subdeck_filter == "all" else MWLD_BY_SUBDECK.get(subdeck_filter, MWLD_ENTRIES[:200])
+            for e in deck_entries:
+                w_low = e["word"].lower().strip()
+                if w_low in PURE_FUNCTION_WORDS:
+                    continue
+                ac_match = None
+                if w_low in vocab_map and vocab_map[w_low].get("acepcoes"):
+                    ac_match = vocab_map[w_low]["acepcoes"][0]
+                tr = resolve_track_for_word(w_low, e["word"], ac_match, e.get("subdeck", subdeck_filter))
+                if tr and tr["en"].lower() not in seen_sentences:
+                    seen_sentences.add(tr["en"].lower())
+                    tracks.append(tr)
+                    if len(tracks) >= limit:
+                        break
+
+        self.send_json({
+            "success": True,
+            "source": source,
+            "subdeck": subdeck_filter,
+            "total": len(tracks),
+            "tracks": tracks
         })
 
     def handle_api_enrich_gaps(self, data):

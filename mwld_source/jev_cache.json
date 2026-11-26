@@ -1076,8 +1076,8 @@
     "model": "jev-1.14.0"
   },
   "__curated_knowledge": {
-    "chosen_en": "There is a lack of knowledge about the tax system.",
-    "confidence": 0.52,
+    "chosen_en": "She has little/no/some <i>knowledge</i> of fashion/history/cooking.",
+    "confidence": 0.77,
     "model": "jev-1.14.0"
   },
   "__curated_indeed": {
@@ -1193,6 +1193,31 @@
   "__curated_supposed": {
     "chosen_en": "<i>I suppose</i> that could happen, but it's not likely.",
     "confidence": 0.59,
+    "model": "jev-1.14.0"
+  },
+  "__curated_base": {
+    "chosen_en": "They are going to <i>base</i> their new company in Seattle.",
+    "confidence": 0.97,
+    "model": "jev-1.14.0"
+  },
+  "__curated_employee": {
+    "chosen_en": "Their longest-serving employee is threatening to quit over pay.",
+    "confidence": 0.48,
+    "model": "jev-1.14.0"
+  },
+  "__curated_goal": {
+    "chosen_en": "He set a <i>goal</i> for himself of exercising at least three times a week.",
+    "confidence": 1.0,
+    "model": "jev-1.14.0"
+  },
+  "__curated_police": {
+    "chosen_en": "(The) <i>Police</i> blocked the street to clear a path for the parade.",
+    "confidence": 0.64,
+    "model": "jev-1.14.0"
+  },
+  "__curated_reeds": {
+    "chosen_en": "Sometimes a reed does not play well because it was not cut properly.",
+    "confidence": 0.52,
     "model": "jev-1.14.0"
   }
 }

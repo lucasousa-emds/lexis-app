@@ -8086,7 +8086,8 @@
           "card_id": 1792427330366,
           "injetado_em": "2026-10-19T13:28:50.538164",
           "ipa": "ɪmˌploɪˈiː",
-          "audio_url": "https://media.merriam-webster.com/soundc11/e/employ07.wav"
+          "audio_url": "https://media.merriam-webster.com/soundc11/e/employ07.wav",
+          "mairo_audio": "41 - Their longest-serving employee is threatening to quit.mp3"
         }
       ],
       "collocations": [],
@@ -28336,5 +28337,5 @@
     "acepcoes_desconhecidas": 248,
     "acepcoes_duvida": 102
   },
-  "ultima_atualizacao": "2026-11-03T18:24:26.518458"
+  "ultima_atualizacao": "2026-11-16"
 }

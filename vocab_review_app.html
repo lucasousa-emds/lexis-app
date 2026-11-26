@@ -2436,6 +2436,14 @@
       <div class="progress-bar-wrapper">
         <div class="progress-bar-fill" id="focus-progress-fill"></div>
       </div>
+      <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin-top: 10px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.06); font-size: 11px;">
+        <span style="color: var(--muted);">Sprints de Alta Alavanca:</span>
+        <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+          <button type="button" class="dictation-btn" style="padding: 3px 10px; font-size: 11px; border-color: rgba(101, 225, 216, 0.35); color: var(--cyan);" onclick="launchHighLeverageSprint('pv-top150')">Atacar Top 150 Phrasal Verbs</button>
+          <button type="button" class="dictation-btn" style="padding: 3px 10px; font-size: 11px;" onclick="launchHighLeverageSprint('02k')">Fechar Restantes Deck 02k</button>
+          <button type="button" class="dictation-btn" style="padding: 3px 10px; font-size: 11px; border-color: rgba(177, 154, 255, 0.35); color: var(--purple);" onclick="launchImmersionOnGaps()">Ouvir Meus Gaps (Podcast)</button>
+        </div>
+      </div>
     </div>
 
     <!-- ==============================================
@@ -2695,6 +2703,7 @@
         <div class="mode-pill-toggle">
           <button type="button" class="mode-pill-btn active" id="btn-mode-video" onclick="switchListeningSubmode('video')">🎬 Vídeo Ditado</button>
           <button type="button" class="mode-pill-btn" id="btn-mode-audio" onclick="switchListeningSubmode('audio')">♫ Escuta às Cegas</button>
+          <button type="button" class="mode-pill-btn" id="btn-mode-podcast" onclick="switchListeningSubmode('podcast')">◉ Imersão Contínua</button>
         </div>
       </div>
       <p class="listening-subtext" id="listening-submode-desc">O vídeo pausa sozinho a cada frase com legenda oculta. Digite o que ouviu para destravar o avanço.</p>
@@ -2889,6 +2898,78 @@
         </aside>
       </div>
 
+      <!-- SUBMODO 3: PLAYLIST CONTINUA DE IMERSAO (PODCAST PESSOAL + MEDIASESSION API) -->
+      <div id="submode-podcast-container" class="listening-workspace" style="display: none;">
+        <section class="player-card" aria-label="Podcast Pessoal de Imersao">
+          <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; align-items: center;">
+            <select id="podcast-source-select" class="select-custom" onchange="loadImmersionPlaylist()" style="flex: 1; min-width: 190px;">
+              <option value="gaps">Meus Gaps e Duvidas (Prioridade i+1)</option>
+              <option value="known">Termos Conhecidos (Consolidacao Auditiva)</option>
+              <option value="subdeck">Deck Atual Selecionado</option>
+              <option value="all">Mix Global Curado</option>
+            </select>
+            <select id="podcast-repeat-select" class="select-custom" onchange="onPodcastConfigChange()" title="Padrao de repeticao por faixa" style="width: auto; min-width: 185px;">
+              <option value="1">1x Direto (Fluxo Continuo)</option>
+              <option value="2" selected>2x Reflexivo (1x -> Pausa -> 2x)</option>
+              <option value="3">3x Shadowing Intenso</option>
+            </select>
+            <select id="podcast-gap-select" class="select-custom" onchange="onPodcastConfigChange()" title="Intervalo de silencio entre frases" style="width: auto; min-width: 120px;">
+              <option value="1500">Pausa 1.5s</option>
+              <option value="2500" selected>Pausa 2.5s</option>
+              <option value="4000">Pausa 4.0s</option>
+              <option value="6000">Pausa 6.0s</option>
+            </select>
+          </div>
+
+          <audio id="podcast-audio-el" preload="auto"></audio>
+
+          <div class="player-top-line">
+            <span id="podcast-track-counter">FAIXA 01 / 00</span>
+            <span id="podcast-pass-indicator" style="color: var(--cyan); font-weight: 600;">Pronto para iniciar</span>
+          </div>
+
+          <div class="audio-art-icon" style="margin: 18px auto 12px;">◉</div>
+          <div style="text-align: center; margin-bottom: 6px;">
+            <span id="podcast-word-badge" style="display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; background: rgba(101, 225, 216, 0.12); color: var(--cyan); border: 1px solid rgba(101, 225, 216, 0.3);">LEXIS IMMERSION</span>
+            <span id="podcast-audio-source-tag" style="display: inline-block; margin-left: 6px; padding: 3px 8px; border-radius: 999px; font-size: 10px; color: var(--muted); border: 1px solid var(--line);">Audio Nativo</span>
+          </div>
+
+          <h3 id="podcast-sentence-en" style="text-align: center; font-size: 17px; line-height: 1.5; margin: 10px 0 6px; min-height: 48px;">Carregando sua playlist pessoal de imersao...</h3>
+          <div class="player-sub" id="podcast-sentence-pt" style="text-align: center; min-height: 20px;"> As frases selecionadas serao encadeadas automaticamente com controle via tela de bloqueio.</div>
+
+          <div class="player-controls-row" style="margin: 20px 0 14px;">
+            <button type="button" class="player-btn-sec" onclick="stepPodcastTrack(-1)" title="Faixa anterior" aria-label="Faixa anterior">◀</button>
+            <button type="button" class="player-btn-circle" id="podcast-play-btn" onclick="togglePodcastPlayback()" aria-label="Iniciar ou pausar imersao">▶</button>
+            <button type="button" class="player-btn-sec" onclick="stepPodcastTrack(1)" title="Proxima faixa" aria-label="Proxima faixa">▶▶</button>
+            <button type="button" class="player-btn-speed" id="podcast-speed-btn" onclick="cyclePodcastSpeed()">1.0x</button>
+          </div>
+
+          <div style="display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;">
+            <button type="button" class="dictation-btn" id="podcast-blind-btn" onclick="togglePodcastBlindMode()">Ocultar Texto (Modo Cego)</button>
+            <button type="button" class="dictation-btn" onclick="loadImmersionPlaylist(true)">Atualizar Fila</button>
+            <button type="button" class="dictation-btn" id="podcast-save-gap-btn" onclick="flagCurrentPodcastTrackAsGap()" style="color: var(--purple); border-color: rgba(177, 154, 255, 0.35);">+ Marcar como Gap Anki</button>
+          </div>
+        </section>
+
+        <aside>
+          <div class="listening-sidecard">
+            <h4>Sessao de Imersao</h4>
+            <div class="session-metric" id="podcast-session-metric">0 <small>/ 0 faixas</small></div>
+            <div class="session-progress-bar">
+              <b id="podcast-session-progress" style="width: 0%;"></b>
+            </div>
+            <div style="font-size: 11px; color: var(--muted); line-height: 1.55;">
+              MediaSession API ativa: controle play, pausa e avanco direto no fone Bluetooth ou na tela bloqueada.
+            </div>
+          </div>
+
+          <div class="listening-sidecard" style="max-height: 290px; overflow-y: auto;">
+            <h4 style="margin-bottom: 10px;">Fila de Reproducao</h4>
+            <div id="podcast-queue-list" style="display: flex; flex-direction: column; gap: 6px; font-size: 12px;"></div>
+          </div>
+        </aside>
+      </div>
+
       <div style="border-top: 1px solid var(--line); margin-top: 28px; padding-top: 18px; display: flex; justify-content: space-between; font-size: 11px; color: var(--muted);">
         <span><strong style="color: var(--cyan);">●</strong> &nbsp; O progresso do ditado é salvo neste navegador.</span>
         <span>EN → PT-BR &nbsp; · &nbsp; Nível conforme o material escolhido</span>
@@ -2897,16 +2978,139 @@
   </section>
 
   <section id="view-module-anki" class="module-view" style="display:none;" aria-label="Anki Hub">
-    <div style="max-width: 1200px; margin: 24px auto; padding: 32px 24px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface);">
-      <h2 style="font-family: var(--font-heading); margin-bottom: 8px;">Anki Hub</h2>
-      <p style="color: var(--muted); font-size: 13px;">Central de injeção e monitoramento dos cartões gerados pelo Lexis.</p>
+    <div style="max-width: 1200px; margin: 22px auto 90px; padding: 0 24px;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 16px; margin-bottom: 20px;">
+        <div>
+          <span class="listening-pill" style="border-color: rgba(237, 197, 121, 0.35); color: var(--amber); background: rgba(237, 197, 121, 0.08);">ANKI HUB · PIPELINE SRS</span>
+          <h2 style="font-family: var(--font-heading); font-size: 26px; margin: 8px 0 4px;">Central de Injecao e Sincronizacao i+1</h2>
+          <p style="color: var(--muted); font-size: 13px; margin: 0;">Governanca completa da fila de Gaps, validacao de frases autenticas, telemetria AnkiConnect e paridade com Google Cloud Run.</p>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+          <button type="button" class="dictation-btn" onclick="loadAnkiHubModule(true)">Verificar Conexao</button>
+          <button type="button" class="dictation-btn" onclick="hubEnrichGaps()" id="hub-btn-enrich" style="border-color: rgba(101, 225, 216, 0.4); color: var(--cyan);">Enriquecer Frases i+1</button>
+          <button type="button" class="dictation-btn" onclick="hubSyncCloud()" id="hub-btn-sync">Sincronizar Nuvem</button>
+          <select id="hub-inject-limit" class="select-custom" style="width: auto; min-width: 130px; height: 36px;">
+            <option value="5">Top 5 Gaps</option>
+            <option value="10" selected>Top 10 Gaps</option>
+            <option value="25">Top 25 Gaps</option>
+            <option value="all">Todos Prontos</option>
+          </select>
+          <button type="button" class="dictation-btn primary" onclick="hubInjectAnki()" id="hub-btn-inject" style="background: var(--amber); color: #171206; font-weight: 700; border: none; padding: 8px 16px;">Injetar no Anki</button>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 20px;">
+        <div style="padding: 18px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface);">
+          <div style="font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px;">Status AnkiConnect</div>
+          <div id="hub-kpi-anki-status" style="font-size: 20px; font-weight: 700; margin-top: 6px; color: var(--text);">Verificando...</div>
+          <div id="hub-kpi-anki-sub" style="font-size: 12px; color: var(--muted); margin-top: 4px;">Porta local 127.0.0.1:8765</div>
+        </div>
+        <div style="padding: 18px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface);">
+          <div style="font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px;">Prontos para Injecao (i+1)</div>
+          <div id="hub-kpi-ready" style="font-size: 26px; font-weight: 700; margin-top: 6px; color: #34d399;">0</div>
+          <div style="font-size: 12px; color: var(--muted); margin-top: 4px;">Com frase validada e definicao</div>
+        </div>
+        <div style="padding: 18px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface);">
+          <div style="font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px;">Retidos pela Trava i+1</div>
+          <div id="hub-kpi-waiting" style="font-size: 26px; font-weight: 700; margin-top: 6px; color: var(--amber);">0</div>
+          <div style="font-size: 12px; color: var(--muted); margin-top: 4px;">Aguardando frase sem obstaculos i+2</div>
+        </div>
+        <div style="padding: 18px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface);">
+          <div style="font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px;">Cartoes Vinculados no Anki</div>
+          <div id="hub-kpi-injected" style="font-size: 26px; font-weight: 700; margin-top: 6px; color: var(--blue);">0</div>
+          <div id="hub-kpi-deck-total" style="font-size: 12px; color: var(--muted); margin-top: 4px;">Baralho Meu Estudo Ativo</div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr); gap: 18px;">
+        <div style="border: 1px solid var(--line); border-radius: 12px; background: var(--surface); padding: 18px; overflow-x: auto;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <h3 style="margin: 0; font-size: 15px;">Fila Prioritaria Pronta (Top 1k -> 10k)</h3>
+            <span id="hub-ready-caption" style="font-size: 11px; color: var(--muted);">Ordenada por frequencia lexical</span>
+          </div>
+          <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+            <thead>
+              <tr style="border-bottom: 1px solid var(--line); text-align: left; color: var(--muted); font-size: 11px;">
+                <th style="padding: 8px 6px;">Deck</th>
+                <th style="padding: 8px 6px;">Termo</th>
+                <th style="padding: 8px 6px;">Contexto i+1</th>
+                <th style="padding: 8px 6px; text-align: right;">Audio</th>
+              </tr>
+            </thead>
+            <tbody id="hub-ready-tbody"></tbody>
+          </table>
+        </div>
+
+        <div style="border: 1px solid var(--line); border-radius: 12px; background: var(--surface); padding: 18px; overflow-x: auto;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <h3 style="margin: 0; font-size: 15px;">Ultimas Injecoes no Baralho</h3>
+            <span id="hub-cloud-caption" style="font-size: 11px; color: var(--muted);">Historico auditavel</span>
+          </div>
+          <div id="hub-injected-list" style="display: flex; flex-direction: column; gap: 8px;"></div>
+        </div>
+      </div>
     </div>
   </section>
 
   <section id="view-module-analytics" class="module-view" style="display:none;" aria-label="Analytics & Métricas">
-    <div style="max-width: 1200px; margin: 24px auto; padding: 32px 24px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface);">
-      <h2 style="font-family: var(--font-heading); margin-bottom: 8px;">Analytics & Métricas</h2>
-      <p style="color: var(--muted); font-size: 13px;">Radar de cobertura CEFR (A1 a C2) e taxa de retenção.</p>
+    <div style="max-width: 1200px; margin: 22px auto 90px; padding: 0 24px;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 16px; margin-bottom: 20px;">
+        <div>
+          <span class="listening-pill" style="border-color: rgba(128, 184, 255, 0.35); color: var(--blue); background: rgba(128, 184, 255, 0.08);">ANALYTICS · TELEMETRIA CEFR</span>
+          <h2 style="font-family: var(--font-heading); font-size: 26px; margin: 8px 0 4px;">Radar de Cobertura Lexica (A1 a C2)</h2>
+          <p style="color: var(--muted); font-size: 13px; margin: 0;">Clique em qualquer faixa de frequencia para abrir imediatamente o Deck correspondente na triagem ativa.</p>
+        </div>
+        <button type="button" class="dictation-btn" onclick="loadAnalyticsModule(true)">Atualizar Telemetria</button>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 20px;">
+        <div style="padding: 18px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface);">
+          <div style="font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px;">Nivel Operacional Estimado</div>
+          <div id="ana-kpi-cefr" style="font-size: 24px; font-weight: 700; margin-top: 6px; color: var(--cyan);">--</div>
+          <div id="ana-kpi-cefr-desc" style="font-size: 12px; color: var(--muted); margin-top: 4px;">Calculando perfil...</div>
+        </div>
+        <div style="padding: 18px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface);">
+          <div style="font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px;">Vocabulario Mapeado</div>
+          <div id="ana-kpi-mapped" style="font-size: 26px; font-weight: 700; margin-top: 6px; color: var(--text);">0</div>
+          <div id="ana-kpi-senses" style="font-size: 12px; color: var(--muted); margin-top: 4px;">0 acepcoes avaliadas</div>
+        </div>
+        <div style="padding: 18px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface);">
+          <div style="font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px;">Indice de Dominio Direto</div>
+          <div id="ana-kpi-mastery" style="font-size: 26px; font-weight: 700; margin-top: 6px; color: #34d399;">0%</div>
+          <div id="ana-kpi-breakdown" style="font-size: 12px; color: var(--muted); margin-top: 4px;">Conhecidos vs Gaps</div>
+        </div>
+        <div style="padding: 18px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface);">
+          <div style="font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px;">Protecao Cognitiva Jev</div>
+          <div id="ana-kpi-jev" style="font-size: 26px; font-weight: 700; margin-top: 6px; color: var(--purple);">0</div>
+          <div id="ana-kpi-jev-sub" style="font-size: 12px; color: var(--muted); margin-top: 4px;">Falsos amigos monitorados</div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: 18px;">
+        <div style="border: 1px solid var(--line); border-radius: 12px; background: var(--surface); padding: 20px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+            <h3 style="margin: 0; font-size: 15px;">Curva de Dominio MWLD (Top 1.000 a 10.000)</h3>
+            <span style="font-size: 11px; color: var(--muted);">Verde: Conhecido · Coral: Gap · Ambar: Duvida</span>
+          </div>
+          <div id="ana-cefr-bars" style="display: flex; flex-direction: column; gap: 11px;"></div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 18px;">
+          <div style="border: 1px solid var(--line); border-radius: 12px; background: var(--surface); padding: 20px;">
+            <h3 style="margin: 0 0 12px; font-size: 15px;">Estruturas e Chunks Nativos</h3>
+            <div id="ana-struct-bars" style="display: flex; flex-direction: column; gap: 10px;"></div>
+          </div>
+
+          <div style="border: 1px solid var(--line); border-radius: 12px; background: var(--surface); padding: 20px;">
+            <h3 style="margin: 0 0 12px; font-size: 15px;">Distribuicao por Classe (POS) & Ritmo</h3>
+            <div id="ana-pos-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 14px;"></div>
+            <div style="border-top: 1px solid var(--line); padding-top: 12px;">
+              <div style="font-size: 11px; color: var(--muted); margin-bottom: 8px;">Atividade Recente de Triagem</div>
+              <div id="ana-timeline-bars" style="display: flex; align-items: flex-end; gap: 6px; height: 64px;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -4583,10 +4787,21 @@
       const crumbMod = document.getElementById('breadcrumb-module-name');
       const crumbSub = document.getElementById('breadcrumb-subview');
       if (crumbMod && info) { crumbMod.textContent = info.name; crumbMod.style.color = info.color; }
-      if (crumbSub && info) crumbSub.textContent = moduleName === 'listening' ? (selectedListeningSubmode === 'video' ? '/ Vídeo Ditado' : '/ Escuta às Cegas') : info.sub;
+      if (crumbSub && info) {
+        const subMap = { video: '/ Vídeo Ditado', audio: '/ Escuta às Cegas', podcast: '/ Imersão Contínua' };
+        crumbSub.textContent = moduleName === 'listening' ? (subMap[selectedListeningSubmode] || '/ Listening') : info.sub;
+      }
       if (moduleName === 'listening') {
-        initYouTubePlayer();
-        renderWordSlots(getCleanTargetTokens(document.getElementById('dictation-input').value));
+        if (selectedListeningSubmode === 'video') {
+          initYouTubePlayer();
+          renderWordSlots(getCleanTargetTokens(document.getElementById('dictation-input').value));
+        } else if (selectedListeningSubmode === 'podcast' && !podcastTracks.length) {
+          loadImmersionPlaylist();
+        }
+      } else if (moduleName === 'anki') {
+        loadAnkiHubModule();
+      } else if (moduleName === 'analytics') {
+        loadAnalyticsModule();
       }
     }
 
@@ -4694,6 +4909,7 @@
       if (local) local.pause();
       if (ytReady && ytPlayer && ytPlayer.pauseVideo) ytPlayer.pauseVideo();
       stopListeningAudio();
+      stopPodcastPlayback();
       if (currentSourceKey) persistDictationSession();
     }
     const VideoController = {
@@ -4743,21 +4959,40 @@
       VideoController.setSpeed(speeds[(speeds.indexOf(currentDictationSpeed) + 1) % speeds.length]);
     }
     function switchListeningSubmode(submode) {
-      if (!['video', 'audio'].includes(submode)) return;
+      if (!['video', 'audio', 'podcast'].includes(submode)) return;
       pauseListeningMedia();
       selectedListeningSubmode = submode;
       document.getElementById('submode-video-container').style.display = submode === 'video' ? 'block' : 'none';
       document.getElementById('submode-audio-container').style.display = submode === 'audio' ? 'grid' : 'none';
-      for (const mode of ['video', 'audio']) {
+      const podContainer = document.getElementById('submode-podcast-container');
+      if (podContainer) podContainer.style.display = submode === 'podcast' ? 'grid' : 'none';
+      for (const mode of ['video', 'audio', 'podcast']) {
         const btn = document.getElementById('btn-mode-' + mode);
+        if (!btn) continue;
         btn.classList.toggle('active', mode === submode);
         btn.setAttribute('aria-pressed', String(mode === submode));
       }
-      document.querySelector('.listening-title-row h2').textContent = submode === 'video' ? 'Vídeo Ditado Interativo' : 'Escuta às Cegas';
-      if (isListeningVisible()) document.getElementById('breadcrumb-subview').textContent = submode === 'video' ? '/ Vídeo Ditado' : '/ Escuta às Cegas';
-      document.getElementById('listening-submode-desc').textContent = submode === 'video'
-        ? 'Ouça o trecho, escreva sua hipótese e compare. Use pistas quando precisar.'
-        : 'Escolha um áudio real e, se quiser, importe a transcrição para treinar por trechos.';
+      const titles = {
+        video: 'Vídeo Ditado Interativo',
+        audio: 'Escuta às Cegas',
+        podcast: 'Playlist Contínua de Imersão'
+      };
+      const crumbs = {
+        video: '/ Vídeo Ditado',
+        audio: '/ Escuta às Cegas',
+        podcast: '/ Imersão Contínua'
+      };
+      const descs = {
+        video: 'Ouça o trecho, escreva sua hipótese e compare. Use pistas quando precisar.',
+        audio: 'Escolha um áudio real e, se quiser, importe a transcrição para treinar por trechos.',
+        podcast: 'Podcast pessoal contínuo com repetição reflexiva (1x -> Pausa -> 2x) e controle na tela de bloqueio.'
+      };
+      document.querySelector('.listening-title-row h2').textContent = titles[submode];
+      if (isListeningVisible()) document.getElementById('breadcrumb-subview').textContent = crumbs[submode];
+      document.getElementById('listening-submode-desc').textContent = descs[submode];
+      if (submode === 'podcast' && !podcastTracks.length) {
+        loadImmersionPlaylist();
+      }
     }
     function switchVideoSource(source) {
       if (!['local', 'youtube'].includes(source)) return;
@@ -5346,8 +5581,514 @@
       audio.addEventListener('error', () => { stopListeningAudio(); showToast('O navegador não conseguiu abrir este áudio.', false); });
       updateListeningTime();
     });
-    document.addEventListener('visibilitychange', () => { if (document.hidden) pauseListeningMedia(); });
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden && !(selectedListeningSubmode === 'podcast' && podcastPlaying)) {
+        pauseListeningMedia();
+      }
+    });
     window.addEventListener('pagehide', pauseListeningMedia);
+
+    // ==========================================
+    // SUBMODO 3: PODCAST CONTINUO DE IMERSAO + MEDIASESSION API
+    // ==========================================
+    let podcastTracks = [];
+    let podcastIndex = 0;
+    let podcastPlaying = false;
+    let podcastPass = 1;
+    let podcastRate = 1.0;
+    let podcastBlind = false;
+    let podcastTimer = null;
+    let podcastActiveUtterance = null;
+
+    function escapeHtmlSafe(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    async function loadImmersionPlaylist(notifyUser = false) {
+      stopPodcastPlayback();
+      const srcEl = document.getElementById('podcast-source-select');
+      const source = srcEl ? srcEl.value : 'gaps';
+      const deckSel = document.getElementById('select-subdeck');
+      const subdeck = deckSel ? deckSel.value : '01k';
+      try {
+        const resp = await fetch(`/api/immersion-playlist?source=${encodeURIComponent(source)}&subdeck=${encodeURIComponent(subdeck)}&limit=45`);
+        const data = await resp.json();
+        podcastTracks = (data && Array.isArray(data.tracks)) ? data.tracks : [];
+        podcastIndex = 0;
+        podcastPass = 1;
+        renderPodcastState();
+        renderPodcastQueue();
+        if (notifyUser) showToast(`${podcastTracks.length} faixas carregadas na playlist de imersao.`);
+      } catch (err) {
+        showToast('Falha ao carregar playlist de imersao.', false);
+      }
+    }
+
+    function renderPodcastQueue() {
+      const box = document.getElementById('podcast-queue-list');
+      if (!box) return;
+      if (!podcastTracks.length) {
+        box.innerHTML = '<div style="color: var(--muted); font-size: 12px;">Nenhuma faixa encontrada para este filtro.</div>';
+        return;
+      }
+      box.innerHTML = podcastTracks.map((tr, i) => {
+        const active = i === podcastIndex;
+        return `<button type="button" onclick="selectPodcastTrack(${i})" style="text-align: left; padding: 8px 10px; border-radius: 8px; border: 1px solid ${active ? 'var(--cyan)' : 'var(--line)'}; background: ${active ? 'rgba(101, 225, 216, 0.10)' : 'rgba(255,255,255,0.02)'}; display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+          <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: ${active ? '700' : '500'}; color: ${active ? 'var(--cyan)' : 'var(--text)'};">${String(i + 1).padStart(2, '0')}. ${escapeHtmlSafe(tr.word)}</span>
+          <span style="font-size: 10px; color: var(--muted); text-transform: uppercase;">${escapeHtmlSafe(tr.subdeck)}</span>
+        </button>`;
+      }).join('');
+    }
+
+    function renderPodcastState() {
+      const total = podcastTracks.length;
+      const tr = podcastTracks[podcastIndex];
+      const counter = document.getElementById('podcast-track-counter');
+      const wordBadge = document.getElementById('podcast-word-badge');
+      const srcTag = document.getElementById('podcast-audio-source-tag');
+      const enEl = document.getElementById('podcast-sentence-en');
+      const ptEl = document.getElementById('podcast-sentence-pt');
+      const metricEl = document.getElementById('podcast-session-metric');
+      const progEl = document.getElementById('podcast-session-progress');
+      const passEl = document.getElementById('podcast-pass-indicator');
+
+      if (!tr) {
+        if (counter) counter.textContent = 'FAIXA 00 / 00';
+        if (enEl) enEl.textContent = 'Nenhuma frase disponivel no filtro atual.';
+        if (ptEl) ptEl.textContent = 'Selecione outro filtro de origem acima.';
+        if (metricEl) metricEl.innerHTML = '0 <small>/ 0 faixas</small>';
+        if (progEl) progEl.style.width = '0%';
+        return;
+      }
+
+      const maxPasses = Number(document.getElementById('podcast-repeat-select')?.value || 2);
+      if (counter) counter.textContent = `FAIXA ${String(podcastIndex + 1).padStart(2, '0')} / ${String(total).padStart(2, '0')}`;
+      if (passEl) passEl.textContent = podcastPlaying ? `Escuta ${podcastPass} de ${maxPasses}` : 'Pausado';
+      if (wordBadge) wordBadge.textContent = `${tr.word}${tr.ipa ? ' /' + tr.ipa + '/' : ''} · ${(tr.subdeck || '').toUpperCase()}`;
+      if (srcTag) {
+        srcTag.textContent = tr.audio_type === 'sentence_native' ? 'Frase Nativa' : (tr.audio_type === 'word_native' ? 'Voz Dicionario + TTS' : 'Sintese Nativa');
+      }
+      if (enEl) enEl.textContent = podcastBlind ? '● ● ●   Modo Cego Ativo — Foque 100% na compreensao auditiva   ● ● ●' : tr.en;
+      if (ptEl) ptEl.textContent = podcastBlind ? 'Clique em Mostrar Texto caso precise conferir a transcricao.' : (tr.pt || tr.def_en || '');
+      if (metricEl) metricEl.innerHTML = `${podcastIndex + 1} <small>/ ${total} faixas</small>`;
+      if (progEl) progEl.style.width = `${Math.round(((podcastIndex + 1) / total) * 100)}%`;
+      updatePodcastMediaSession(tr);
+    }
+
+    function updatePodcastMediaSession(tr) {
+      if (!('mediaSession' in navigator) || !tr) return;
+      try {
+        navigator.mediaSession.metadata = new MediaMetadata({
+          title: podcastBlind ? `Faixa ${podcastIndex + 1} (${tr.subdeck.toUpperCase()})` : `${tr.word} — ${tr.en}`,
+          artist: 'Lexis Immersion Studio',
+          album: `Deck ${(tr.subdeck || 'Lexis').toUpperCase()} · Comprehensible Input`
+        });
+        navigator.mediaSession.playbackState = podcastPlaying ? 'playing' : 'paused';
+        navigator.mediaSession.setActionHandler('play', () => { if (!podcastPlaying) startPodcastPlayback(); });
+        navigator.mediaSession.setActionHandler('pause', () => { if (podcastPlaying) stopPodcastPlayback(); });
+        navigator.mediaSession.setActionHandler('previoustrack', () => stepPodcastTrack(-1));
+        navigator.mediaSession.setActionHandler('nexttrack', () => stepPodcastTrack(1));
+      } catch (_) {}
+    }
+
+    function togglePodcastPlayback() {
+      if (podcastPlaying) stopPodcastPlayback();
+      else startPodcastPlayback();
+    }
+
+    function startPodcastPlayback() {
+      if (!podcastTracks.length) {
+        loadImmersionPlaylist().then(() => { if (podcastTracks.length) startPodcastPlayback(); });
+        return;
+      }
+      podcastPlaying = true;
+      const btn = document.getElementById('podcast-play-btn');
+      if (btn) { btn.textContent = 'Ⅱ'; btn.setAttribute('aria-label', 'Pausar imersao'); }
+      renderPodcastState();
+      playCurrentPodcastPass();
+    }
+
+    function stopPodcastPlayback() {
+      podcastPlaying = false;
+      if (podcastTimer) { clearTimeout(podcastTimer); podcastTimer = null; }
+      const audioEl = document.getElementById('podcast-audio-el');
+      if (audioEl) { audioEl.onended = null; audioEl.onerror = null; audioEl.pause(); }
+      if ('speechSynthesis' in window) { try { window.speechSynthesis.cancel(); } catch (_) {} }
+      const btn = document.getElementById('podcast-play-btn');
+      if (btn) { btn.textContent = '▶'; btn.setAttribute('aria-label', 'Iniciar imersao'); }
+      const passEl = document.getElementById('podcast-pass-indicator');
+      if (passEl) passEl.textContent = 'Pausado';
+      if ('mediaSession' in navigator) { try { navigator.mediaSession.playbackState = 'paused'; } catch (_) {} }
+    }
+
+    function scheduleNextPodcastStep() {
+      if (!podcastPlaying) return;
+      const maxPasses = Number(document.getElementById('podcast-repeat-select')?.value || 2);
+      const gapMs = Number(document.getElementById('podcast-gap-select')?.value || 2500);
+      const passEl = document.getElementById('podcast-pass-indicator');
+      if (podcastPass < maxPasses) {
+        podcastPass += 1;
+        if (passEl) passEl.textContent = `Pausa reflexiva (${(gapMs / 1000).toFixed(1)}s) -> Repeticao ${podcastPass}/${maxPasses}`;
+        podcastTimer = setTimeout(() => { if (podcastPlaying) playCurrentPodcastPass(); }, gapMs);
+      } else {
+        podcastPass = 1;
+        podcastIndex = (podcastIndex + 1) % podcastTracks.length;
+        if (passEl) passEl.textContent = `Intervalo (${(gapMs / 1000).toFixed(1)}s) -> Proxima faixa`;
+        podcastTimer = setTimeout(() => {
+          if (!podcastPlaying) return;
+          renderPodcastState();
+          renderPodcastQueue();
+          playCurrentPodcastPass();
+        }, gapMs);
+      }
+    }
+
+    function speakSentenceFallback(text, onDone) {
+      if (!('speechSynthesis' in window)) { onDone(); return; }
+      try {
+        window.speechSynthesis.cancel();
+        const utt = new SpeechSynthesisUtterance(text);
+        utt.lang = 'en-US';
+        utt.rate = podcastRate;
+        podcastActiveUtterance = utt;
+        utt.onend = () => { podcastActiveUtterance = null; onDone(); };
+        utt.onerror = () => { podcastActiveUtterance = null; onDone(); };
+        window.speechSynthesis.speak(utt);
+      } catch (_) {
+        onDone();
+      }
+    }
+
+    function playCurrentPodcastPass() {
+      if (!podcastPlaying) return;
+      const tr = podcastTracks[podcastIndex];
+      if (!tr) { stopPodcastPlayback(); return; }
+      renderPodcastState();
+      const audioEl = document.getElementById('podcast-audio-el');
+
+      if (tr.audio_url && tr.audio_type === 'sentence_native' && audioEl) {
+        audioEl.src = tr.audio_url;
+        audioEl.playbackRate = podcastRate;
+        audioEl.onended = () => scheduleNextPodcastStep();
+        audioEl.onerror = () => speakSentenceFallback(tr.en, scheduleNextPodcastStep);
+        audioEl.play().catch(() => speakSentenceFallback(tr.en, scheduleNextPodcastStep));
+      } else if (tr.audio_url && tr.audio_type === 'word_native' && audioEl && podcastPass === 1) {
+        audioEl.src = tr.audio_url;
+        audioEl.playbackRate = podcastRate;
+        audioEl.onended = () => {
+          if (!podcastPlaying) return;
+          setTimeout(() => { if (podcastPlaying) speakSentenceFallback(tr.en, scheduleNextPodcastStep); }, 350);
+        };
+        audioEl.onerror = () => speakSentenceFallback(tr.en, scheduleNextPodcastStep);
+        audioEl.play().catch(() => speakSentenceFallback(tr.en, scheduleNextPodcastStep));
+      } else {
+        speakSentenceFallback(tr.en, scheduleNextPodcastStep);
+      }
+    }
+
+    function selectPodcastTrack(idx) {
+      if (idx < 0 || idx >= podcastTracks.length) return;
+      const wasPlaying = podcastPlaying;
+      stopPodcastPlayback();
+      podcastIndex = idx;
+      podcastPass = 1;
+      renderPodcastState();
+      renderPodcastQueue();
+      if (wasPlaying) startPodcastPlayback();
+    }
+
+    function stepPodcastTrack(delta) {
+      if (!podcastTracks.length) return;
+      const next = (podcastIndex + delta + podcastTracks.length) % podcastTracks.length;
+      selectPodcastTrack(next);
+    }
+
+    function cyclePodcastSpeed() {
+      const speeds = [1.0, 0.85, 1.15];
+      podcastRate = speeds[(speeds.indexOf(podcastRate) + 1) % speeds.length];
+      const btn = document.getElementById('podcast-speed-btn');
+      if (btn) btn.textContent = podcastRate.toFixed(2).replace(/\.00$/, '.0') + 'x';
+      const audioEl = document.getElementById('podcast-audio-el');
+      if (audioEl) audioEl.playbackRate = podcastRate;
+    }
+
+    function togglePodcastBlindMode() {
+      podcastBlind = !podcastBlind;
+      const btn = document.getElementById('podcast-blind-btn');
+      if (btn) btn.textContent = podcastBlind ? 'Mostrar Texto (Transcricao)' : 'Ocultar Texto (Modo Cego)';
+      renderPodcastState();
+    }
+
+    function onPodcastConfigChange() {
+      podcastPass = 1;
+      renderPodcastState();
+    }
+
+    async function flagCurrentPodcastTrackAsGap() {
+      const tr = podcastTracks[podcastIndex];
+      if (!tr) return;
+      try {
+        const res = await fetch('/api/evaluate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id: `${tr.word.toLowerCase()}_immersion`,
+            word: tr.word,
+            status: 'desconhecido',
+            pos: tr.pos || 'IMMERSION',
+            subdeck: tr.subdeck || '01k',
+            definition_en: tr.def_en || tr.en,
+            definition_pt: tr.pt || '',
+            example_1: tr.en
+          })
+        });
+        const data = await res.json();
+        if (data && data.success) {
+          showToast(`"${tr.word}" enviado para a Fila prioritaria do Anki.`);
+          fetchStatus();
+        }
+      } catch (_) {
+        showToast('Nao foi possivel registrar o termo agora.', false);
+      }
+    }
+
+    // ==========================================
+    // MODULO 3: ANKI HUB COMMAND CENTER
+    // ==========================================
+    function playHubAudioUrl(url) {
+      if (!url) return;
+      try {
+        if (currentAudioObj) currentAudioObj.pause();
+        currentAudioObj = new Audio(url);
+        currentAudioObj.play().catch(() => showToast('Audio indisponivel localmente.', false));
+      } catch (_) {}
+    }
+
+    async function loadAnkiHubModule(notifyUser = false) {
+      try {
+        const res = await fetch('/api/anki-hub');
+        const data = await res.json();
+        if (!data || !data.success) return;
+
+        const stEl = document.getElementById('hub-kpi-anki-status');
+        const subEl = document.getElementById('hub-kpi-anki-sub');
+        if (stEl) {
+          stEl.textContent = data.anki_connected ? `Online (v${data.anki_version || 6})` : 'Anki Desktop Fechado';
+          stEl.style.color = data.anki_connected ? '#34d399' : 'var(--amber)';
+        }
+        if (subEl) {
+          subEl.textContent = data.anki_connected
+            ? `${data.deck_card_count !== null ? data.deck_card_count + ' cartoes ativos no baralho' : 'AnkiConnect pronto em 127.0.0.1:8765'}`
+            : 'Abra o Anki com AnkiConnect para injetar os Gaps prontos';
+        }
+
+        document.getElementById('hub-kpi-ready').textContent = data.pipeline.ready_count;
+        document.getElementById('hub-kpi-waiting').textContent = data.pipeline.waiting_count;
+        document.getElementById('hub-kpi-injected').textContent = data.pipeline.injected_count;
+
+        const tbody = document.getElementById('hub-ready-tbody');
+        if (tbody) {
+          if (!data.top_ready.length) {
+            tbody.innerHTML = '<tr><td colspan="4" style="padding: 18px 6px; color: var(--muted); text-align: center;">Nenhum Gap pendente com frase pronta no momento.</td></tr>';
+          } else {
+            tbody.innerHTML = data.top_ready.map(item => {
+              const safeAudio = item.audio_url ? item.audio_url.replace(/'/g, "\\'") : '';
+              return `<tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 9px 6px;"><span style="font-size: 11px; padding: 2px 7px; border-radius: 6px; background: rgba(101, 225, 216, 0.12); color: var(--cyan); font-weight: 700;">${escapeHtmlSafe((item.subdeck || '').toUpperCase())}</span></td>
+                <td style="padding: 9px 6px; font-weight: 700; color: var(--text);">${escapeHtmlSafe(item.termo_display)} <small style="color: var(--muted); font-weight: 400;">${escapeHtmlSafe(item.pos)}</small></td>
+                <td style="padding: 9px 6px; color: #cbd5e1; font-size: 12px;">${escapeHtmlSafe(item.frase)}<div style="color: var(--muted); font-size: 11px; margin-top: 2px;">${escapeHtmlSafe(item.definicao_pt || item.definicao)}</div></td>
+                <td style="padding: 9px 6px; text-align: right;">${safeAudio ? `<button type="button" class="dictation-btn" style="padding: 3px 8px; font-size: 11px;" onclick="playHubAudioUrl('${safeAudio}')">▶</button>` : '<span style="color: var(--muted); font-size: 11px;">--</span>'}</td>
+              </tr>`;
+            }).join('');
+          }
+        }
+
+        const injBox = document.getElementById('hub-injected-list');
+        if (injBox) {
+          if (!data.recent_injected.length) {
+            injBox.innerHTML = '<div style="color: var(--muted); font-size: 12px; padding: 12px 0;">Nenhuma injecao registrada ainda no mapa local.</div>';
+          } else {
+            injBox.innerHTML = data.recent_injected.slice(0, 14).map(it => {
+              const dt = (it.injetado_em || it.confirmado_em || '').slice(0, 10) || 'Vinculado';
+              return `<div style="padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: rgba(255,255,255,0.02);">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <strong style="color: var(--text); font-size: 13px;">${escapeHtmlSafe(it.termo_display)}</strong>
+                  <span style="font-size: 10px; color: var(--blue); border: 1px solid rgba(128,184,255,0.3); padding: 1px 6px; border-radius: 4px;">${escapeHtmlSafe(dt)}</span>
+                </div>
+                <div style="font-size: 11px; color: var(--muted); margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtmlSafe(it.frase || it.definicao)}</div>
+              </div>`;
+            }).join('');
+          }
+        }
+
+        if (notifyUser) showToast('Status do Anki Hub atualizado.');
+      } catch (_) {
+        showToast('Erro ao consultar /api/anki-hub.', false);
+      }
+    }
+
+    async function hubEnrichGaps() {
+      const btn = document.getElementById('hub-btn-enrich');
+      if (btn) btn.disabled = true;
+      await enrichAllGaps();
+      await loadAnkiHubModule();
+      if (btn) btn.disabled = false;
+    }
+
+    async function hubSyncCloud() {
+      const btn = document.getElementById('hub-btn-sync');
+      if (btn) btn.disabled = true;
+      await syncWithCloud();
+      await loadAnkiHubModule();
+      if (btn) btn.disabled = false;
+    }
+
+    async function hubInjectAnki() {
+      const btn = document.getElementById('hub-btn-inject');
+      const qty = document.getElementById('hub-inject-limit')?.value || '10';
+      if (btn) btn.disabled = true;
+      showToast('Executando injecao cirurgica no Anki via AnkiConnect...');
+      try {
+        const res = await fetch('/api/inject-anki', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ limit: qty })
+        });
+        const data = await res.json();
+        if (data && data.success) {
+          showToast(data.message || 'Cartoes injetados com sucesso.');
+          await fetchStatus();
+          await loadAnkiHubModule();
+        } else {
+          showToast((data && (data.message || data.error)) || 'Abra o Anki Desktop para concluir a injecao.', false);
+        }
+      } catch (_) {
+        showToast('Erro de comunicacao com o servidor local.', false);
+      } finally {
+        if (btn) btn.disabled = false;
+      }
+    }
+
+    // ==========================================
+    // MODULO 4: ANALYTICS & COBERTURA CEFR
+    // ==========================================
+    function jumpToDeckFromAnalytics(subdeck) {
+      const sel = document.getElementById('select-subdeck');
+      if (sel) {
+        sel.value = subdeck;
+        onSubdeckChange();
+      }
+      switchModule('vocab');
+    }
+
+    function launchHighLeverageSprint(subdeck) {
+      const sel = document.getElementById('select-subdeck');
+      if (sel) {
+        sel.value = subdeck;
+        onSubdeckChange();
+      }
+      switchView('focus');
+      showToast(`Sprint iniciado em ${subdeck.toUpperCase()} · Modo Foco ativo.`);
+    }
+
+    function launchImmersionOnGaps() {
+      switchModule('listening');
+      switchListeningSubmode('podcast');
+      const srcEl = document.getElementById('podcast-source-select');
+      if (srcEl) srcEl.value = 'gaps';
+      loadImmersionPlaylist(true);
+    }
+
+    async function loadAnalyticsModule(notifyUser = false) {
+      try {
+        const res = await fetch('/api/analytics');
+        const data = await res.json();
+        if (!data || !data.success) return;
+
+        const ul = data.user_level || {};
+        const tot = data.totals || {};
+        document.getElementById('ana-kpi-cefr').textContent = `${ul.code || 'B1'} · ${ul.label || ''}`;
+        document.getElementById('ana-kpi-cefr-desc').textContent = ul.desc || '';
+        document.getElementById('ana-kpi-mapped').textContent = (tot.mapped_terms || 0).toLocaleString('pt-BR');
+        document.getElementById('ana-kpi-senses').textContent = `${(tot.evaluated_senses || 0).toLocaleString('pt-BR')} acepcoes classificadas`;
+        document.getElementById('ana-kpi-mastery').textContent = `${tot.mastery_rate || 0}%`;
+        document.getElementById('ana-kpi-breakdown').textContent = `${tot.known || 0} conhecidos · ${tot.gaps || 0} gaps · ${tot.doubts || 0} duvidas`;
+        document.getElementById('ana-kpi-jev').textContent = tot.jev_false_friends || 0;
+        document.getElementById('ana-kpi-jev-sub').textContent = `${tot.jev_analyzed || 0} julgamentos em cache Jev`;
+
+        const renderBandRow = (b) => {
+          const t = Math.max(1, b.total || 1);
+          const pKnown = Math.min(100, (b.known / t) * 100);
+          const pGaps = Math.min(100 - pKnown, (b.gaps / t) * 100);
+          const pDoubts = Math.min(100 - pKnown - pGaps, (b.doubts / t) * 100);
+          return `<div onclick="jumpToDeckFromAnalytics('${escapeHtmlSafe(b.subdeck)}')" style="cursor: pointer; padding: 8px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.015);">
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px; margin-bottom: 5px;">
+              <div>
+                <strong style="color: var(--text);">${escapeHtmlSafe(b.subdeck.toUpperCase())}</strong>
+                <span style="color: var(--cyan); font-size: 11px; margin-left: 6px;">${escapeHtmlSafe(b.cefr_code)}</span>
+                <span style="color: var(--muted); font-size: 11px; margin-left: 6px;">${escapeHtmlSafe(b.label)}</span>
+              </div>
+              <span style="font-family: monospace; font-size: 11px; color: var(--muted);">${b.evaluated}/${b.total} (${b.percent}%)</span>
+            </div>
+            <div style="height: 7px; background: rgba(255,255,255,0.07); border-radius: 999px; overflow: hidden; display: flex;">
+              <span style="width: ${pKnown.toFixed(1)}%; background: #34d399;"></span>
+              <span style="width: ${pGaps.toFixed(1)}%; background: #f87171;"></span>
+              <span style="width: ${pDoubts.toFixed(1)}%; background: #fbbf24;"></span>
+            </div>
+          </div>`;
+        };
+
+        const cefrBox = document.getElementById('ana-cefr-bars');
+        if (cefrBox) cefrBox.innerHTML = (data.cefr_bands || []).map(renderBandRow).join('');
+
+        const structBox = document.getElementById('ana-struct-bars');
+        if (structBox) structBox.innerHTML = (data.structures_bands || []).map(renderBandRow).join('');
+
+        const posLabels = {
+          verb: 'Verbos',
+          noun: 'Substantivos',
+          adjective: 'Adjetivos',
+          adverb: 'Adverbios',
+          chunk: 'Chunks / PV',
+          other: 'Outros / Listening'
+        };
+        const posBox = document.getElementById('ana-pos-grid');
+        if (posBox && data.pos_breakdown) {
+          posBox.innerHTML = Object.entries(posLabels).map(([k, lbl]) => {
+            const val = data.pos_breakdown[k] || 0;
+            return `<div style="padding: 8px 10px; border-radius: 8px; border: 1px solid var(--line); background: rgba(255,255,255,0.02); display: flex; justify-content: space-between; align-items: center; font-size: 12px;">
+              <span style="color: var(--muted);">${lbl}</span>
+              <strong style="color: var(--text); font-family: monospace;">${val}</strong>
+            </div>`;
+          }).join('');
+        }
+
+        const tlBox = document.getElementById('ana-timeline-bars');
+        if (tlBox) {
+          const tl = data.daily_timeline || [];
+          if (!tl.length) {
+            tlBox.innerHTML = '<span style="font-size: 11px; color: var(--muted);">Sem historico datado suficiente.</span>';
+          } else {
+            const maxC = Math.max(1, ...tl.map(x => x.count));
+            tlBox.innerHTML = tl.map(item => {
+              const h = Math.max(10, Math.round((item.count / maxC) * 56));
+              return `<div title="${item.date}: ${item.count} avaliacoes" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                <div style="width: 100%; max-width: 18px; height: ${h}px; background: var(--blue); border-radius: 3px 3px 0 0; opacity: 0.85;"></div>
+                <span style="font-size: 9px; color: var(--muted); font-family: monospace;">${item.date.slice(8, 10)}/${item.date.slice(5, 7)}</span>
+              </div>`;
+            }).join('');
+          }
+        }
+
+        if (notifyUser) showToast('Telemetria CEFR atualizada.');
+      } catch (_) {
+        showToast('Erro ao carregar /api/analytics.', false);
+      }
+    }
 
 
     function switchView(mode) {

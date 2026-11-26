@@ -12,9 +12,12 @@ Plataforma web modular para triagem acelerada de vocabulario em ingles (MWLD 01k
 2. **Listening Studio:**
    - Ditado Ativo com Video: suporte a YouTube (`/api/youtube-transcript` com fusao sintatica de micro-legendas) e arquivos locais (`.mp4`/`.webm` + `.srt`/`.vtt`), Word Slots em tempo real, dicas ortograficas (Levenshtein) e controle de velocidade.
    - Escuta as Cegas (Blind Listening): reproducao auditiva com revelacao em dois estagios (transcricao EN -> traducao PT).
-3. **Anki Hub & Sincronizacao Bidirecional:**
-   - Fila qualificada de Gaps com salvaguarda $i+1$ e injecao via AnkiConnect (`http://127.0.0.1:8765`).
+   - Imersao Continua (Podcast Pessoal - `/api/immersion-playlist`): player continuo com repeticao reflexiva (`1x -> Pausa -> 2x`), Modo Cego e integracao nativa com `MediaSession API` (controle por fone Bluetooth e tela bloqueada).
+3. **Anki Hub Command Center (`/api/anki-hub`) & Sincronizacao Bidirecional:**
+   - Painel completo de telemetria AnkiConnect (`http://127.0.0.1:8765`), fila prioritaria de Gaps com salvaguarda estrita $i+1$, preview de audio e injecao seletiva em lote.
    - Sincronizacao bidirecional com Google Cloud Run (`/api/sync-cloud` e `/api/import-knowledge-map`).
+4. **Analytics & Cobertura CEFR (`/api/analytics`):**
+   - Radar completo de cobertura lexica por faixa de frequencia (`01k` a `10k` / A1 a C2), progresso em estruturas nativas (`Phrasal Verbs`, `Collocations`, `Idioms`), distribuicao morfossintatica (POS) e contabilidade de falsos cognatos Jev.
 
 ---
 
