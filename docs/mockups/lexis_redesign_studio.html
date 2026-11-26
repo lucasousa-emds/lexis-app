@@ -1,0 +1,1671 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="obsidian" data-density="zen">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lexis Suite · Redesign Studio</title>
+  <style>
+    @property --fade-start {
+      syntax: "<length>";
+      inherits: false;
+      initial-value: 0px;
+    }
+    @property --fade-end {
+      syntax: "<length>";
+      inherits: false;
+      initial-value: 0px;
+    }
+
+    :root,
+    html[data-theme="obsidian"] {
+      color-scheme: dark;
+      --bg: #090b0f;
+      --bg-gradient: radial-gradient(ellipse at 50% -10%, rgba(16, 185, 129, 0.06), transparent 55%);
+      --surface: #11151d;
+      --card: #161b26;
+      --card-elevated: #1c2230;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-strong: rgba(255, 255, 255, 0.16);
+      --text: #f3f5f8;
+      --muted: #98a2b3;
+      --dim: #667085;
+      --accent: #e4e7ec;
+      --accent-ink: #090b0f;
+      --cyan: #67e8f9;
+      --purple: #c4b5fd;
+      --amber: #fbbf24;
+      --blue: #93c5fd;
+      --known: #10b981;
+      --unknown: #f43f5e;
+      --doubt: #f59e0b;
+      --grain-opacity: 0.035;
+      --shadow-frame: 0 28px 70px rgba(0, 0, 0, 0.55);
+    }
+
+    html[data-theme="midnight"] {
+      color-scheme: dark;
+      --bg: #080c12;
+      --bg-gradient: radial-gradient(ellipse at 50% 0%, rgba(101, 225, 216, 0.09), transparent 55%),
+                     radial-gradient(ellipse at 85% 95%, rgba(177, 154, 255, 0.08), transparent 50%);
+      --surface: #101720;
+      --card: #131c28;
+      --card-elevated: #182332;
+      --border: #25303d;
+      --border-strong: #374659;
+      --text: #eff4fa;
+      --muted: #8fa0b5;
+      --dim: #637387;
+      --accent: #65e1d8;
+      --accent-ink: #081214;
+      --cyan: #65e1d8;
+      --purple: #b19aff;
+      --amber: #edc579;
+      --blue: #80b8ff;
+      --known: #34d399;
+      --unknown: #fb7185;
+      --doubt: #edc579;
+      --grain-opacity: 0.035;
+      --shadow-frame: 0 28px 70px rgba(0, 0, 0, 0.6);
+    }
+
+    html[data-theme="paper"] {
+      color-scheme: light;
+      --bg: #f5f2eb;
+      --bg-gradient: radial-gradient(ellipse at 50% 0%, rgba(15, 118, 110, 0.05), transparent 55%);
+      --surface: #eae5da;
+      --card: #ffffff;
+      --card-elevated: #f9f7f2;
+      --border: rgba(20, 23, 28, 0.11);
+      --border-strong: rgba(20, 23, 28, 0.22);
+      --text: #14171c;
+      --muted: #4b5563;
+      --dim: #6b7280;
+      --accent: #0f766e;
+      --accent-ink: #ffffff;
+      --cyan: #0f766e;
+      --purple: #6d28d9;
+      --amber: #b45309;
+      --blue: #1d4ed8;
+      --known: #047857;
+      --unknown: #c2410c;
+      --doubt: #b45309;
+      --grain-opacity: 0;
+      --shadow-frame: 0 24px 60px rgba(20, 23, 28, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      background-color: var(--bg);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    html[data-theme="paper"] body {
+      -webkit-font-smoothing: subpixel-antialiased;
+      -moz-osx-font-smoothing: auto;
+    }
+
+    body {
+      min-height: 100dvh;
+      background-color: var(--bg);
+      background-image: var(--bg-gradient);
+      color: var(--text);
+      font-family: Inter, "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      padding: 16px 20px 40px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Craft: Tiled SVG Noise overlay (dark themes only) */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+      background-size: 200px 200px;
+      background-repeat: repeat;
+      opacity: var(--grain-opacity);
+      mix-blend-mode: overlay;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--cyan);
+      outline-offset: 2px;
+    }
+
+    button, input, select {
+      font: inherit;
+      color: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      border: 0;
+      background: transparent;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Craft: Button Press (transform only, 100ms ease-out) */
+    .pressable {
+      transition: transform 100ms ease-out;
+    }
+    .pressable:active:not(:disabled) {
+      transform: scale(0.97);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .pressable, .wave-bar, * {
+        transition: none !important;
+        animation: none !important;
+      }
+    }
+
+    /* Craft: Tabular Numbers */
+    .tnum {
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* STUDIO CONTROL BAR */
+    .studio-bar {
+      max-width: 1180px;
+      margin: 0 auto 14px;
+      padding: 10px 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .studio-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .studio-badge {
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      background: color-mix(in oklab, var(--cyan) 14%, transparent);
+      color: var(--cyan);
+      border: 1px solid color-mix(in oklab, var(--cyan) 32%, transparent);
+    }
+
+    .studio-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Craft: Nested radius 14px outer - 4px padding = 10px inner */
+    .seg-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      padding: 4px;
+      border-radius: 14px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+    }
+
+    .seg-btn {
+      padding: 5px 11px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Craft: Hover Restraint - instant highlight on frequent nav/tabs */
+    .seg-btn:hover {
+      color: var(--text);
+    }
+
+    .seg-btn.active {
+      background: var(--card-elevated);
+      color: var(--text);
+      font-weight: 600;
+      border: 1px solid var(--border-strong);
+    }
+
+    /* APP FRAME WITH REAL @container QUERIES */
+    .viewport-stage {
+      max-width: 1180px;
+      margin: 0 auto;
+      transition: max-width 200ms cubic-bezier(0.33, 1, 0.68, 1);
+    }
+
+    .viewport-stage.mobile-preview {
+      max-width: 390px;
+    }
+
+    .app-shell {
+      container-type: inline-size;
+      container-name: app;
+      background: var(--bg);
+      border: 1px solid var(--border-strong);
+      border-radius: 20px;
+      box-shadow: var(--shadow-frame);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 700px;
+      position: relative;
+    }
+
+    /* TOPBAR */
+    .app-topbar {
+      height: 60px;
+      padding: 0 20px;
+      border-bottom: 1px solid var(--border);
+      background: color-mix(in oklab, var(--surface) 88%, transparent);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 18px;
+      letter-spacing: -0.03em;
+    }
+
+    .brand-mark {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: color-mix(in oklab, var(--cyan) 15%, transparent);
+      border: 1px solid color-mix(in oklab, var(--cyan) 35%, transparent);
+      color: var(--cyan);
+    }
+
+    .brand-sub {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      color: var(--dim);
+      display: block;
+      margin-top: -2px;
+    }
+
+    .top-nav {
+      display: flex;
+      align-self: stretch;
+      gap: 6px;
+    }
+
+    .nav-tab {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 0 12px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--muted);
+      border-bottom: 2px solid transparent;
+    }
+
+    .nav-tab:hover {
+      color: var(--text);
+    }
+
+    .nav-tab.active {
+      color: var(--text);
+      font-weight: 600;
+      border-bottom-color: var(--tab-accent, var(--cyan));
+    }
+
+    .nav-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 2px;
+      background: var(--tab-accent, var(--cyan));
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .cloud-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 11px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      background: var(--card-elevated);
+      border: 1px solid var(--border-strong);
+      display: grid;
+      place-items: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    /* APP MAIN AREA */
+    .app-main {
+      padding: 18px 22px 28px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .module-panel {
+      display: none;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .module-panel.active {
+      display: flex;
+    }
+
+    /* DENSITY CONTROLLED CHROME */
+    .unified-strip {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+    }
+
+    .strip-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+      min-width: 210px;
+    }
+
+    .select-slim {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      max-width: 100%;
+    }
+
+    .strip-kpis {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .mini-kpi {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .sprint-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: color-mix(in oklab, var(--card) 70%, transparent);
+      font-size: 12px;
+    }
+
+    html[data-density="zen"] .sprint-bar {
+      display: none;
+    }
+
+    .progress-rail {
+      height: 5px;
+      border-radius: 999px;
+      background: color-mix(in oklab, var(--text) 9%, transparent);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--cyan);
+      border-radius: 999px;
+    }
+
+    /* FOCUS CARD: Craft Nested Radius (20px outer - 12px pad = 8px inner) */
+    .focus-card {
+      max-width: 780px;
+      width: 100%;
+      margin: 2px auto 0;
+      padding: 20px;
+      border-radius: 20px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .focus-meta-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .badge-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .tag-chip {
+      padding: 3px 9px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    .tag-chip.accent {
+      color: var(--cyan);
+      border-color: color-mix(in oklab, var(--cyan) 30%, transparent);
+      background: color-mix(in oklab, var(--cyan) 10%, transparent);
+    }
+
+    .tag-chip.danger {
+      color: var(--unknown);
+      border-color: color-mix(in oklab, var(--unknown) 35%, transparent);
+      background: color-mix(in oklab, var(--unknown) 11%, transparent);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .icon-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 11px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .icon-btn:hover {
+      border-color: var(--border-strong);
+      background: var(--card-elevated);
+    }
+
+    /* Modern Web Guidance: clamp() with max <= 2.5 * min */
+    .word-headline {
+      font-size: clamp(1.75rem, 1.2rem + 2.2vw, 2.75rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+    }
+
+    .word-row {
+      display: flex;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .ipa-text {
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .inner-box {
+      padding: 12px 14px;
+      border-radius: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .alert-box {
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid color-mix(in oklab, var(--doubt) 38%, transparent);
+      background: color-mix(in oklab, var(--doubt) 10%, transparent);
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 13px;
+    }
+
+    .lang-pill {
+      display: inline-block;
+      min-width: 26px;
+      text-align: center;
+      padding: 2px 5px;
+      border-radius: 5px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      background: color-mix(in oklab, var(--text) 8%, transparent);
+      color: var(--muted);
+      margin-right: 8px;
+    }
+
+    .example-en {
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.45;
+    }
+
+    .example-en mark {
+      background: color-mix(in oklab, var(--cyan) 18%, transparent);
+      color: var(--cyan);
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-weight: 700;
+    }
+
+    .actions-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .action-btn {
+      padding: 12px 10px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .action-btn.known:hover {
+      border-color: var(--known);
+      background: color-mix(in oklab, var(--known) 12%, transparent);
+    }
+
+    .action-btn.unknown:hover {
+      border-color: var(--unknown);
+      background: color-mix(in oklab, var(--unknown) 12%, transparent);
+    }
+
+    .action-btn.doubt:hover {
+      border-color: var(--doubt);
+      background: color-mix(in oklab, var(--doubt) 12%, transparent);
+    }
+
+    .action-hint {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--dim);
+      font-family: ui-monospace, monospace;
+    }
+
+    .aux-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding-top: 2px;
+    }
+
+    /* LISTENING STUDIO */
+    .split-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+      gap: 16px;
+    }
+
+    .panel-card {
+      padding: 18px;
+      border-radius: 16px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Modern Web Guidance: reserve video space with aspect-ratio */
+    .video-frame {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border-radius: 10px;
+      background: #05070b;
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+      color: #f3f5f8;
+    }
+
+    .word-slots {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .slot {
+      padding: 5px 10px;
+      border-radius: 7px;
+      font-size: 13px;
+      font-weight: 600;
+      border: 1px dashed var(--border-strong);
+      color: var(--dim);
+    }
+
+    .slot.completed {
+      border-style: solid;
+      border-color: var(--known);
+      background: color-mix(in oklab, var(--known) 14%, transparent);
+      color: var(--known);
+    }
+
+    .slot.current {
+      border-style: solid;
+      border-color: var(--purple);
+      background: color-mix(in oklab, var(--purple) 14%, transparent);
+      color: var(--purple);
+    }
+
+    .slot.typo {
+      border-style: solid;
+      border-color: var(--doubt);
+      background: color-mix(in oklab, var(--doubt) 14%, transparent);
+      color: var(--doubt);
+    }
+
+    .dictation-input {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border-strong);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 15px;
+    }
+
+    /* PODCAST PLAYER & WAVEFORM */
+    .play-circle {
+      width: 48px;
+      height: 48px;
+      border-radius: 999px;
+      background: var(--purple);
+      color: #110b1f;
+      display: grid;
+      place-items: center;
+    }
+
+    /* Craft: Optical Alignment for right-pointing triangle */
+    .play-triangle {
+      transform: translateX(1px);
+    }
+
+    .wave-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      height: 52px;
+    }
+
+    .wave-bar {
+      width: 3px;
+      border-radius: 999px;
+      background: color-mix(in oklab, var(--purple) 45%, transparent);
+    }
+
+    .wave-row.playing .wave-bar {
+      background: var(--purple);
+      animation: wavePulse 0.7s ease-in-out infinite alternate;
+      animation-delay: calc(var(--i) * -45ms);
+    }
+
+    @keyframes wavePulse {
+      to { transform: scaleY(0.45); opacity: 0.6; }
+    }
+
+    /* Craft: Edge-aware scroll fade */
+    @keyframes fadeStart {
+      from { --fade-start: 0px; }
+      to { --fade-start: 1.75rem; }
+    }
+    @keyframes fadeEnd {
+      from { --fade-end: 1.75rem; }
+      to { --fade-end: 0px; }
+    }
+
+    .queue-scroll {
+      max-height: 230px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding-right: 2px;
+      mask-image: linear-gradient(
+        to bottom,
+        transparent,
+        black var(--fade-start),
+        black calc(100% - var(--fade-end)),
+        transparent
+      );
+    }
+
+    @supports (animation-timeline: scroll()) {
+      .queue-scroll {
+        animation: fadeStart 1ms linear both, fadeEnd 1ms linear both;
+        animation-range: 0 2.5rem, calc(100% - 2.5rem) 100%;
+        animation-timeline: scroll(self y);
+      }
+    }
+
+    @supports not (animation-timeline: scroll()) {
+      .queue-scroll {
+        --fade-start: 1.25rem;
+        --fade-end: 1.25rem;
+      }
+    }
+
+    .queue-item {
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      text-align: left;
+    }
+
+    .queue-item.active {
+      border-color: var(--cyan);
+      background: color-mix(in oklab, var(--cyan) 10%, transparent);
+    }
+
+    /* KPI GRID & DATA TABLES */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .kpi-box {
+      padding: 14px;
+      border-radius: 14px;
+      background: var(--card);
+      border: 1px solid var(--border);
+    }
+
+    .kpi-label {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .kpi-val {
+      font-size: 22px;
+      font-weight: 800;
+      margin-top: 4px;
+      letter-spacing: -0.02em;
+    }
+
+    .band-row {
+      padding: 9px 11px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      text-align: left;
+    }
+
+    .band-row:hover {
+      border-color: var(--border-strong);
+    }
+
+    .stacked-track {
+      height: 7px;
+      border-radius: 999px;
+      background: color-mix(in oklab, var(--text) 8%, transparent);
+      overflow: hidden;
+      display: flex;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    .data-table th {
+      text-align: left;
+      color: var(--muted);
+      font-size: 11px;
+      padding: 8px 6px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .data-table td {
+      padding: 9px 6px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* MOBILE BOTTOM BAR (shown via @container query) */
+    .bottom-nav {
+      display: none;
+      border-top: 1px solid var(--border);
+      background: color-mix(in oklab, var(--surface) 95%, transparent);
+      padding: 8px 6px calc(10px + env(safe-area-inset-bottom, 0px));
+      justify-content: space-around;
+    }
+
+    .bottom-tab {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 4px;
+      border-radius: 10px;
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .bottom-tab.active {
+      color: var(--text);
+      font-weight: 700;
+      background: color-mix(in oklab, var(--cyan) 12%, transparent);
+    }
+
+    /* Modern Web Guidance: @container app responsive layout */
+    @container app (max-width: 720px) {
+      .top-nav {
+        display: none;
+      }
+      .bottom-nav {
+        display: flex;
+      }
+      .app-main {
+        padding: 14px 14px 20px;
+      }
+      .focus-card {
+        padding: 14px;
+      }
+      .split-grid {
+        grid-template-columns: 1fr;
+      }
+      .kpi-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .actions-grid {
+        gap: 8px;
+      }
+      .action-btn {
+        min-height: 52px;
+      }
+    }
+
+    /* Modern Web Guidance: Forced Colors Mode support */
+    @media (forced-colors: active) {
+      .studio-bar, .app-shell, .focus-card, .panel-card, .kpi-box, .action-btn, .band-row, .seg-btn.active {
+        border: 1px solid CanvasText;
+      }
+      .nav-tab.active, .bottom-tab.active {
+        outline: 2px solid Highlight;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- STUDIO DESIGN SWITCHER -->
+  <div class="studio-bar" role="region" aria-label="Controles do Estudio Visual">
+    <div class="studio-title">
+      <span class="studio-badge">DESIGN STUDIO</span>
+      <span>Teste em HTML antes da implementacao final</span>
+    </div>
+
+    <div class="studio-controls">
+      <!-- Theme Switcher -->
+      <div class="seg-group" role="group" aria-label="Tema visual">
+        <button type="button" class="seg-btn pressable active" data-theme-btn="obsidian" onclick="setTheme('obsidian')">Obsidian</button>
+        <button type="button" class="seg-btn pressable" data-theme-btn="midnight" onclick="setTheme('midnight')">Midnight</button>
+        <button type="button" class="seg-btn pressable" data-theme-btn="paper" onclick="setTheme('paper')">Paper Light</button>
+      </div>
+
+      <!-- Density Switcher -->
+      <div class="seg-group" role="group" aria-label="Densidade de cabecalho">
+        <button type="button" class="seg-btn pressable active" data-density-btn="zen" onclick="setDensity('zen')">Modo Zen</button>
+        <button type="button" class="seg-btn pressable" data-density-btn="full" onclick="setDensity('full')">Completa</button>
+      </div>
+
+      <!-- Viewport Switcher -->
+      <div class="seg-group" role="group" aria-label="Tamanho da tela">
+        <button type="button" class="seg-btn pressable active" data-vp-btn="desktop" onclick="setViewport('desktop')">Desktop</button>
+        <button type="button" class="seg-btn pressable" data-vp-btn="mobile" onclick="setViewport('mobile')">Mobile 390px</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIVE APP PREVIEW SHELL -->
+  <div id="viewport-stage" class="viewport-stage">
+    <div class="app-shell">
+
+      <!-- TOPBAR -->
+      <header class="app-topbar">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          </div>
+          <div>
+            <span>lexis</span>
+            <span class="brand-sub">SUITE</span>
+          </div>
+        </div>
+
+        <nav class="top-nav" aria-label="Modulos desktop">
+          <button type="button" class="nav-tab active" style="--tab-accent: var(--cyan)" data-mod-btn="vocab" onclick="switchModule('vocab')">
+            <span class="nav-dot"></span>Vocabulario
+          </button>
+          <button type="button" class="nav-tab" style="--tab-accent: var(--purple)" data-mod-btn="listening" onclick="switchModule('listening')">
+            <span class="nav-dot"></span>Listening Studio
+          </button>
+          <button type="button" class="nav-tab" style="--tab-accent: var(--amber)" data-mod-btn="anki" onclick="switchModule('anki')">
+            <span class="nav-dot"></span>Anki Hub
+          </button>
+          <button type="button" class="nav-tab" style="--tab-accent: var(--blue)" data-mod-btn="analytics" onclick="switchModule('analytics')">
+            <span class="nav-dot"></span>Analytics
+          </button>
+        </nav>
+
+        <div class="top-actions">
+          <button type="button" class="cloud-pill pressable" onclick="flashCloudSync(this)">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>
+            <span id="cloud-label" class="tnum">1.507 termos</span>
+          </button>
+          <div class="avatar" title="Lucas">LC</div>
+        </div>
+      </header>
+
+      <!-- MAIN WORKSPACE -->
+      <main class="app-main">
+
+        <!-- MODULE 1: VOCABULARIO -->
+        <section id="mod-vocab" class="module-panel active" aria-label="Vocabulario">
+          <div class="unified-strip">
+            <div class="strip-left">
+              <select id="demo-deck-select" class="select-slim" onchange="onSelectDemoDeck(this.value)" aria-label="Deck ativo">
+                <option value="02k" selected>Deck 02k · A2 (57,9% · faltam 393)</option>
+                <option value="pv-top150">Top 150 Phrasal Verbs (0% · alta alavanca)</option>
+                <option value="03k">Deck 03k · B1 (9,9% · faltam 860)</option>
+              </select>
+              <span class="tag-chip accent tnum">B1 · 74,6%</span>
+            </div>
+            <div class="strip-kpis tnum">
+              <span class="mini-kpi">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--known)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                <span id="kpi-known">1.170</span>
+              </span>
+              <span class="mini-kpi">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--unknown)" stroke-width="2.5"><circle cx="12" cy="12" r="9"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                <span id="kpi-gaps">248</span>
+              </span>
+              <span class="mini-kpi">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--doubt)" stroke-width="2.5"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 0 1 5 1c0 1.5-2.5 2-2.5 3.5"/><circle cx="12" cy="17" r="0.6"/></svg>
+                <span id="kpi-doubt">102</span>
+              </span>
+            </div>
+          </div>
+
+          <div class="sprint-bar">
+            <span style="color: var(--muted); font-weight: 600;">Sprints de Alta Alavanca (Modo Completo)</span>
+            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+              <button type="button" class="icon-btn pressable" onclick="jumpToWordByTag('pv-top150')">Atacar Top 150 Phrasal Verbs</button>
+              <button type="button" class="icon-btn pressable" onclick="switchModule('listening'); switchListeningTab('podcast')">Ouvir Meus Gaps</button>
+            </div>
+          </div>
+
+          <div class="progress-rail" aria-label="Progresso do deck">
+            <div id="demo-progress-fill" class="progress-fill" style="width: 57.9%;"></div>
+          </div>
+
+          <!-- FOCUS CARD -->
+          <article class="focus-card">
+            <div class="focus-meta-row">
+              <div class="badge-row">
+                <span id="card-deck" class="tag-chip accent">02K</span>
+                <span id="card-pos" class="tag-chip">VERB</span>
+                <span id="card-source" class="tag-chip">MWLD + Mairo</span>
+                <span id="card-ff-badge" class="tag-chip danger">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                  Falso Amigo
+                </span>
+              </div>
+              <div style="display: flex; gap: 8px;">
+                <button type="button" class="icon-btn pressable" onclick="toggleJevPanel()">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2"><path d="M12 3l2.5 5.5L20 11l-5.5 2.5L12 19l-2.5-5.5L4 11l5.5-2.5L12 3z"/></svg>
+                  Jev IA [J]
+                </button>
+                <button type="button" class="icon-btn pressable" onclick="speakWord()">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+                  Audio [A]
+                </button>
+              </div>
+            </div>
+
+            <div class="word-row">
+              <h2 id="card-word" class="word-headline">pretend</h2>
+              <span id="card-ipa" class="ipa-text">/priˈtɛnd/</span>
+            </div>
+
+            <div id="card-ff-alert" class="alert-box">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--doubt)" stroke-width="2" style="flex-shrink:0; margin-top:2px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              <div id="card-ff-text">Falso Cognato: significa FINGIR, nao pretender. Pretender = intend.</div>
+            </div>
+
+            <div id="jev-insight" class="inner-box" style="display: none; border-color: color-mix(in oklab, var(--purple) 35%, transparent);">
+              <div style="font-size: 12px; font-weight: 700; color: var(--purple);">Diagnostico Cognitivo TypeSafe Jev</div>
+              <div id="jev-insight-body" style="font-size: 12px; color: var(--muted);"></div>
+            </div>
+
+            <div class="inner-box">
+              <div><span class="lang-pill">EN</span><span id="card-def-en">to act as if something is true when it is not</span></div>
+              <div><span class="lang-pill">PT</span><span id="card-def-pt" style="color: var(--muted);">fingir, simular que algo e real</span></div>
+            </div>
+
+            <div class="inner-box">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 11px; color: var(--dim); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Frase de Contexto i+1</span>
+                <button type="button" class="icon-btn pressable" style="padding: 3px 9px; font-size: 11px;" onclick="nextExampleSentence()">Outro Exemplo</button>
+              </div>
+              <div id="card-ex-en" class="example-en">She tried to <mark>pretend</mark> that nothing had happened.</div>
+              <div id="card-ex-pt" style="font-size: 13px; color: var(--muted);">Ela tentou fingir que nada tinha acontecido.</div>
+            </div>
+
+            <div class="actions-grid">
+              <button type="button" class="action-btn known pressable" onclick="evaluateDemo('conhecido')">
+                <span>Conheco</span>
+                <span class="action-hint">[1]</span>
+              </button>
+              <button type="button" class="action-btn unknown pressable" onclick="evaluateDemo('desconhecido')">
+                <span>Nao Sei</span>
+                <span class="action-hint">[2]</span>
+              </button>
+              <button type="button" class="action-btn doubt pressable" onclick="evaluateDemo('duvida')">
+                <span>Duvida</span>
+                <span class="action-hint">[3]</span>
+              </button>
+            </div>
+
+            <div class="aux-row">
+              <button type="button" id="btn-demo-undo" class="icon-btn pressable" onclick="undoDemo()" disabled>Voltar Carta [Z]</button>
+              <span id="demo-counter" class="tnum" style="font-size: 12px; color: var(--dim);">Carta 1 de 5 (demonstracao interativa)</span>
+              <button type="button" class="icon-btn pressable" onclick="advanceDemo()">Pular</button>
+            </div>
+          </article>
+        </section>
+
+        <!-- MODULE 2: LISTENING STUDIO -->
+        <section id="mod-listening" class="module-panel" aria-label="Listening Studio">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div>
+              <span class="studio-badge" style="color: var(--purple); border-color: color-mix(in oklab, var(--purple) 35%, transparent); background: color-mix(in oklab, var(--purple) 12%, transparent);">LISTENING STUDIO</span>
+              <h2 id="listening-heading" style="font-size: 22px; margin-top: 4px; letter-spacing: -0.02em;">Video Ditado Interativo</h2>
+            </div>
+            <div class="seg-group">
+              <button type="button" class="seg-btn pressable active" id="ltab-video" onclick="switchListeningTab('video')">Video Ditado</button>
+              <button type="button" class="seg-btn pressable" id="ltab-podcast" onclick="switchListeningTab('podcast')">Imersao Continua</button>
+            </div>
+          </div>
+
+          <!-- Submode Video Ditado -->
+          <div id="lpanel-video" class="split-grid">
+            <div class="panel-card">
+              <div class="video-frame">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="1.6"><rect x="2" y="4" width="20" height="16" rx="3"/><polygon points="10 9 16 12 10 15 10 9" fill="var(--purple)"/></svg>
+                <div style="font-size: 13px; font-weight: 600;">Steve Jobs · Discurso Stanford (178 frases)</div>
+                <div class="tnum" style="font-size: 11px; color: #98a2b3;">Trecho 01 / 178 · 00:25.8 - 00:30.1 · 1.0x</div>
+              </div>
+
+              <div class="word-slots" id="demo-word-slots"></div>
+
+              <input id="demo-dictation-input" type="text" class="dictation-input" value="I am honered to be with" oninput="renderDemoSlots(this.value)" placeholder="Digite o que ouviu..." aria-label="Transcricao do trecho" />
+
+              <div id="demo-spelling-hint" class="alert-box">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--doubt)" stroke-width="2" style="flex-shrink:0; margin-top:2px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <span>Dica ortografica inteligente: voce digitou "honered", a grafia correta e "honored".</span>
+              </div>
+            </div>
+
+            <aside class="panel-card">
+              <div style="font-size: 13px; font-weight: 700;">Fluxo de Destravamento</div>
+              <div class="inner-box" style="font-size: 12px; color: var(--muted);">
+                <div>1. O video pausa sozinho no fim da frase.</div>
+                <div>2. Slots verdes confirmam acerto por palavra.</div>
+                <div>3. Aprox. fonetica exibe alerta antes de reprovar.</div>
+                <div>4. Um toque envia trechos dificeis para o Anki Hub.</div>
+              </div>
+              <button type="button" class="icon-btn pressable" style="justify-content: center;" onclick="document.getElementById('demo-dictation-input').value='I am honored to be with you today for your commencement'; renderDemoSlots(document.getElementById('demo-dictation-input').value);">Simular Frase Completa Correta</button>
+            </aside>
+          </div>
+
+          <!-- Submode Podcast Imersao -->
+          <div id="lpanel-podcast" class="split-grid" style="display: none;">
+            <div class="panel-card" style="align-items: center; text-align: center;">
+              <div style="width: 100%; display: flex; justify-content: space-between; font-size: 11px; color: var(--muted);" class="tnum">
+                <span>FAIXA 01 / 45 · GAPS i+1</span>
+                <span style="color: var(--cyan); font-weight: 600;">MediaSession API Ativa</span>
+              </div>
+              <span class="tag-chip accent" style="margin-top: 6px;">pretend · /priˈtɛnd/ · 02K</span>
+              <div id="pod-en" style="font-size: 18px; font-weight: 600; max-width: 500px;">She tried to pretend that nothing had happened.</div>
+              <div id="pod-pt" style="font-size: 13px; color: var(--muted);">Ela tentou fingir que nada tinha acontecido.</div>
+
+              <div id="pod-wave" class="wave-row" aria-hidden="true"></div>
+
+              <div style="display: flex; align-items: center; gap: 16px;">
+                <button type="button" class="icon-btn pressable" onclick="stepPod(-1)">Anterior</button>
+                <button type="button" id="pod-play-btn" class="play-circle pressable" onclick="togglePodPlay()" aria-label="Reproduzir ou pausar imersao">
+                  <svg class="play-triangle" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"/></svg>
+                </button>
+                <button type="button" class="icon-btn pressable" onclick="stepPod(1)">Proxima</button>
+              </div>
+              <div style="font-size: 11px; color: var(--dim);">Padrao ativo: 2x Reflexivo (Ouvir 1x -> Pausa 2.5s -> Ouvir 2x)</div>
+            </div>
+
+            <aside class="panel-card">
+              <div style="font-size: 13px; font-weight: 700;">Fila de Imersao (Scroll Fade)</div>
+              <div id="pod-queue" class="queue-scroll"></div>
+            </aside>
+          </div>
+        </section>
+
+        <!-- MODULE 3: ANKI HUB -->
+        <section id="mod-anki" class="module-panel" aria-label="Anki Hub">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div>
+              <span class="studio-badge" style="color: var(--amber); border-color: color-mix(in oklab, var(--amber) 35%, transparent); background: color-mix(in oklab, var(--amber) 12%, transparent);">ANKI HUB · SRS</span>
+              <h2 style="font-size: 22px; margin-top: 4px; letter-spacing: -0.02em;">Pipeline de Injecao i+1</h2>
+            </div>
+            <button type="button" class="icon-btn pressable" style="background: var(--amber); color: #191204; border: none;" onclick="flashCloudSync(this)">Injetar Top 10 Gaps</button>
+          </div>
+
+          <div class="kpi-grid tnum">
+            <div class="kpi-box">
+              <div class="kpi-label">AnkiConnect</div>
+              <div class="kpi-val" style="font-size: 16px; display:flex; align-items:center; gap:6px; margin-top:8px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--doubt)" stroke-width="2.5"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <span>Aguardando PC</span>
+              </div>
+            </div>
+            <div class="kpi-box">
+              <div class="kpi-label">Prontos i+1</div>
+              <div class="kpi-val" style="color: var(--known);">340</div>
+            </div>
+            <div class="kpi-box">
+              <div class="kpi-label">Retidos i+2</div>
+              <div class="kpi-val" style="color: var(--doubt);">10</div>
+            </div>
+            <div class="kpi-box">
+              <div class="kpi-label">No Baralho</div>
+              <div class="kpi-val" style="color: var(--blue);">398</div>
+            </div>
+          </div>
+
+          <div class="panel-card" style="overflow-x: auto;">
+            <div style="font-size: 13px; font-weight: 700;">Fila Prioritaria (Top 1k -> 10k)</div>
+            <table class="data-table">
+              <thead>
+                <tr><th>Deck</th><th>Termo</th><th>Frase i+1 Validada</th><th style="text-align:right;">Audio</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><span class="tag-chip accent">02K</span></td><td><strong>pretend</strong></td><td>She tried to pretend that nothing had happened.</td><td style="text-align:right;"><button type="button" class="icon-btn pressable" style="padding:3px 8px;" onclick="speakWord('She tried to pretend that nothing had happened.')">Ouvir</button></td></tr>
+                <tr><td><span class="tag-chip accent">02K</span></td><td><strong>thorough</strong></td><td>The team conducted a thorough review of the logs.</td><td style="text-align:right;"><button type="button" class="icon-btn pressable" style="padding:3px 8px;" onclick="speakWord('The team conducted a thorough review of the logs.')">Ouvir</button></td></tr>
+                <tr><td><span class="tag-chip accent">COLLOC</span></td><td><strong>draw a conclusion</strong></td><td>It is too early to draw a conclusion from this test.</td><td style="text-align:right;"><button type="button" class="icon-btn pressable" style="padding:3px 8px;" onclick="speakWord('It is too early to draw a conclusion from this test.')">Ouvir</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- MODULE 4: ANALYTICS -->
+        <section id="mod-analytics" class="module-panel" aria-label="Analytics CEFR">
+          <div>
+            <span class="studio-badge" style="color: var(--blue); border-color: color-mix(in oklab, var(--blue) 35%, transparent); background: color-mix(in oklab, var(--blue) 12%, transparent);">ANALYTICS · CEFR</span>
+            <h2 style="font-size: 22px; margin-top: 4px; letter-spacing: -0.02em;">Radar de Cobertura Lexica</h2>
+          </div>
+
+          <div class="kpi-grid tnum">
+            <div class="kpi-box"><div class="kpi-label">Nivel Atual</div><div class="kpi-val" style="color: var(--cyan);">B1</div></div>
+            <div class="kpi-box"><div class="kpi-label">Mapeados</div><div class="kpi-val">1.507</div></div>
+            <div class="kpi-box"><div class="kpi-label">Dominio</div><div class="kpi-val" style="color: var(--known);">74,6%</div></div>
+            <div class="kpi-box"><div class="kpi-label">Falsos Amigos</div><div class="kpi-val" style="color: var(--purple);">88</div></div>
+          </div>
+
+          <div class="split-grid">
+            <div class="panel-card">
+              <div style="font-size: 13px; font-weight: 700;">Curva MWLD (Clique na faixa para abrir)</div>
+              <div id="analytics-bands" style="display: flex; flex-direction: column; gap: 8px;"></div>
+            </div>
+            <div class="panel-card">
+              <div style="font-size: 13px; font-weight: 700;">Estruturas Nativas</div>
+              <div id="analytics-structs" style="display: flex; flex-direction: column; gap: 8px;"></div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <!-- MOBILE BOTTOM NAVIGATION -->
+      <nav class="bottom-nav" aria-label="Modulos mobile">
+        <button type="button" class="bottom-tab active" data-mod-btn="vocab" onclick="switchModule('vocab')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="7" y1="9" x2="17" y2="9"/><line x1="7" y1="13" x2="13" y2="13"/></svg>
+          <span>Vocab</span>
+        </button>
+        <button type="button" class="bottom-tab" data-mod-btn="listening" onclick="switchModule('listening')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>
+          <span>Listening</span>
+        </button>
+        <button type="button" class="bottom-tab" data-mod-btn="anki" onclick="switchModule('anki')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+          <span>Anki Hub</span>
+        </button>
+        <button type="button" class="bottom-tab" data-mod-btn="analytics" onclick="switchModule('analytics')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          <span>Analytics</span>
+        </button>
+      </nav>
+
+    </div>
+  </div>
+
+  <script>
+    const demoDeck = [
+      {
+        deck: "02K", pos: "VERB", word: "pretend", ipa: "/priˈtɛnd/",
+        falseFriend: "Falso Cognato: significa FINGIR, nao pretender. Pretender = intend.",
+        jev: "Risco de confusao 91% para falantes de PT-BR. Priorize o contraste visual fingir vs intend.",
+        defEn: "to act as if something is true when it is not",
+        defPt: "fingir, simular que algo e real",
+        examples: [
+          { en: "She tried to <mark>pretend</mark> that nothing had happened.", pt: "Ela tentou fingir que nada tinha acontecido." },
+          { en: "Do not <mark>pretend</mark> to understand if the rule is still unclear.", pt: "Nao finja entender se a regra ainda nao estiver clara." }
+        ]
+      },
+      {
+        deck: "PV-TOP150", pos: "PHRASAL VERB", word: "figure out", ipa: "/ˈfɪgjər aʊt/",
+        falseFriend: "",
+        jev: "Chunk atomico de altissima frequencia na fala nativa. Aceita objeto intercalado (figure it out).",
+        defEn: "to understand or solve something after thinking carefully",
+        defPt: "descobrir, decifrar ou resolver algo",
+        examples: [
+          { en: "It took me ten minutes to <mark>figure out</mark> why the build failed.", pt: "Levei dez minutos para descobrir por que o build falhou." },
+          { en: "Give him space and he will <mark>figure</mark> it <mark>out</mark> on his own.", pt: "De espaco a ele e ele vai resolver isso sozinho." }
+        ]
+      },
+      {
+        deck: "02K", pos: "VERB", word: "charge", ipa: "/tʃɑːrdʒ/",
+        falseFriend: "",
+        jev: "Polissemia alta: cobrar, carregar bateria ou acusar formalmente. Esta acepcao foca em acusacao.",
+        defEn: "to formally accuse someone of a crime",
+        defPt: "acusar formalmente alguem de um crime",
+        examples: [
+          { en: "The police decided to <mark>charge</mark> the suspect with theft.", pt: "A policia decidiu acusar o suspeito de roubo." }
+        ]
+      },
+      {
+        deck: "03K", pos: "ADJECTIVE", word: "resilient", ipa: "/rɪˈzɪliənt/",
+        falseFriend: "",
+        jev: "Cognato transparente com pronuncia atenta no segundo i (/zɪl/).",
+        defEn: "able to recover quickly after difficult conditions",
+        defPt: "resiliente, capaz de se recuperar rapido apos falhas",
+        examples: [
+          { en: "A <mark>resilient</mark> pipeline recovers stale locks automatically.", pt: "Um pipeline resiliente recupera travas antigas automaticamente." }
+        ]
+      },
+      {
+        deck: "04K", pos: "ADJECTIVE", word: "subtle", ipa: "/ˈsʌtəl/",
+        falseFriend: "",
+        jev: "Armadilha fonetica: a letra b e silenciosa (/ˈsʌtəl/).",
+        defEn: "not obvious, small and difficult to notice",
+        defPt: "sutil, discreto, dificil de notar a primeira vista",
+        examples: [
+          { en: "There is a <mark>subtle</mark> difference between spacing and padding.", pt: "Ha uma diferenca sutil entre espacamento externo e interno." }
+        ]
+      }
+    ];
+
+    let cardIdx = 0;
+    let exIdx = 0;
+    let kpiKnown = 1170;
+    let kpiGaps = 248;
+    let kpiDoubt = 102;
+    let historyStack = [];
+
+    function renderCard() {
+      const c = demoDeck[cardIdx];
+      const ex = c.examples[exIdx % c.examples.length];
+      document.getElementById("card-deck").textContent = c.deck;
+      document.getElementById("card-pos").textContent = c.pos;
+      document.getElementById("card-word").textContent = c.word;
+      document.getElementById("card-ipa").textContent = c.ipa;
+      document.getElementById("card-def-en").textContent = c.defEn;
+      document.getElementById("card-def-pt").textContent = c.defPt;
+      document.getElementById("card-ex-en").innerHTML = ex.en;
+      document.getElementById("card-ex-pt").textContent = ex.pt;
+      document.getElementById("jev-insight-body").textContent = c.jev;
+
+      const ffBadge = document.getElementById("card-ff-badge");
+      const ffAlert = document.getElementById("card-ff-alert");
+      if (c.falseFriend) {
+        ffBadge.style.display = "inline-flex";
+        ffAlert.style.display = "flex";
+        document.getElementById("card-ff-text").textContent = c.falseFriend;
+      } else {
+        ffBadge.style.display = "none";
+        ffAlert.style.display = "none";
+      }
+
+      document.getElementById("kpi-known").textContent = kpiKnown.toLocaleString("pt-BR");
+      document.getElementById("kpi-gaps").textContent = kpiGaps.toLocaleString("pt-BR");
+      document.getElementById("kpi-doubt").textContent = kpiDoubt.toLocaleString("pt-BR");
+      document.getElementById("demo-counter").textContent = `Carta ${cardIdx + 1} de ${demoDeck.length} (demonstracao interativa)`;
+      document.getElementById("btn-demo-undo").disabled = historyStack.length === 0;
+    }
+
+    function evaluateDemo(status) {
+      historyStack.push({ cardIdx, status });
+      if (status === "conhecido") kpiKnown += 1;
+      else if (status === "desconhecido") kpiGaps += 1;
+      else kpiDoubt += 1;
+      cardIdx = (cardIdx + 1) % demoDeck.length;
+      exIdx = 0;
+      renderCard();
+    }
+
+    function undoDemo() {
+      const prev = historyStack.pop();
+      if (!prev) return;
+      if (prev.status === "conhecido") kpiKnown -= 1;
+      else if (prev.status === "desconhecido") kpiGaps -= 1;
+      else kpiDoubt -= 1;
+      cardIdx = prev.cardIdx;
+      exIdx = 0;
+      renderCard();
+    }
+
+    function advanceDemo() {
+      cardIdx = (cardIdx + 1) % demoDeck.length;
+      exIdx = 0;
+      renderCard();
+    }
+
+    function nextExampleSentence() {
+      exIdx += 1;
+      renderCard();
+    }
+
+    function toggleJevPanel() {
+      const el = document.getElementById("jev-insight");
+      el.style.display = el.style.display === "none" ? "flex" : "none";
+    }
+
+    function speakWord(customText) {
+      if (!("speechSynthesis" in window)) return;
+      const text = customText || demoDeck[cardIdx].word;
+      try {
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = "en-US";
+        window.speechSynthesis.speak(u);
+      } catch (_) {}
+    }
+
+    function onSelectDemoDeck(val) {
+      const map = { "02k": "57.9%", "pv-top150": "0%", "03k": "9.9%" };
+      document.getElementById("demo-progress-fill").style.width = map[val] || "50%";
+      if (val === "pv-top150") cardIdx = 1;
+      else if (val === "03k") cardIdx = 3;
+      else cardIdx = 0;
+      renderCard();
+    }
+
+    function jumpToWordByTag(val) {
+      document.getElementById("demo-deck-select").value = val;
+      onSelectDemoDeck(val);
+      switchModule("vocab");
+    }
+
+    function setTheme(theme) {
+      document.documentElement.setAttribute("data-theme", theme);
+      document.querySelectorAll("[data-theme-btn]").forEach(b => b.classList.toggle("active", b.dataset.themeBtn === theme));
+    }
+
+    function setDensity(density) {
+      document.documentElement.setAttribute("data-density", density);
+      document.querySelectorAll("[data-density-btn]").forEach(b => b.classList.toggle("active", b.dataset.densityBtn === density));
+    }
+
+    function setViewport(vp) {
+      document.getElementById("viewport-stage").classList.toggle("mobile-preview", vp === "mobile");
+      document.querySelectorAll("[data-vp-btn]").forEach(b => b.classList.toggle("active", b.dataset.vpBtn === vp));
+    }
+
+    function switchModule(mod) {
+      document.querySelectorAll(".module-panel").forEach(p => p.classList.toggle("active", p.id === "mod-" + mod));
+      document.querySelectorAll("[data-mod-btn]").forEach(b => b.classList.toggle("active", b.dataset.modBtn === mod));
+    }
+
+    function switchListeningTab(sub) {
+      document.getElementById("lpanel-video").style.display = sub === "video" ? "grid" : "none";
+      document.getElementById("lpanel-podcast").style.display = sub === "podcast" ? "grid" : "none";
+      document.getElementById("ltab-video").classList.toggle("active", sub === "video");
+      document.getElementById("ltab-podcast").classList.toggle("active", sub === "podcast");
+      document.getElementById("listening-heading").textContent = sub === "video" ? "Video Ditado Interativo" : "Imersao Continua (Podcast Pessoal)";
+    }
+
+    const targetTokens = ["I", "am", "honored", "to", "be", "with", "you", "today", "for", "your", "commencement"];
+    function renderDemoSlots(val) {
+      const typed = String(val || "").trim().split(/\s+/).filter(Boolean);
+      const box = document.getElementById("demo-word-slots");
+      let hintMsg = "";
+      box.innerHTML = targetTokens.map((tok, i) => {
+        const t = typed[i];
+        if (!t) {
+          const cls = i === typed.length ? "slot current" : "slot";
+          return `<span class="${cls}">${"_".repeat(Math.max(3, tok.length))}</span>`;
+        }
+        if (t.toLowerCase() === tok.toLowerCase()) {
+          return `<span class="slot completed">${tok}</span>`;
+        }
+        hintMsg = `Dica ortografica inteligente: voce digitou "${t}", a grafia correta e "${tok}".`;
+        return `<span class="slot typo">${t}</span>`;
+      }).join("");
+      const hintBox = document.getElementById("demo-spelling-hint");
+      if (hintMsg) {
+        hintBox.style.display = "flex";
+        hintBox.querySelector("span").textContent = hintMsg;
+      } else {
+        hintBox.style.display = "none";
+      }
+    }
+
+    let podPlaying = false;
+    let podIdx = 0;
+    const podTracks = [
+      { word: "pretend", en: "She tried to pretend that nothing had happened.", pt: "Ela tentou fingir que nada tinha acontecido.", deck: "02K" },
+      { word: "figure out", en: "It took me ten minutes to figure out why the build failed.", pt: "Levei dez minutos para descobrir por que o build falhou.", deck: "PV-150" },
+      { word: "thorough", en: "The team conducted a thorough review of the logs.", pt: "A equipe conduziu uma revisao minuciosa dos logs.", deck: "02K" },
+      { word: "resilient", en: "A resilient pipeline recovers stale locks automatically.", pt: "Um pipeline resiliente recupera travas antigas automaticamente.", deck: "03K" },
+      { word: "subtle", en: "There is a subtle difference between spacing and padding.", pt: "Ha uma diferenca sutil entre espacamento externo e interno.", deck: "04K" },
+      { word: "draw a conclusion", en: "It is too early to draw a conclusion from this test.", pt: "E cedo demais para tirar uma conclusao deste teste.", deck: "COLLOC" }
+    ];
+
+    function initPodcastVisuals() {
+      const w = document.getElementById("pod-wave");
+      w.innerHTML = Array.from({ length: 34 }, (_, i) => {
+        const h = Math.round(12 + Math.abs(Math.sin(i * 1.4) * Math.cos(i * 0.35)) * 34);
+        return `<span class="wave-bar" style="height:${h}px; --i:${i};"></span>`;
+      }).join("");
+      renderPodQueue();
+    }
+
+    function renderPodQueue() {
+      document.getElementById("pod-queue").innerHTML = podTracks.map((t, i) => `
+        <button type="button" class="queue-item pressable ${i === podIdx ? "active" : ""}" onclick="selectPod(${i})">
+          <strong>${String(i + 1).padStart(2, "0")}. ${t.word}</strong>
+          <span class="tnum" style="color:var(--muted);">${t.deck}</span>
+        </button>
+      `).join("");
+      document.getElementById("pod-en").textContent = podTracks[podIdx].en;
+      document.getElementById("pod-pt").textContent = podTracks[podIdx].pt;
+    }
+
+    function selectPod(i) {
+      podIdx = i;
+      renderPodQueue();
+    }
+
+    function stepPod(delta) {
+      podIdx = (podIdx + delta + podTracks.length) % podTracks.length;
+      renderPodQueue();
+    }
+
+    function togglePodPlay() {
+      podPlaying = !podPlaying;
+      document.getElementById("pod-wave").classList.toggle("playing", podPlaying);
+      document.getElementById("pod-play-btn").innerHTML = podPlaying
+        ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>'
+        : '<svg class="play-triangle" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"/></svg>';
+      if (podPlaying) speakWord(podTracks[podIdx].en);
+    }
+
+    function renderAnalyticsDemo() {
+      const bands = [
+        { code: "01k", cefr: "A1/A2", pct: 100.0, known: 660, gaps: 187, total: 847 },
+        { code: "02k", cefr: "A2", pct: 57.9, known: 386, gaps: 154, total: 933 },
+        { code: "03k", cefr: "B1", pct: 9.9, known: 75, gaps: 20, total: 955 },
+        { code: "04k", cefr: "B1+", pct: 7.2, known: 45, gaps: 24, total: 959 }
+      ];
+      const structs = [
+        { code: "pv-top150", cefr: "A2-B2", pct: 0.0, known: 0, gaps: 0, total: 202 },
+        { code: "collocations", cefr: "B1-C1", pct: 0.1, known: 5, gaps: 3, total: 6458 },
+        { code: "idioms", cefr: "B2-C2", pct: 0.0, known: 0, gaps: 0, total: 1500 }
+      ];
+      const makeRow = (b) => {
+        const pk = ((b.known / b.total) * 100).toFixed(1);
+        const pg = ((b.gaps / b.total) * 100).toFixed(1);
+        return `<button type="button" class="band-row pressable" onclick="jumpToWordByTag('${b.code === "pv-top150" ? "pv-top150" : "02k"}')">
+          <div style="display:flex; justify-content:space-between; width:100%; font-size:12px;">
+            <span><strong>${b.code.toUpperCase()}</strong> <span style="color:var(--cyan); margin-left:4px;">${b.cefr}</span></span>
+            <span class="tnum" style="color:var(--muted);">${b.known + b.gaps}/${b.total} (${b.pct}%)</span>
+          </div>
+          <div class="stacked-track">
+            <span style="width:${pk}%; background:var(--known);"></span>
+            <span style="width:${pg}%; background:var(--unknown);"></span>
+          </div>
+        </button>`;
+      };
+      document.getElementById("analytics-bands").innerHTML = bands.map(makeRow).join("");
+      document.getElementById("analytics-structs").innerHTML = structs.map(makeRow).join("");
+    }
+
+    function flashCloudSync(btn) {
+      const lbl = document.getElementById("cloud-label");
+      const prev = lbl.textContent;
+      lbl.textContent = "Sincronizado";
+      setTimeout(() => { lbl.textContent = prev; }, 1400);
+    }
+
+    window.addEventListener("keydown", (e) => {
+      if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
+      if (!document.getElementById("mod-vocab").classList.contains("active")) return;
+      const k = e.key.toLowerCase();
+      if (k === "1") evaluateDemo("conhecido");
+      else if (k === "2") evaluateDemo("desconhecido");
+      else if (k === "3") evaluateDemo("duvida");
+      else if (k === "z") undoDemo();
+      else if (k === "a") speakWord();
+      else if (k === "j") toggleJevPanel();
+    });
+
+    window.addEventListener("touchstart", () => {}, { passive: true });
+    renderCard();
+    renderDemoSlots(document.getElementById("demo-dictation-input").value);
+    initPodcastVisuals();
+    renderAnalyticsDemo();
+  </script>
+</body>
+</html>

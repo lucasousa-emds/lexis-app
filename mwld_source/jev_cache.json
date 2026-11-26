@@ -1219,5 +1219,18 @@
     "chosen_en": "Sometimes a reed does not play well because it was not cut properly.",
     "confidence": 0.52,
     "model": "jev-1.14.0"
+  },
+  "neck": {
+    "word": "neck",
+    "cognate_type": "opaque",
+    "cognate_confidence": 0.82,
+    "cognate_probabilities": {
+      "transparent": 0.04,
+      "false_friend": 0.08,
+      "opaque": 0.88
+    },
+    "confusion_risk": 0.4,
+    "sentence_quality": 1.73,
+    "pedagogical_hook": "vivid_scene"
   }
 }

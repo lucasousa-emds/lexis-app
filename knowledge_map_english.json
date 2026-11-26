@@ -28328,14 +28328,68 @@
       ],
       "collocations": [],
       "observacoes": "Classificado via Web Reviewer"
+    },
+    "colleague": {
+      "termo": "colleague",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "colleague_02k_9380",
+          "pos": "noun",
+          "definicao": "a person who works with you a fellow worker",
+          "definicao_pt": "uma pessoa que trabalha com você um colega de trabalho",
+          "status": "conhecido",
+          "frase_exemplo": "A <i>colleague</i> of mine will be speaking at the conference.",
+          "frase_i1": "A <i>colleague</i> of mine will be speaking at the conference.",
+          "confirmado_em": "2026-11-26T15:27:04.369914"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer"
+    },
+    "application": {
+      "termo": "application",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "application_02k_9381",
+          "pos": "noun",
+          "definicao": "a formal and usually written request for something (such as a job, admission to a school, a loan, etc.)",
+          "definicao_pt": "um pedido formal e geralmente por escrito de algo (como um emprego, admissão em uma escola, um empréstimo, etc.)",
+          "status": "conhecido",
+          "frase_exemplo": "We've made an <i>application</i> for certification. [=we have applied to be certified]",
+          "frase_i1": "We've made an <i>application</i> for certification. [=we have applied to be certified]",
+          "confirmado_em": "2026-11-26T15:27:05.902138"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer"
+    },
+    "lean": {
+      "termo": "lean",
+      "status_geral": "desconhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "lean_02k_9389",
+          "pos": "verb",
+          "definicao": "to bend or move from a straight position",
+          "definicao_pt": "dobrar ou mover-se de uma posição reta",
+          "status": "desconhecido",
+          "frase_exemplo": "The tree <i>leans</i> to one side.",
+          "frase_i1": "The tree <i>leans</i> to one side.",
+          "confirmado_em": "2026-11-26T15:27:12.580678"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer"
     }
   },
   "estatisticas": {
-    "total_termos": 1507,
-    "acepcoes_conhecidas": 1170,
+    "total_termos": 1510,
+    "acepcoes_conhecidas": 1172,
     "acepcoes_em_estudo": 48,
-    "acepcoes_desconhecidas": 248,
+    "acepcoes_desconhecidas": 249,
     "acepcoes_duvida": 102
   },
-  "ultima_atualizacao": "2026-11-16"
+  "ultima_atualizacao": "2026-11-26T16:34:03.869992"
 }

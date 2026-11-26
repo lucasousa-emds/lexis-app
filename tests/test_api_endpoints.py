@@ -139,3 +139,30 @@ def test_persistent_data_dir_seeding_and_merge(tmp_path):
 
     assert persist_file.exists()
     assert "resilient" in mod.KNOWLEDGE_MAP["mapa_vocabulario"]
+
+
+def test_static_assets_served(base_url):
+    for rel, expected_ctype in [
+        ("/static/css/lexis.css", "text/css"),
+        ("/static/js/lexis.js", "application/javascript"),
+    ]:
+        with urlopen(f"{base_url}{rel}", timeout=5) as response:
+            assert response.status == 200
+            ctype = response.headers.get("Content-Type", "")
+            assert expected_ctype in ctype
+            body = response.read().decode("utf-8")
+            assert len(body) > 100
+
+
+def test_static_path_traversal_blocked(base_url):
+    with pytest.raises(urllib.error.HTTPError) as exc_info:
+        urlopen(f"{base_url}/static/../.env", timeout=5)
+    assert exc_info.value.code in (403, 404)
+
+
+def test_dev_watch_endpoint(base_url):
+    with urlopen(f"{base_url}/api/dev-watch", timeout=5) as response:
+        assert response.status == 200
+        data = json.load(response)
+    assert {"html", "css", "js"} <= data.keys()
+    assert all(isinstance(data[k], int) and data[k] > 0 for k in ("html", "css", "js"))

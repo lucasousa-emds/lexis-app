@@ -32,6 +32,7 @@ if hasattr(sys.stdout, "reconfigure"):
 
 PORT = int(os.environ.get("PORT", 5050))
 WORKSPACE_DIR = os.path.dirname(os.path.abspath(__file__))
+STATIC_DIR = os.path.join(WORKSPACE_DIR, "static")
 PERSISTENT_DATA_DIR = os.environ.get("LEXIS_DATA_DIR", "").strip()
 SEED_MAP_FILE = os.path.join(WORKSPACE_DIR, "knowledge_map_english.json")
 MAP_FILE = os.path.join(PERSISTENT_DATA_DIR, "knowledge_map_english.json") if PERSISTENT_DATA_DIR else SEED_MAP_FILE
@@ -1860,10 +1861,14 @@ class RequestHandler(BaseHTTPRequestHandler):
             self.handle_api_anki_hub()
         elif path == "/api/immersion-playlist":
             self.handle_api_immersion_playlist(query)
+        elif path == "/api/dev-watch":
+            self.handle_api_dev_watch()
         elif path == "/api/export-knowledge-map":
             self.send_json(KNOWLEDGE_MAP)
         elif path == "/api/youtube-transcript":
             self.handle_api_youtube_transcript(query)
+        elif path.startswith("/static/"):
+            self.serve_static(path)
         elif path.startswith("/media/"):
             self.serve_media(path)
         elif path == "/favicon.ico":
@@ -1939,6 +1944,61 @@ class RequestHandler(BaseHTTPRequestHandler):
             self.send_response(500)
             self.end_headers()
             self.wfile.write(b"HTML template not found")
+
+    def serve_static(self, path):
+        rel = urllib.parse.unquote(path[len("/static/"):]).lstrip("/\\")
+        if not rel:
+            self.send_response(404)
+            self.end_headers()
+            return
+        static_root = os.path.realpath(STATIC_DIR)
+        candidate = os.path.realpath(os.path.join(static_root, rel))
+        try:
+            in_root = os.path.commonpath([static_root, candidate]) == static_root
+        except ValueError:
+            in_root = False
+        if not in_root:
+            self.send_response(403)
+            self.send_header("Content-Type", "text/plain; charset=utf-8")
+            self.end_headers()
+            self.wfile.write(b"Forbidden")
+            return
+        if not os.path.isfile(candidate):
+            self.send_response(404)
+            self.send_header("Content-Type", "text/plain; charset=utf-8")
+            self.end_headers()
+            self.wfile.write(b"Not Found")
+            return
+        ext = os.path.splitext(candidate)[1].lower()
+        mime_map = {
+            ".css": "text/css; charset=utf-8",
+            ".js": "application/javascript; charset=utf-8",
+            ".svg": "image/svg+xml",
+            ".json": "application/json; charset=utf-8",
+            ".png": "image/png",
+            ".html": "text/html; charset=utf-8",
+        }
+        ctype = mime_map.get(ext, "application/octet-stream")
+        with open(candidate, "rb") as f:
+            content = f.read()
+        self.send_response(200)
+        self.send_header("Content-Type", ctype)
+        self.send_header("Content-Length", str(len(content)))
+        self.send_header("Cache-Control", "no-cache")
+        self.end_headers()
+        self.wfile.write(content)
+
+    def handle_api_dev_watch(self):
+        def _mtime(p):
+            try:
+                return int(os.path.getmtime(p) * 1000)
+            except OSError:
+                return 0
+        self.send_json({
+            "html": _mtime(os.path.join(WORKSPACE_DIR, "vocab_review_app.html")),
+            "css": _mtime(os.path.join(STATIC_DIR, "css", "lexis.css")),
+            "js": _mtime(os.path.join(STATIC_DIR, "js", "lexis.js")),
+        })
 
     def serve_media(self, path):
         filename = urllib.parse.unquote(path[len("/media/"):])

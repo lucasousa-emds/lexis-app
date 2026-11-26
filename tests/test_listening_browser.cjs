@@ -32,6 +32,13 @@ async function run(existingBrowser) {
     const url = new URL(route.request().url());
     if (url.hostname !== 'lexis.test') return route.abort();
     if (url.pathname === '/') return route.fulfill({contentType:'text/html',body:fs.readFileSync(fs.existsSync(path.join(root,'vocab_review_app.html')) ? path.join(root,'vocab_review_app.html') : path.join(root,'..','vocab_review_app.html'),'utf8')});
+    if (url.pathname.startsWith('/static/')) {
+      const repoRoot = fs.existsSync(path.join(root, 'static')) ? root : path.join(root, '..');
+      const assetPath = path.join(repoRoot, url.pathname.slice(1));
+      if (!fs.existsSync(assetPath)) return route.fulfill({status:404, body:'Not Found'});
+      const ctype = assetPath.endsWith('.css') ? 'text/css; charset=utf-8' : assetPath.endsWith('.js') ? 'application/javascript; charset=utf-8' : 'application/octet-stream';
+      return route.fulfill({contentType: ctype, body: fs.readFileSync(assetPath, 'utf8')});
+    }
     if (url.pathname === '/api/evaluate') {
       requests.push(JSON.parse(route.request().postData()));
       if (apiMode === 'network') return route.abort();
