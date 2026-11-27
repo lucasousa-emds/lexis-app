@@ -36,7 +36,7 @@
         <span class="dot"></span>Mídia
       </button>
       <button type="button" class="tab" data-module="anki" onclick="switchModule('anki')">
-        <span class="dot"></span>Anki
+        <span class="dot"></span>Anki <span class="badge-count" id="header-gap-count" style="display:none;">0</span>
       </button>
       <button type="button" class="tab" data-module="analytics" onclick="switchModule('analytics')">
         <span class="dot"></span>Progresso
@@ -120,15 +120,15 @@
               <span class="kpi-label">Conhecidos</span>
               <span class="val" id="stat-known">0</span>
             </div>
-            <div class="kpi-chip unknown" title="Gaps identificados para envio ao Anki">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--color-unknown)" stroke-width="2.5"><circle cx="12" cy="12" r="9"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-              <span class="kpi-label">Gaps</span>
-              <span class="val" id="stat-unknown">0</span>
-            </div>
             <div class="kpi-chip doubt" title="Palavras com dúvida">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--color-doubt)" stroke-width="2.5"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 0 1 5 1c0 1.5-2.5 2-2.5 3.5"/><circle cx="12" cy="17" r="0.6"/></svg>
               <span class="kpi-label">Dúvidas</span>
               <span class="val" id="stat-doubt">0</span>
+            </div>
+            <div class="kpi-chip unknown" title="Gaps identificados para envio ao Anki">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--color-unknown)" stroke-width="2.5"><circle cx="12" cy="12" r="9"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+              <span class="kpi-label">Gaps</span>
+              <span class="val" id="stat-unknown">0</span>
             </div>
           </div>
         </div>
@@ -137,7 +137,6 @@
           <div class="view-mode-tabs">
             <button type="button" class="tab-btn active" id="tab-focus" onclick="switchView('focus')">Modo Foco</button>
             <button type="button" class="tab-btn" id="tab-batch" onclick="switchView('batch')">Grade</button>
-            <button type="button" class="tab-btn" id="tab-gaps" onclick="switchModule('anki')" title="Ir para a central unificada do Anki">Anki <span class="badge-count" id="header-gap-count" style="display:none;">0</span></button>
           </div>
         </div>
       </div>
@@ -198,7 +197,10 @@
             </span>
           </div>
 
-          <div class="mobile-context-meaning" id="focus-mobile-translation"></div>
+          <div class="mobile-meaning-row">
+            <div class="mobile-context-meaning" id="focus-mobile-translation"></div>
+            <button type="button" id="btn-mobile-def-toggle" class="mobile-def-toggle" onclick="toggleMobileDefinition()">Ver definição</button>
+          </div>
 
           <div class="jev-insight-panel" id="focus-jev-panel" style="display: none;">
             <div class="jev-panel-header">
@@ -308,9 +310,9 @@
             <span style="font-size: 12px; color: var(--muted); margin-left: 8px;">Marque conhecidas e altere apenas as exceções.</span>
           </div>
           <div class="batch-buttons">
-            <button type="button" class="btn-batch-action" id="btn-auto-approve-cognates" onclick="autoApproveBatchCognates()" style="color: var(--purple);">Auto-Aprovar Cognatos (Jev)</button>
-            <button type="button" class="btn-batch-action btn-batch-all-known" id="btn-mark-batch-remaining" onclick="batchMarkAllKnown()">Marcar Restantes Conhecidas</button>
-            <button type="button" class="btn-batch-action btn-batch-save" onclick="saveBatchEvaluations()">Salvar Lote e Próxima</button>
+            <button type="button" class="btn-batch-action" id="btn-auto-approve-cognates" onclick="autoApproveBatchCognates()" style="color: var(--purple);">Cognatos (Jev)</button>
+            <button type="button" class="btn-batch-action btn-batch-all-known" id="btn-mark-batch-remaining" onclick="batchMarkAllKnown()">Marcar Todas</button>
+            <button type="button" class="btn-batch-action btn-batch-save" onclick="saveBatchEvaluations()">Salvar Lote</button>
           </div>
         </div>
 

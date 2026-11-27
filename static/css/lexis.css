@@ -972,12 +972,46 @@ main {
   gap: 12px;
 }
 
-.mobile-context-meaning {
+.mobile-meaning-row {
   display: none;
-  font-size: 14px;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.mobile-context-meaning {
+  font-size: 14.5px;
   font-weight: 600;
   color: var(--color-known);
   line-height: 1.35;
+}
+
+.mobile-def-toggle {
+  flex-shrink: 0;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.mobile-def-toggle:hover {
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+
+.highlight-target.highlight-search {
+  background: color-mix(in oklab, var(--color-doubt) 20%, transparent);
+  color: var(--color-doubt);
+  border: 1px dashed color-mix(in oklab, var(--color-doubt) 65%, transparent);
+}
+
+html[data-theme="light"] .highlight-target.highlight-search {
+  background: #fef3c7;
+  color: #92400e;
+  border-color: #d97706;
 }
 
 /* Modern Web Guidance: clamp() with max <= 2.5 * min */
@@ -2474,7 +2508,7 @@ html[data-theme="light"] .media-term-row {
   .view-mode-tabs {
     width: 100%;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
   .view-mode-tabs .tab-btn {
     justify-content: center;
@@ -2487,7 +2521,10 @@ html[data-theme="light"] .media-term-row {
     display: none;
   }
 
-  /* Mobile Focus Card: clean, essential info only (word + context translation + sentence) */
+  /* Mobile Focus Card: clean, essential info + fixed thumb evaluation bar */
+  #view-focus {
+    padding-bottom: 78px;
+  }
   .focus-card {
     padding: 15px 14px;
     gap: 11px;
@@ -2501,8 +2538,11 @@ html[data-theme="light"] .media-term-row {
   .focus-card #btn-curate-example {
     display: none !important;
   }
-  .focus-card .mobile-context-meaning {
-    display: block;
+  .focus-card.show-mobile-def .sense-container {
+    display: flex !important;
+  }
+  .focus-card .mobile-meaning-row {
+    display: flex;
   }
   .focus-card .word-text {
     font-size: 1.95rem;
@@ -2514,10 +2554,24 @@ html[data-theme="light"] .media-term-row {
     font-size: 15px;
     line-height: 1.45;
   }
+  .focus-card .actions-grid {
+    position: fixed;
+    left: 12px;
+    right: 12px;
+    bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+    z-index: 140;
+    background: color-mix(in oklab, var(--card) 95%, transparent);
+    backdrop-filter: blur(12px);
+    padding: 7px;
+    border: 1px solid var(--border-strong);
+    border-radius: 14px;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.38);
+    gap: 7px;
+  }
   .focus-card .btn-action {
-    min-height: 50px;
-    padding: 10px 6px;
-    font-size: 12.5px;
+    min-height: 46px;
+    padding: 8px 6px;
+    font-size: 12px;
   }
 
   /* Mobile Grade: stack each table row into a full-width readable card */
@@ -2621,8 +2675,11 @@ html[data-theme="light"] .media-term-row {
   .analytics-split-grid {
     grid-template-columns: 1fr;
   }
-  .dictation-actions-row .dictation-btn {
-    min-height: 42px;
+  .dictation-actions-row .dictation-btn,
+  .dictation-header-info .dictation-btn {
+    min-height: 40px;
+    padding: 0 11px !important;
+    font-size: 12px !important;
   }
   #yt-controls-wrap,
   #local-controls-wrap {

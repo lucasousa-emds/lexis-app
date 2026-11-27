@@ -266,7 +266,7 @@
         const s = extraSearch.trim();
         if (s.toLowerCase() !== (word || "").toLowerCase()) {
           const sPat = new RegExp(`\\b(${s}[a-zA-Z]*)\\b`, 'gi');
-          html = html.replace(sPat, '<span class="highlight-target" style="box-shadow: 0 0 10px rgba(245,158,11,0.5); border: 1px dashed #f59e0b; color: #fef08a;" title="Termo pesquisado">$1</span>');
+          html = html.replace(sPat, '<span class="highlight-target highlight-search" title="Termo pesquisado">$1</span>');
         }
       }
 
@@ -652,7 +652,11 @@
         if (fcBadge) fcBadge.style.display = "none";
       }
 
-      // Reset Painel Jev
+      // Reset Painel Jev e definição mobile
+      const focusCardEl = document.getElementById("focus-card");
+      if (focusCardEl) focusCardEl.classList.remove("show-mobile-def");
+      const mobDefBtn = document.getElementById("btn-mobile-def-toggle");
+      if (mobDefBtn) mobDefBtn.textContent = "Ver definição";
       const jevPanel = document.getElementById("focus-jev-panel");
       if (jevPanel) jevPanel.style.display = "none";
       const btnJev = document.getElementById("btn-jev-analyze");
@@ -1339,7 +1343,7 @@
 
       const markBtn = document.getElementById("btn-mark-batch-remaining");
       if (markBtn && currentWords) {
-        markBtn.textContent = `Marcar Restantes (${currentWords.length}) Conhecidas`;
+        markBtn.textContent = `Marcar Todas (${currentWords.length})`;
       }
 
       if (!currentWords || currentWords.length === 0) {
@@ -1863,6 +1867,8 @@
         else if (DECK_PICKER_CHUNKS.some(x => x.id === cur)) deckPickerCat = "chunks";
         else deckPickerCat = "freq";
         switchDeckPickerCat(deckPickerCat);
+        const searchInput = document.getElementById("deck-picker-search");
+        if (searchInput) setTimeout(() => searchInput.focus(), 10);
         if (!Object.keys(deckProgressBySubdeck).length) {
           fetch("/api/analytics").then(r => r.json()).then(d => {
             if (!d || !d.success) return;
@@ -1872,6 +1878,8 @@
             renderDeckPickerBody();
           }).catch(() => {});
         }
+      } else if (isOpen) {
+        btn.focus();
       }
     }
 
@@ -3399,6 +3407,11 @@
         document.getElementById('hub-kpi-ready').textContent = data.pipeline.ready_count;
         document.getElementById('hub-kpi-waiting').textContent = data.pipeline.waiting_count;
         document.getElementById('hub-kpi-injected').textContent = data.pipeline.injected_count;
+        const injBtn = document.getElementById('hub-btn-inject');
+        if (injBtn) {
+          const rdy = data.pipeline.ready_count || 0;
+          injBtn.textContent = rdy > 0 ? `Injetar no Anki (${rdy} prontos)` : 'Injetar no Anki';
+        }
 
         const tbody = document.getElementById('hub-ready-tbody');
         if (tbody) {
@@ -3537,14 +3550,14 @@
       const pKnown = Math.min(100, (b.known / t) * 100);
       const pGaps = Math.min(100 - pKnown, (b.gaps / t) * 100);
       const pDoubts = Math.min(100 - pKnown - pGaps, (b.doubts / t) * 100);
-      return `<div class="ana-band-row" onclick="jumpToDeckFromAnalytics('${escapeHtmlSafe(b.subdeck)}')">
+      return `<div class="ana-band-row" role="button" tabindex="0" onclick="jumpToDeckFromAnalytics('${escapeHtmlSafe(b.subdeck)}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();jumpToDeckFromAnalytics('${escapeHtmlSafe(b.subdeck)}');}">
         <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px; margin-bottom: 6px; gap: 8px;">
           <div>
             <strong style="color: var(--text);">${escapeHtmlSafe(b.subdeck.toUpperCase())}</strong>
             <span style="color: var(--cyan); font-size: 11px; margin-left: 6px; font-weight: 600;">${escapeHtmlSafe(b.cefr_code)}</span>
             <span style="color: var(--muted); font-size: 11px; margin-left: 6px;">${escapeHtmlSafe(b.label)}</span>
           </div>
-          <span class="tnum" style="font-family: var(--font-mono); font-size: 11px; color: var(--muted); white-space: nowrap;">${b.evaluated}/${b.total} (${b.percent}%)</span>
+          <span class="tnum" style="font-family: var(--font-mono); font-size: 11px; color: var(--muted); white-space: nowrap;">${b.evaluated}/${b.total} (${b.percent}%) <span style="color: var(--cyan); margin-left: 6px; font-family: var(--font-body); font-weight: 600;">Estudar</span></span>
         </div>
         <div class="ana-track">
           <span style="width: ${pKnown.toFixed(1)}%; background: var(--color-known);"></span>
@@ -3857,7 +3870,10 @@
     // ==========================================
     function setupKeyboardShortcuts() {
       window.addEventListener("keydown", (e) => {
-        if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
+        if (e.repeat) return;
+        if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT" || e.target.tagName === "TEXTAREA") return;
+        const deckPop = document.getElementById("deck-picker-popover");
+        if (deckPop && deckPop.style.display !== "none") return;
 
         if (!document.getElementById('view-module-vocab').classList.contains('active')) return;
 
@@ -3900,6 +3916,14 @@
 
       // CRAFT: Enable instant :active pseudo-class button-press feedback on iOS Safari
       window.addEventListener("touchstart", () => {}, { passive: true });
+    }
+
+    function toggleMobileDefinition() {
+      const card = document.getElementById("focus-card");
+      const btn = document.getElementById("btn-mobile-def-toggle");
+      if (!card || !btn) return;
+      const expanded = card.classList.toggle("show-mobile-def");
+      btn.textContent = expanded ? "Ocultar definição" : "Ver definição";
     }
 
     // Dual Theme Switcher (Obsidian Dark + Studio Light)
