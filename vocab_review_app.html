@@ -30,16 +30,16 @@
 
     <nav class="nav" aria-label="Módulos desktop">
       <button type="button" class="tab active" data-module="vocab" onclick="switchModule('vocab')">
-        <span class="dot"></span>Vocabulário
+        <span class="dot"></span>Estudar
       </button>
       <button type="button" class="tab" data-module="listening" onclick="switchModule('listening')">
-        <span class="dot"></span>Listening Studio
+        <span class="dot"></span>Mídia
       </button>
       <button type="button" class="tab" data-module="anki" onclick="switchModule('anki')">
-        <span class="dot"></span>Anki Hub
+        <span class="dot"></span>Anki
       </button>
       <button type="button" class="tab" data-module="analytics" onclick="switchModule('analytics')">
-        <span class="dot"></span>Analytics
+        <span class="dot"></span>Progresso
       </button>
     </nav>
 
@@ -69,7 +69,8 @@
     <div class="vocab-context-shell">
       <div class="toolbar">
         <div class="toolbar-left">
-          <select class="select-custom" id="select-subdeck" onchange="onSubdeckChange()" aria-label="Selecionar Deck">
+          <!-- Select preservado oculto para compatibilidade de estado -->
+          <select class="select-custom" id="select-subdeck" onchange="onSubdeckChange()" aria-label="Selecionar Deck" style="display:none;">
             <optgroup label="Vocabulario MWLD (Palavras)">
               <option value="01k">Deck 01k · A1/A2 (Top 1.000)</option>
               <option value="02k">Deck 02k · A2 (Top 2.000)</option>
@@ -87,9 +88,31 @@
               <option value="pv-top150">Top 150 Phrasal Verbs Essenciais</option>
               <option value="pv-all">Phrasal Verbs · Acervo Completo (5.300+)</option>
               <option value="collocations">Collocations · Oxford (6.400+)</option>
-              <option value="idioms">Idioms e Expressoes Cotidianas (1.500+)</option>
+              <option value="idioms">Idioms e Expressões Cotidianas (1.500+)</option>
             </optgroup>
+            <optgroup id="optgroup-media-decks" label="Meus Decks de Mídia"></optgroup>
           </select>
+
+          <!-- Seletor Visual de Decks por Categorias -->
+          <div class="deck-picker-wrap" id="deck-picker-wrap">
+            <button type="button" id="btn-deck-picker" class="deck-picker-trigger" onclick="toggleDeckPicker()" aria-haspopup="dialog" aria-expanded="false">
+              <span class="deck-picker-tag" id="deck-picker-tag">01K</span>
+              <span class="deck-picker-title" id="deck-picker-title">Deck 01k · A1/A2</span>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+
+            <div class="deck-picker-popover" id="deck-picker-popover" role="dialog" aria-label="Escolher deck de estudo" style="display: none;">
+              <div class="deck-picker-head">
+                <div class="deck-picker-cats" role="tablist">
+                  <button type="button" class="dp-cat-btn active" data-dp-cat="freq" onclick="switchDeckPickerCat('freq')">Frequência</button>
+                  <button type="button" class="dp-cat-btn" data-dp-cat="chunks" onclick="switchDeckPickerCat('chunks')">Expressões</button>
+                  <button type="button" class="dp-cat-btn" data-dp-cat="media" onclick="switchDeckPickerCat('media')">Minhas Obras <span id="dp-media-badge" class="badge-count" style="display:none;">0</span></button>
+                </div>
+                <input type="text" id="deck-picker-search" class="deck-picker-search" placeholder="Filtrar..." oninput="renderDeckPickerBody()" autocomplete="off">
+              </div>
+              <div class="deck-picker-body" id="deck-picker-body"></div>
+            </div>
+          </div>
 
           <div class="kpi-inline-strip">
             <div class="kpi-chip known" title="Palavras conhecidas">
@@ -114,32 +137,33 @@
           <div class="view-mode-tabs">
             <button type="button" class="tab-btn active" id="tab-focus" onclick="switchView('focus')">Modo Foco</button>
             <button type="button" class="tab-btn" id="tab-batch" onclick="switchView('batch')">Grade</button>
-            <button type="button" class="tab-btn" id="tab-gaps" onclick="switchView('gaps')">Fila Anki <span class="badge-count" id="header-gap-count" style="display:none;">0</span></button>
+            <button type="button" class="tab-btn" id="tab-gaps" onclick="switchModule('anki')" title="Ir para a central unificada do Anki">Anki <span class="badge-count" id="header-gap-count" style="display:none;">0</span></button>
           </div>
         </div>
       </div>
     </div>
 
     <main>
-      <!-- BARRA DE PROGRESSO & SPRINTS -->
+      <!-- BARRA DE PROGRESSO COMPACTA + SPRINTS COLAPSAVEIS -->
       <div class="dashboard-progress-card">
         <div class="progress-top-row">
           <div class="progress-left-info">
             <span class="cefr-badge" id="deck-cefr-badge"><span id="deck-cefr-text">01K · A1/A2</span></span>
-            <span class="user-level-badge" id="user-global-level-badge"><span id="user-global-level-text">Nivel B1</span></span>
+            <span class="user-level-badge" id="user-global-level-badge"><span id="user-global-level-text">Nível B1</span></span>
+            <details class="sprints-drawer">
+              <summary>Sprints</summary>
+              <div class="sprint-shortcuts-row">
+                <button type="button" class="dictation-btn" style="padding: 4px 10px; font-size: 11px; color: var(--cyan);" onclick="launchHighLeverageSprint('pv-top150')">Top 150 Phrasal Verbs</button>
+                <button type="button" class="dictation-btn" style="padding: 4px 10px; font-size: 11px;" onclick="launchHighLeverageSprint('02k')">Fechar Deck 02k</button>
+                <button type="button" class="dictation-btn" style="padding: 4px 10px; font-size: 11px; color: var(--purple);" onclick="launchImmersionOnGaps()">Ouvir Meus Gaps (Podcast)</button>
+                <button type="button" class="dictation-btn" style="padding: 4px 10px; font-size: 11px; color: var(--color-known);" onclick="switchModule('media')">Minerar Livro / Série</button>
+              </div>
+            </details>
           </div>
           <div class="deck-metrics-text" id="deck-metrics-text">Carregando...</div>
         </div>
         <div class="progress-bar-wrapper">
           <div class="progress-bar-fill" id="focus-progress-fill"></div>
-        </div>
-        <div class="sprint-shortcuts-row">
-          <span style="color: var(--muted); font-weight: 600;">Sprints de Alta Alavanca</span>
-          <div style="display: flex; flex-wrap: wrap; gap: 6px;">
-            <button type="button" class="dictation-btn" style="padding: 4px 10px; font-size: 11px; color: var(--cyan);" onclick="launchHighLeverageSprint('pv-top150')">Atacar Top 150 Phrasal Verbs</button>
-            <button type="button" class="dictation-btn" style="padding: 4px 10px; font-size: 11px;" onclick="launchHighLeverageSprint('02k')">Fechar Restantes Deck 02k</button>
-            <button type="button" class="dictation-btn" style="padding: 4px 10px; font-size: 11px; color: var(--purple);" onclick="launchImmersionOnGaps()">Ouvir Meus Gaps (Podcast)</button>
-          </div>
         </div>
       </div>
 
@@ -279,24 +303,23 @@
         <div class="batch-header-bar">
           <div>
             <span style="font-weight: 700; font-size: 14px;" id="batch-info-text">Exibindo Lote de 25 palavras</span>
-            <span style="font-size: 12px; color: var(--muted); margin-left: 8px;">Marque conhecidas e altere apenas as excecoes.</span>
+            <span style="font-size: 12px; color: var(--muted); margin-left: 8px;">Marque conhecidas e altere apenas as exceções.</span>
           </div>
           <div class="batch-buttons">
             <button type="button" class="btn-batch-action" id="btn-auto-approve-cognates" onclick="autoApproveBatchCognates()" style="color: var(--purple);">Auto-Aprovar Cognatos (Jev)</button>
             <button type="button" class="btn-batch-action btn-batch-all-known" id="btn-mark-batch-remaining" onclick="batchMarkAllKnown()">Marcar Restantes Conhecidas</button>
-            <button type="button" class="btn-batch-action btn-batch-save" onclick="saveBatchEvaluations()">Salvar Lote e Proxima</button>
+            <button type="button" class="btn-batch-action btn-batch-save" onclick="saveBatchEvaluations()">Salvar Lote e Próxima</button>
           </div>
         </div>
 
         <div class="table-container">
-          <table>
+          <table class="batch-table">
             <thead>
               <tr>
-                <th style="width: 170px;">Palavra e Classe</th>
-                <th style="width: 120px;">Pronuncia</th>
-                <th>Sentido Especifico</th>
-                <th>Exemplo de Contexto e Traducao</th>
-                <th style="width: 210px; text-align: center;">Status</th>
+                <th style="width: 195px;">Termo e Pronúncia</th>
+                <th style="width: 31%;">Sentido (EN / PT)</th>
+                <th>Exemplo de Contexto e Tradução</th>
+                <th style="width: 268px; text-align: center;">Status</th>
               </tr>
             </thead>
             <tbody id="batch-table-body"></tbody>
@@ -304,9 +327,9 @@
         </div>
 
         <div style="display: flex; justify-content: space-between; align-items: center;">
-          <button type="button" class="btn-skip" onclick="prevBatchPage()">Pagina Anterior</button>
-          <span id="batch-pagination-info" style="font-size: 12px; color: var(--muted);">Pagina 1</span>
-          <button type="button" class="btn-skip" onclick="nextBatchPage()">Proxima Pagina</button>
+          <button type="button" class="btn-skip" onclick="prevBatchPage()">Página Anterior</button>
+          <span id="batch-pagination-info" style="font-size: 12px; color: var(--muted);">Página 1</span>
+          <button type="button" class="btn-skip" onclick="nextBatchPage()">Próxima Página</button>
         </div>
       </div>
 
@@ -364,22 +387,146 @@
   </section>
 
   <!-- ========================================================================
-       MODULO 2: LISTENING STUDIO
+       MODULO 2: HUB DE MIDIA (LIVROS/TEXTOS, VIDEO DITADO, ESCUTA E PODCAST)
        ======================================================================== -->
-  <section id="view-module-listening" class="module-view" style="display:none;" aria-label="Listening Studio">
+  <section id="view-module-listening" class="module-view" style="display:none;" aria-label="Hub de Mídia">
     <div class="listening-stage">
       <div class="listening-title-row">
         <div>
-          <span class="listening-pill">LISTENING STUDIO</span>
+          <span class="listening-pill">HUB DE MÍDIA</span>
           <h2>Vídeo Ditado Interativo</h2>
         </div>
         <div class="mode-pill-toggle">
+          <button type="button" class="mode-pill-btn" id="btn-mode-books" onclick="switchListeningSubmode('books')">Livros e Textos</button>
           <button type="button" class="mode-pill-btn active" id="btn-mode-video" onclick="switchListeningSubmode('video')">Vídeo Ditado</button>
           <button type="button" class="mode-pill-btn" id="btn-mode-audio" onclick="switchListeningSubmode('audio')">Escuta às Cegas</button>
-          <button type="button" class="mode-pill-btn" id="btn-mode-podcast" onclick="switchListeningSubmode('podcast')">Imersão Contínua</button>
+          <button type="button" class="mode-pill-btn" id="btn-mode-podcast" onclick="switchListeningSubmode('podcast')">Imersão / Podcast</button>
         </div>
       </div>
       <p class="listening-subtext" id="listening-submode-desc">O vídeo pausa sozinho a cada frase com legenda oculta. Digite o que ouviu para destravar o avanço.</p>
+
+      <!-- SUBMODO 0: LIVROS E TEXTOS (MEDIA MINER 95%) -->
+      <div id="submode-books-container" style="display: none;">
+        <div class="media-miner-grid">
+          <div class="surface-panel">
+            <h3 style="font-size: 14px; margin-bottom: 12px;">Nova Mídia para Dominar</h3>
+
+            <div class="media-form-row">
+              <div style="flex: 2; min-width: 180px;">
+                <label class="media-field-label" for="media-title-input">Título da Obra</label>
+                <input type="text" id="media-title-input" class="input-search" style="width: 100%;" placeholder="Ex: Harry Potter / Shadow Slave">
+              </div>
+              <div style="flex: 1; min-width: 140px;">
+                <label class="media-field-label" for="media-type-select">Tipo</label>
+                <select id="media-type-select" class="select-custom" style="width: 100%;">
+                  <option value="book">Livro / EPUB</option>
+                  <option value="subtitle">Série / Filme (.srt/.vtt)</option>
+                  <option value="article">Artigo / Texto</option>
+                </select>
+              </div>
+              <div style="width: 175px;">
+                <label class="media-field-label" for="media-max-words">Limite Deck</label>
+                <select id="media-max-words" class="select-custom" style="width: 100%;">
+                  <option value="auto95" selected>Auto · Meta 95%</option>
+                  <option value="40">40 termos (Sprint)</option>
+                  <option value="80">80 termos (Capítulo)</option>
+                  <option value="180">180 termos</option>
+                  <option value="400">400 termos (Bloco)</option>
+                  <option value="800">800 termos (Livro)</option>
+                  <option value="all">Todos (até 1.500)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="media-upload-bar">
+              <label class="dictation-btn file-picker" style="color: var(--cyan);">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <span>Carregar .epub, .srt, .vtt ou .txt</span>
+                <input type="file" id="media-file-input" accept=".epub,.srt,.vtt,.txt,.md" onchange="onMediaFileSelected(event)">
+              </label>
+              <span id="media-file-label" style="font-size: 12px; color: var(--muted);">Nenhum arquivo selecionado</span>
+            </div>
+
+            <div id="media-chapter-wrap" style="display: none; margin-bottom: 12px;">
+              <label class="media-field-label" for="media-chapter-select">Capítulo Detectado</label>
+              <select id="media-chapter-select" class="select-custom" style="width: 100%;">
+                <option value="all">Obra Completa</option>
+              </select>
+            </div>
+
+            <div style="margin-bottom: 12px;">
+              <label class="media-field-label" for="media-text-input">Ou cole o texto / trecho em inglês diretamente</label>
+              <textarea id="media-text-input" class="media-textarea" rows="5" placeholder="Cole aqui um capítulo de livro, roteiro, artigo ou legenda em inglês..."></textarea>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap;">
+              <span id="media-mine-status" style="font-size: 12px; color: var(--muted);">Análise 100% local cruzada com MWLD, Phrasal Verbs e Idioms (nomes próprios filtrados automaticamente).</span>
+              <button type="button" id="btn-mine-media" class="btn-batch-action btn-batch-save" onclick="runMediaMine()">Analisar e Gerar Deck</button>
+            </div>
+          </div>
+
+          <div class="surface-panel">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <h3 style="font-size: 14px;">Minha Biblioteca de Mídias</h3>
+              <span id="media-library-count" style="font-size: 11px; color: var(--muted);">0 obras</span>
+            </div>
+            <div id="media-decks-list" style="display: flex; flex-direction: column; gap: 10px;">
+              <div style="font-size: 12px; color: var(--muted); padding: 14px; border: 1px dashed var(--line); border-radius: 10px; text-align: center;">
+                Nenhuma mídia minerada ainda. Envie um livro (.epub) ou cole um trecho ao lado.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="media-result-section" style="display: none; margin-top: 18px;">
+          <div class="surface-panel" style="margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+              <div>
+                <span class="subdeck-badge" id="media-res-badge">DECK DE MÍDIA</span>
+                <h3 id="media-res-title" style="font-size: 18px; margin-top: 6px;">Obra</h3>
+                <div id="media-res-subtitle" style="font-size: 12px; color: var(--muted);">Capítulo</div>
+              </div>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button type="button" id="btn-media-open-focus" class="btn-batch-action btn-batch-save" onclick="openActiveMediaInFocus()">Estudar no Modo Foco</button>
+                <button type="button" id="btn-media-open-podcast" class="dictation-btn" style="color: var(--purple);" onclick="openActiveMediaInPodcast()">Ouvir Frases no Podcast</button>
+              </div>
+            </div>
+
+            <div class="kpi-grid-4 tnum" style="margin-bottom: 16px;">
+              <div class="kpi-card">
+                <div class="kpi-card-label">Cobertura Atual</div>
+                <div id="media-kpi-cov" class="kpi-card-val" style="color: var(--cyan);">0%</div>
+                <div id="media-kpi-tokens" class="kpi-card-sub">0 palavras analisadas</div>
+              </div>
+              <div class="kpi-card">
+                <div class="kpi-card-label">Meta 95% (Leitura Fluida)</div>
+                <div id="media-kpi-95" class="kpi-card-val" style="color: var(--color-known);">0</div>
+                <div class="kpi-card-sub">palavras-chave restantes</div>
+              </div>
+              <div class="kpi-card">
+                <div class="kpi-card-label">Cobertura Pós-Deck</div>
+                <div id="media-kpi-proj" class="kpi-card-val" style="color: var(--blue);">0%</div>
+                <div id="media-kpi-decksize" class="kpi-card-sub">0 termos no deck</div>
+              </div>
+              <div class="kpi-card">
+                <div class="kpi-card-label">Expressões & Chunks</div>
+                <div id="media-kpi-expr" class="kpi-card-val" style="color: var(--purple);">0</div>
+                <div class="kpi-card-sub">phrasal verbs, idioms, collocations</div>
+              </div>
+            </div>
+
+            <div id="media-coverage-curve-box" style="margin-bottom: 16px;"></div>
+
+            <div class="media-preview-tabs">
+              <div class="mode-pill-toggle" style="margin-bottom: 12px;">
+                <button type="button" class="mode-pill-btn active" id="btn-media-tab-words" onclick="switchMediaPreviewTab('words')">Palavras-Chave da Obra</button>
+                <button type="button" class="mode-pill-btn" id="btn-media-tab-expr" onclick="switchMediaPreviewTab('expressions')">Expressões e Modos de Dizer</button>
+              </div>
+              <div id="media-preview-list" style="display: flex; flex-direction: column; gap: 8px;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- SUBMODO 1: VIDEO DITADO -->
       <div id="submode-video-container" class="video-dictation-card">
@@ -468,8 +615,8 @@
         </div>
       </div>
 
-      <div id="dictation-summary" class="study-notice" role="status" hidden></div>
-      <div class="study-notice">
+      <div id="dictation-summary" class="study-notice video-dictation-notice" role="status" hidden></div>
+      <div class="study-notice video-dictation-notice">
         <span id="dictation-session-status" role="status">Selecione um treino ou importe seu vídeo e legenda.</span>
         <button type="button" class="dictation-btn" onclick="restartDictationSession()">Recomeçar treino</button>
         <button type="button" class="dictation-btn" onclick="retryPendingListening()">Reenviar pendências <span id="listening-pending-count"></span></button>
@@ -763,6 +910,13 @@
           </div>
 
           <div class="surface-panel">
+            <h3 style="font-size: 14px; margin-bottom: 12px;">Minhas Obras (Cobertura 95%)</h3>
+            <div id="ana-media-obras" style="display: flex; flex-direction: column; gap: 8px;">
+              <div style="font-size: 12px; color: var(--muted);">Carregando biblioteca...</div>
+            </div>
+          </div>
+
+          <div class="surface-panel">
             <h3 style="font-size: 14px; margin-bottom: 12px;">Estruturas e Chunks Nativos</h3>
             <div id="ana-struct-bars" style="display: flex; flex-direction: column; gap: 8px;"></div>
           </div>
@@ -783,23 +937,23 @@
     </div>
   </section>
 
-  <!-- MOBILE BOTTOM NAVIGATION -->
+  <!-- MOBILE BOTTOM NAVIGATION (4 PILARES UNIFICADOS) -->
   <nav class="bottom-nav" aria-label="Módulos mobile">
     <button type="button" class="tab active" data-module="vocab" onclick="switchModule('vocab')">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="7" y1="9" x2="17" y2="9"/><line x1="7" y1="13" x2="13" y2="13"/></svg>
-      <span>Vocabulário</span>
+      <span>Estudar</span>
     </button>
     <button type="button" class="tab" data-module="listening" onclick="switchModule('listening')">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>
-      <span>Listening</span>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      <span>Mídia</span>
     </button>
     <button type="button" class="tab" data-module="anki" onclick="switchModule('anki')">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
-      <span>Anki Hub</span>
+      <span>Anki</span>
     </button>
     <button type="button" class="tab" data-module="analytics" onclick="switchModule('analytics')">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-      <span>Analytics</span>
+      <span>Progresso</span>
     </button>
   </nav>
 

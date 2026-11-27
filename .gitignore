@@ -7,3 +7,5 @@ __pycache__/
 *.log
 *.tmp
 *.bak*
+
+media_decks/

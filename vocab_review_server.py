@@ -22,6 +22,10 @@ from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 import threading
 import sqlite3
 import socket
+_SRV_DIR = os.path.dirname(os.path.abspath(__file__))
+if _SRV_DIR not in sys.path:
+    sys.path.insert(0, _SRV_DIR)
+import media_miner
 
 if hasattr(sys.stdout, "reconfigure"):
     try:
@@ -36,6 +40,7 @@ STATIC_DIR = os.path.join(WORKSPACE_DIR, "static")
 PERSISTENT_DATA_DIR = os.environ.get("LEXIS_DATA_DIR", "").strip()
 SEED_MAP_FILE = os.path.join(WORKSPACE_DIR, "knowledge_map_english.json")
 MAP_FILE = os.path.join(PERSISTENT_DATA_DIR, "knowledge_map_english.json") if PERSISTENT_DATA_DIR else SEED_MAP_FILE
+MEDIA_DECKS_DIR = os.path.join(PERSISTENT_DATA_DIR, "media_decks") if PERSISTENT_DATA_DIR else os.path.join(WORKSPACE_DIR, "media_decks")
 MWLD_FILE = os.path.join(WORKSPACE_DIR, "mwld_source", "notes.csv")
 TRANS_CACHE_FILE = os.path.join(WORKSPACE_DIR, "mwld_source", "translations_cache.json")
 JEV_CACHE_FILE = os.path.join(WORKSPACE_DIR, "mwld_source", "jev_cache.json")
@@ -74,6 +79,7 @@ MWLD_ENTRIES = []
 MWLD_BY_SUBDECK = {}
 MWLD_BY_WORD = {}
 STRUCTURES_BY_SUBDECK = {}
+MEDIA_DECKS = {}
 TRANSLATIONS_CACHE = {}
 JEV_CACHE = {}
 LOCK = threading.RLock()
@@ -1861,6 +1867,8 @@ class RequestHandler(BaseHTTPRequestHandler):
             self.handle_api_anki_hub()
         elif path == "/api/immersion-playlist":
             self.handle_api_immersion_playlist(query)
+        elif path == "/api/media-decks":
+            self.handle_api_media_decks()
         elif path == "/api/dev-watch":
             self.handle_api_dev_watch()
         elif path == "/api/export-knowledge-map":
@@ -1918,6 +1926,12 @@ class RequestHandler(BaseHTTPRequestHandler):
             self.handle_api_import_knowledge_map(data)
         elif path == "/api/sync-cloud":
             self.handle_api_sync_cloud(data)
+        elif path == "/api/media-chapters":
+            self.handle_api_media_chapters(data)
+        elif path == "/api/media-mine":
+            self.handle_api_media_mine(data)
+        elif path == "/api/media-delete":
+            self.handle_api_media_delete(data)
         else:
             self.send_response(404)
             self.end_headers()
@@ -2515,11 +2529,13 @@ class RequestHandler(BaseHTTPRequestHandler):
         paginated = filtered[offset:offset+limit]
 
         # Garantir tradução instantânea dos primeiros itens da tela com tag preservada
+        # Para decks de mídia (frases novas inéditas), enfileira em background para abertura instantânea (<10ms)
+        allow_sync_tx = not subdeck.startswith("media:")
         for idx, item in enumerate(paginated):
             if (not item.get("example_1_pt") or ("<b" not in item.get("example_1_pt") and "<i" not in item.get("example_1_pt"))) and item.get("example_1"):
                 tagged_ex = tag_sentence_for_translation(item["example_1"], item["word"])
                 if tagged_ex:
-                    if idx < 4:
+                    if allow_sync_tx and idx < 4:
                         t_pt = translate_to_pt_sync(tagged_ex)
                         if t_pt:
                             cleaned_t1 = clean_portuguese_tag(t_pt, item["word"])
@@ -2531,7 +2547,7 @@ class RequestHandler(BaseHTTPRequestHandler):
             if (not item.get("example_2_pt") or ("<b" not in item.get("example_2_pt") and "<i" not in item.get("example_2_pt"))) and item.get("example_2"):
                 tagged_ex2 = tag_sentence_for_translation(item["example_2"], item["word"])
                 if tagged_ex2:
-                    if idx < 3:
+                    if allow_sync_tx and idx < 3:
                         t_pt2 = translate_to_pt_sync(tagged_ex2)
                         if t_pt2:
                             cleaned_t2 = clean_portuguese_tag(t_pt2, item["word"])
@@ -2541,7 +2557,7 @@ class RequestHandler(BaseHTTPRequestHandler):
                         TRANSLATE_QUEUE.put(tagged_ex2)
 
             if not item.get("definition_pt") and item.get("definition_en"):
-                if idx < 4:
+                if allow_sync_tx and idx < 4:
                     t_def = translate_to_pt_sync(item["definition_en"])
                     if t_def:
                         item["definition_pt"] = t_def
@@ -3466,7 +3482,16 @@ class RequestHandler(BaseHTTPRequestHandler):
                 if w_low in PURE_FUNCTION_WORDS:
                     continue
                 ac_match = None
-                if w_low in vocab_map and vocab_map[w_low].get("acepcoes"):
+                if subdeck_filter.startswith("media:") and e.get("example_1"):
+                    ac_match = {
+                        "frase_i1": e.get("example_1", ""),
+                        "definicao": e.get("definition_en", ""),
+                        "pos": e.get("pos", "term"),
+                        "ipa": e.get("ipa", ""),
+                        "audio_url": e.get("audio_url", ""),
+                        "status": e.get("status_snapshot", "pending"),
+                    }
+                elif w_low in vocab_map and vocab_map[w_low].get("acepcoes"):
                     ac_match = vocab_map[w_low]["acepcoes"][0]
                 tr = resolve_track_for_word(w_low, e["word"], ac_match, e.get("subdeck", subdeck_filter))
                 if tr and tr["en"].lower() not in seen_sentences:
@@ -3482,6 +3507,116 @@ class RequestHandler(BaseHTTPRequestHandler):
             "total": len(tracks),
             "tracks": tracks
         })
+
+    def handle_api_media_decks(self):
+        decks_out = []
+        with LOCK:
+            for slug, deck in MEDIA_DECKS.items():
+                live = media_miner.compute_live_deck_progress(deck, KNOWLEDGE_MAP)
+                decks_out.append({
+                    "slug": slug,
+                    "subdeck": deck.get("subdeck", f"media:{slug}"),
+                    "title": deck.get("title", slug),
+                    "chapter_label": deck.get("chapter_label", "Texto Completo"),
+                    "media_type": deck.get("media_type", "text"),
+                    "created_at": deck.get("created_at", ""),
+                    "stats": deck.get("stats", {}),
+                    "coverage_curve": deck.get("coverage_curve", []),
+                    "top_words": deck.get("top_words", []),
+                    "top_expressions": deck.get("top_expressions", []),
+                    "live": live,
+                })
+        decks_out.sort(key=lambda d: d.get("created_at", ""), reverse=True)
+        self.send_json({"success": True, "decks": decks_out})
+
+    def handle_api_media_chapters(self, data):
+        try:
+            chapters, detected_type = media_miner.extract_media_chapters(
+                text=data.get("text", ""),
+                file_name=data.get("file_name", ""),
+                file_b64=data.get("file_b64", ""),
+            )
+            summary = [
+                {"index": c["index"], "title": c["title"], "word_count": c["word_count"]}
+                for c in chapters
+            ]
+            self.send_json({"success": True, "media_type": detected_type, "chapters": summary})
+        except Exception as exc:
+            self.send_json({"success": False, "error": str(exc)}, 400)
+
+    def handle_api_media_mine(self, data):
+        try:
+            title = (data.get("title") or "").strip()
+            file_name = (data.get("file_name") or "").strip()
+            if not title:
+                title = os.path.splitext(os.path.basename(file_name))[0] if file_name else "Minha Midia"
+
+            chapters, detected_type = media_miner.extract_media_chapters(
+                text=data.get("text", ""),
+                file_name=file_name,
+                file_b64=data.get("file_b64", ""),
+            )
+
+            chap_sel = str(data.get("chapter_index", "all")).strip().lower()
+            if chap_sel != "all" and chap_sel.isdigit():
+                idx_num = int(chap_sel)
+                chosen = [c for c in chapters if c["index"] == idx_num]
+                if not chosen:
+                    chosen = [chapters[0]]
+                combined_text = chosen[0]["text"]
+                chapter_label = chosen[0]["title"]
+            else:
+                combined_text = "\n\n".join(c["text"] for c in chapters)
+                chapter_label = f"Obra Completa ({len(chapters)} cap.)" if len(chapters) > 1 else chapters[0]["title"]
+
+            raw_mw = str(data.get("max_words", "auto95")).strip().lower()
+            if raw_mw in ("auto95", "all"):
+                max_words = raw_mw
+            else:
+                max_words = max(15, min(1500, int(raw_mw)))
+            media_type = (data.get("media_type") or detected_type or "text").strip()
+
+            with LOCK:
+                deck = media_miner.mine_media_deck(
+                    title=title,
+                    text=combined_text,
+                    media_type=media_type,
+                    mwld_by_word=MWLD_BY_WORD,
+                    structures_by_subdeck=STRUCTURES_BY_SUBDECK,
+                    knowledge_map=KNOWLEDGE_MAP,
+                    pure_function_words=PURE_FUNCTION_WORDS,
+                    chapter_label=chapter_label,
+                    max_words=max_words,
+                )
+                save_media_deck(deck)
+                live = media_miner.compute_live_deck_progress(deck, KNOWLEDGE_MAP)
+
+            self.send_json({
+                "success": True,
+                "deck": {
+                    "slug": deck["slug"],
+                    "subdeck": deck["subdeck"],
+                    "title": deck["title"],
+                    "chapter_label": deck["chapter_label"],
+                    "media_type": deck["media_type"],
+                    "created_at": deck["created_at"],
+                    "stats": deck["stats"],
+                    "coverage_curve": deck["coverage_curve"],
+                    "top_words": deck["top_words"],
+                    "top_expressions": deck["top_expressions"],
+                    "live": live,
+                },
+            })
+        except Exception as exc:
+            self.send_json({"success": False, "error": str(exc)}, 400)
+
+    def handle_api_media_delete(self, data):
+        slug = (data.get("slug") or "").strip()
+        if not slug:
+            self.send_json({"success": False, "error": "slug obrigatorio"}, 400)
+            return
+        removed = delete_media_deck(slug)
+        self.send_json({"success": True, "removed": removed, "slug": slug})
 
     def handle_api_enrich_gaps(self, data):
         vocab_map = KNOWLEDGE_MAP.get("mapa_vocabulario", {})
@@ -3885,12 +4020,66 @@ def keep_alive_worker():
             pass
         time.sleep(540) # A cada 9 minutos
 
+def load_media_decks():
+    """Carrega decks de midia salvos em disco e registra em MWLD_BY_SUBDECK."""
+    os.makedirs(MEDIA_DECKS_DIR, exist_ok=True)
+    loaded = 0
+    for fn in sorted(os.listdir(MEDIA_DECKS_DIR)):
+        if not fn.endswith(".json"):
+            continue
+        fp = os.path.join(MEDIA_DECKS_DIR, fn)
+        try:
+            with open(fp, "r", encoding="utf-8") as f:
+                deck = json.load(f)
+            slug = deck.get("slug") or os.path.splitext(fn)[0]
+            subdeck = deck.get("subdeck") or f"media:{slug}"
+            MEDIA_DECKS[slug] = deck
+            MWLD_BY_SUBDECK[subdeck] = deck.get("entries", [])
+            loaded += 1
+        except Exception as e:
+            print(f"Aviso ao carregar media deck {fn}: {e}")
+    if loaded:
+        print(f"✓ {loaded} deck(s) de midia carregados de {MEDIA_DECKS_DIR}")
+
+
+def save_media_deck(deck_obj):
+    os.makedirs(MEDIA_DECKS_DIR, exist_ok=True)
+    slug = deck_obj["slug"]
+    subdeck = deck_obj["subdeck"]
+    MEDIA_DECKS[slug] = deck_obj
+    MWLD_BY_SUBDECK[subdeck] = deck_obj.get("entries", [])
+    fp = os.path.join(MEDIA_DECKS_DIR, f"{slug}.json")
+    tmp = fp + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as f:
+        json.dump(deck_obj, f, ensure_ascii=False, indent=2)
+    os.replace(tmp, fp)
+
+
+def delete_media_deck(slug):
+    safe_slug = re.sub(r"[^a-z0-9\-_]", "", slug.lower())
+    removed = False
+    with LOCK:
+        deck = MEDIA_DECKS.pop(safe_slug, None)
+        if deck:
+            MWLD_BY_SUBDECK.pop(deck.get("subdeck", f"media:{safe_slug}"), None)
+            removed = True
+        fp = os.path.join(MEDIA_DECKS_DIR, f"{safe_slug}.json")
+        if os.path.exists(fp):
+            try:
+                os.remove(fp)
+                removed = True
+            except Exception:
+                pass
+    return removed
+
+
 def run_server():
     load_translations_cache()
     load_jev_cache()
     load_knowledge_map()
     index_mwld()
     index_structures()
+    load_media_decks()
     load_mairo_sentences()
 
     # Iniciar workers em background

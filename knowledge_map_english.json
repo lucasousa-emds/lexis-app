@@ -28382,14 +28382,2139 @@
       ],
       "collocations": [],
       "observacoes": "Classificado via Web Reviewer"
+    },
+    "have to": {
+      "termo": "have to",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "media_shadow-slave-guiltythree-parvaz-z-library-_expr_have_to",
+          "pos": "Collocation",
+          "definicao": "Natural collocation formed with 'have': Possess, own, or hold",
+          "definicao_pt": "Colocação natural formada com 'ter': possuir, possuir ou manter",
+          "status": "conhecido",
+          "frase_exemplo": "So how do you know that they're not real?\" \"You might have to kill them, kid.",
+          "confirmado_em": "2026-11-26T20:10:23.477368"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "look at": {
+      "termo": "look at",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "media_shadow-slave-guiltythree-parvaz-z-library-_expr_look_at",
+          "pos": "Phrasal Verb",
+          "definicao": "to turn your eyes on something; to stare at something",
+          "definicao_pt": "",
+          "status": "conhecido",
+          "frase_exemplo": "This journey is truly too hard for someone that young.\" The soldier looked at Sunny with pity.",
+          "confirmado_em": "2026-11-26T20:10:23.477368"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "and then": {
+      "termo": "and then",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "media_shadow-slave-guiltythree-parvaz-z-library-_expr_and_then",
+          "pos": "Collocation",
+          "definicao": "Natural collocation formed with 'and': Used to connect words of the same part of speech, clauses, or sentences",
+          "definicao_pt": "",
+          "status": "conhecido",
+          "frase_exemplo": "It's going to keep me awake, at least.\" He stared into the distance, dozing off, and then slapped himself in the face to wake up.",
+          "confirmado_em": "2026-11-26T20:10:23.477368"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "go to": {
+      "termo": "go to",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "media_shadow-slave-guiltythree-parvaz-z-library-_expr_go_to",
+          "pos": "Phrasal Verb",
+          "definicao": "allocate money.",
+          "definicao_pt": "",
+          "status": "conhecido",
+          "frase_exemplo": "It's going to keep me awake, at least.\" He stared into the distance, dozing off, and then slapped himself in the face to wake up.",
+          "confirmado_em": "2026-11-26T20:10:23.477368"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "the same": {
+      "termo": "the same",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "media_shadow-slave-guiltythree-parvaz-z-library-_expr_the_same",
+          "pos": "Collocation",
+          "definicao": "Natural collocation formed with 'the': Denoting one or more people or things already mentioned or assumed to be common knowledge",
+          "definicao_pt": "",
+          "status": "conhecido",
+          "frase_exemplo": "At least police stations remained the same wherever you go.",
+          "confirmado_em": "2026-11-26T20:10:23.477368"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "able to": {
+      "termo": "able to",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "media_shadow-slave-guiltythree-parvaz-z-library-_expr_able_to",
+          "pos": "Collocation",
+          "definicao": "Natural collocation formed with 'able': Having the power, skill, means, or opportunity to do something",
+          "definicao_pt": "Colocação natural formada com 'capaz': Ter o poder, a habilidade, os meios ou a oportunidade de fazer algo",
+          "status": "conhecido",
+          "frase_exemplo": "The nearest Awakened won't be able to get here for a few hours, so we would really appreciate it if you don't make us fight that thing ourselves…\" 'What?' With that last thought, Sunny finally slipped into a deep slumber.",
+          "confirmado_em": "2026-11-26T20:10:23.477368"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "want to": {
+      "termo": "want to",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "media_shadow-slave-guiltythree-parvaz-z-library-_expr_want_to",
+          "pos": "Collocation",
+          "definicao": "Natural collocation formed with 'want': Have a desire to possess or do (something); wish for",
+          "definicao_pt": "",
+          "status": "conhecido",
+          "frase_exemplo": "The only thing he could think about was how much he wanted to sleep.",
+          "confirmado_em": "2026-11-26T20:10:23.477368"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "would have": {
+      "termo": "would have",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "media_shadow-slave-guiltythree-parvaz-z-library-_expr_would_have",
+          "pos": "Collocation",
+          "definicao": "Natural collocation formed with 'would': Expressing the conditional mood, indicating the consequence of an imagined event or situation",
+          "definicao_pt": "",
+          "status": "conhecido",
+          "frase_exemplo": "A magic sword or a suit of armor would have come in handy right about now.",
+          "confirmado_em": "2026-11-26T20:10:23.477368"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "out of": {
+      "termo": "out of",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "media_shadow-slave-guiltythree-parvaz-z-library-_expr_out_of",
+          "pos": "Collocation",
+          "definicao": "Natural collocation formed with 'out': Moving or appearing to move away from a particular place, especially one that is enclosed or hidden",
+          "definicao_pt": "",
+          "status": "conhecido",
+          "frase_exemplo": "Looking haggard in his cheap clothes and from the lack of sleep, unhealthily thin and pale, Sunny was indeed out of his place here.",
+          "confirmado_em": "2026-11-26T20:10:23.477368"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "at least": {
+      "termo": "at least",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "media_shadow-slave-guiltythree-parvaz-z-library-_expr_at_least",
+          "pos": "Collocation",
+          "definicao": "Natural collocation formed with 'least': Smallest in amount, extent, or significance",
+          "definicao_pt": "",
+          "status": "conhecido",
+          "frase_exemplo": "It's going to keep me awake, at least.\" He stared into the distance, dozing off, and then slapped himself in the face to wake up.",
+          "confirmado_em": "2026-11-26T20:10:23.477368"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "a while": {
+      "termo": "a while",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "media_shadow-slave-guiltythree-parvaz-z-library-_expr_a_while",
+          "pos": "Collocation",
+          "definicao": "Natural collocation formed with 'while': A period of time",
+          "definicao_pt": "",
+          "status": "conhecido",
+          "frase_exemplo": "After a while, the Spell's voice came whispering into his ear: [You have slain a dormant human, name unknown.] Sunny flinched.",
+          "confirmado_em": "2026-11-26T20:10:23.477368"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "i am": {
+      "termo": "I am",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "media_shadow-slave-guiltythree-parvaz-z-library-_expr_i_am",
+          "pos": "Collocation",
+          "definicao": "Natural collocation formed with 'I': Used by a speaker to refer to himself or herself",
+          "definicao_pt": "",
+          "status": "conhecido",
+          "frase_exemplo": "\"Uh, no.\" Then he scratched the back of his head and added: \"As demanded by the Third Special Directive, I am here to surrender myself as a carrier of the Nightmare Spell.\" The officer's expression instantly changed from irritated to wary.",
+          "confirmado_em": "2026-11-26T20:10:23.477368"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "for a while": {
+      "termo": "For A While",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "media_shadow-slave-guiltythree-parvaz-z-library-_expr_for_a_while",
+          "pos": "Idiom",
+          "definicao": "for a temporary period of time",
+          "definicao_pt": "",
+          "status": "conhecido",
+          "frase_exemplo": "It stayed motionless for a while and then moved forward, scraping its claws against the ground.",
+          "confirmado_em": "2026-11-26T20:10:23.477368"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "be in": {
+      "termo": "be in",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "media_shadow-slave-guiltythree-parvaz-z-library-_expr_be_in",
+          "pos": "Phrasal Verb",
+          "definicao": "be at home or at work.",
+          "definicao_pt": "",
+          "status": "conhecido",
+          "frase_exemplo": "The room they were in was situated in the basement of the police station, with thick armored walls and a formidable-looking vault door.",
+          "confirmado_em": "2026-11-26T20:10:23.477368"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "as though": {
+      "termo": "as though",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "media_shadow-slave-guiltythree-parvaz-z-library-_expr_as_though",
+          "pos": "Collocation",
+          "definicao": "Natural collocation formed with 'though': Despite the fact that; although",
+          "definicao_pt": "",
+          "status": "conhecido",
+          "frase_exemplo": "There are those who are blessed, and there are those who are cursed… but rarely both.\" [Mark of Divinity] Attribute Description: \"You bear a faint scent of divinity, as though someone briefly touched by it once, a long time ago.\"...",
+          "confirmado_em": "2026-11-26T20:10:23.477368"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "need to": {
+      "termo": "need to",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "media_shadow-slave-guiltythree-parvaz-z-library-_expr_need_to",
+          "pos": "Collocation",
+          "definicao": "Natural collocation formed with 'need': Require (something) because it is essential or very important",
+          "definicao_pt": "",
+          "status": "conhecido",
+          "frase_exemplo": "We need to warm ourselves and discuss what to do next.\" Without waiting for their response, Hero turned around and walked away.",
+          "confirmado_em": "2026-11-26T20:10:23.477368"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "the most": {
+      "termo": "the most",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "media_shadow-slave-guiltythree-parvaz-z-library-_expr_the_most",
+          "pos": "Collocation",
+          "definicao": "Natural collocation formed with 'most': Greatest in amount, quantity, or degree",
+          "definicao_pt": "",
+          "status": "conhecido",
+          "frase_exemplo": "Combat Aspects are the most common, so the probability of receiving one is high.\" The armored room was growing dimmer.",
+          "confirmado_em": "2026-11-26T20:10:23.477368"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "all of": {
+      "termo": "all of",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "media_shadow-slave-guiltythree-parvaz-z-library-_expr_all_of",
+          "pos": "Collocation",
+          "definicao": "Natural collocation formed with 'all': Used to refer to the whole quantity or extent of a particular group or thing",
+          "definicao_pt": "",
+          "status": "conhecido",
+          "frase_exemplo": "That's why the familiar broad-shouldered slave ended up just where he started despite all of his efforts to get closer to the flame.",
+          "confirmado_em": "2026-11-26T20:10:23.477368"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "a lot of": {
+      "termo": "a lot of",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "media_shadow-slave-guiltythree-parvaz-z-library-_expr_a_lot_of",
+          "pos": "Collocation",
+          "definicao": "Natural collocation formed with 'lot': A particular group, collection, or set of people or things",
+          "definicao_pt": "",
+          "status": "conhecido",
+          "frase_exemplo": "At first, the emergence of a new disease that caused millions of people to complain about constant fatigue and sleepiness did not attract a lot of attention.",
+          "confirmado_em": "2026-11-26T20:10:23.477368"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "much more": {
+      "termo": "much more",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "media_shadow-slave-guiltythree-parvaz-z-library-_expr_much_more",
+          "pos": "Collocation",
+          "definicao": "Natural collocation formed with 'much': A large amount",
+          "definicao_pt": "",
+          "status": "conhecido",
+          "frase_exemplo": "The boy might prove useful later on.\" These words, which had sounded benevolent then, now turned out to hide a much more sinister meaning.",
+          "confirmado_em": "2026-11-26T20:10:23.477368"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "remain silent": {
+      "termo": "remain silent",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "media_shadow-slave-guiltythree-parvaz-z-library-_expr_remain_silent",
+          "pos": "Collocation",
+          "definicao": "Natural collocation formed with 'remain': Continue to exist, especially after other similar or related people or things have ceased to exist",
+          "definicao_pt": "",
+          "status": "conhecido",
+          "frase_exemplo": "That's why going back is our best hope.\" Scholar opened his mouth, planning to say something, but then thought better of it and remained silent.",
+          "confirmado_em": "2026-11-26T20:10:23.477368"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "it is": {
+      "termo": "it is",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "media_shadow-slave-guiltythree-parvaz-z-library-_expr_it_is",
+          "pos": "Collocation",
+          "definicao": "Natural collocation formed with 'it': Used to refer to a thing previously mentioned or easily identified",
+          "definicao_pt": "",
+          "status": "conhecido",
+          "frase_exemplo": "If it is reinforced by a physical Attribute, then that's even better.",
+          "confirmado_em": "2026-11-26T20:10:23.477368"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "come to": {
+      "termo": "come to",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "media_shadow-slave-guiltythree-parvaz-z-library-_expr_come_to",
+          "pos": "Phrasal Verb",
+          "definicao": "become conscious, wake up from anaesthetic.",
+          "definicao_pt": "",
+          "status": "conhecido",
+          "frase_exemplo": "After all, his life was coming to an end.",
+          "confirmado_em": "2026-11-26T20:10:23.477368"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "most of": {
+      "termo": "most of",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "media_shadow-slave-guiltythree-parvaz-z-library-_expr_most_of",
+          "pos": "Collocation",
+          "definicao": "Natural collocation formed with 'most': Greatest in amount, quantity, or degree",
+          "definicao_pt": "",
+          "status": "conhecido",
+          "frase_exemplo": "This cup of plant-based coffee, usually available only to higher rank citizens, had cost most of his savings.",
+          "confirmado_em": "2026-11-26T20:10:23.477368"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "appear on": {
+      "termo": "appear on",
+      "status_geral": "desconhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "media_shadow-slave-guiltythree-parvaz-z-library-_expr_appear_on",
+          "pos": "Collocation",
+          "definicao": "Natural collocation formed with 'appear': Come into sight; become visible or noticeable",
+          "definicao_pt": "",
+          "status": "desconhecido",
+          "frase_exemplo": "I thought that if I do it when you sleep, you won't have to suffer.\" Unseen to him, a bitter grin appeared on Sunny's face.",
+          "confirmado_em": "2026-11-26T20:10:23.477368"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "neck": {
+      "termo": "neck",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "neck_02k_9396",
+          "pos": "noun",
+          "definicao": "[see picture at human]<br>the part of the body between the head and the shoulders",
+          "definicao_pt": "[ver foto em humano]<br>a parte do corpo entre a cabeça e os ombros",
+          "status": "conhecido",
+          "frase_exemplo": "She craned/stretched her <i>neck</i> to see what was going on.",
+          "confirmado_em": "2026-11-27T04:52:56.772533"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "damage": {
+      "termo": "damage",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "damage_02k_9399",
+          "pos": "noun",
+          "definicao": "physical harm that is done to something or to someone's body",
+          "definicao_pt": "dano físico causado a algo ou ao corpo de alguém",
+          "status": "conhecido",
+          "frase_exemplo": "The items were carefully wrapped to protect them from <i>damage</i> during shipping.",
+          "confirmado_em": "2026-11-27T04:52:56.772533"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "plastic": {
+      "termo": "plastic",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "plastic_02k_9404",
+          "pos": "noun",
+          "definicao": "a light, strong substance that can be made into different shapes and that is used for making many common products",
+          "definicao_pt": "uma substância leve e forte que pode ser transformada em diferentes formas e que é usada para fazer muitos produtos comuns",
+          "status": "conhecido",
+          "frase_exemplo": "The toy was made of <i>plastic</i>.",
+          "confirmado_em": "2026-11-27T04:52:56.772533"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "tall": {
+      "termo": "tall",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "tall_02k_9409",
+          "pos": "adjective",
+          "definicao": "[opposite short]<br>greater in height than the average person, building, etc.",
+          "definicao_pt": "[oposto ao curto]<br>maior em altura do que a média de uma pessoa, edifício, etc.",
+          "status": "conhecido",
+          "frase_exemplo": "All the children in my family grew up to be very <i>tall</i>.",
+          "confirmado_em": "2026-11-27T04:52:56.772533"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "plate": {
+      "termo": "plate",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "plate_02k_9411",
+          "pos": "noun",
+          "definicao": "[see picture at place setting]<br>a flat and usually round dish that is used for eating or serving food",
+          "definicao_pt": "[veja a imagem no local]<br>um prato plano e geralmente redondo que é usado para comer ou servir comida",
+          "status": "conhecido",
+          "frase_exemplo": "<i>plates</i>, bowls, and cups",
+          "confirmado_em": "2026-11-27T04:52:56.772533"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "hate": {
+      "termo": "hate",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "hate_02k_9425",
+          "pos": "verb",
+          "definicao": "[opposite love]<br>to dislike (someone) very strongly to feel hate for (someone)",
+          "definicao_pt": "[amor oposto]<br>não gostar muito de (alguém) sentir ódio por (alguém)",
+          "status": "conhecido",
+          "frase_exemplo": "He was a cruel tyrant who was <i>hated</i> and feared by his people.",
+          "confirmado_em": "2026-11-27T04:52:56.772533"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "otherwise": {
+      "termo": "otherwise",
+      "status_geral": "desconhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "otherwise_02k_9428",
+          "pos": "adverb",
+          "definicao": "in a different way or manner",
+          "definicao_pt": "de uma maneira ou maneira diferente",
+          "status": "desconhecido",
+          "frase_exemplo": "All of the books had been burned or <i>otherwise</i> destroyed.",
+          "confirmado_em": "2026-11-27T04:52:56.772533"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "writing": {
+      "termo": "writing",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "writing_02k_9434",
+          "pos": "noun",
+          "definicao": "the activity or work of writing books, poems, stories, etc.",
+          "definicao_pt": "a atividade ou trabalho de escrever livros, poemas, histórias, etc.",
+          "status": "conhecido",
+          "frase_exemplo": "<i>Writing</i> usually isn't a lucrative career, but it has been very fulfilling for me.",
+          "confirmado_em": "2026-11-27T04:52:56.772533"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "male": {
+      "termo": "male",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "male_02k_9449",
+          "pos": "adjective",
+          "definicao": "of or relating to the sex that cannot produce young or lay eggs",
+          "definicao_pt": "de ou relacionado ao sexo que não pode produzir filhotes ou botar ovos",
+          "status": "conhecido",
+          "frase_exemplo": "a <i>male</i> bird/mammal/insect",
+          "confirmado_em": "2026-11-27T04:52:56.772533"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "alive": {
+      "termo": "alive",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "alive_02k_9463",
+          "pos": "adjective",
+          "definicao": "having life living not dead",
+          "definicao_pt": "tendo vida viva e não morta",
+          "status": "conhecido",
+          "frase_exemplo": "It feels great to be <i>alive</i>.",
+          "confirmado_em": "2026-11-27T04:52:56.772533"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "expression": {
+      "termo": "expression",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "expression_02k_9468",
+          "pos": "noun",
+          "definicao": "the act of making your thoughts, feelings, etc., known by speech, writing, or some other method the act of expressing something",
+          "definicao_pt": "o ato de tornar seus pensamentos, sentimentos, etc., conhecidos pela fala, escrita ou algum outro método o ato de expressar algo",
+          "status": "conhecido",
+          "frase_exemplo": "freedom of <i>expression</i> [=freedom to say and show what you feel and believe]",
+          "confirmado_em": "2026-11-27T04:52:56.772533"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "football": {
+      "termo": "football",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "football_02k_9473",
+          "pos": "noun",
+          "definicao": "an American game that is played between two teams of 11 players each and in which the ball is moved forward by running or passing",
+          "definicao_pt": "um jogo americano disputado entre duas equipes de 11 jogadores cada e em que a bola avança correndo ou passando",
+          "status": "conhecido",
+          "frase_exemplo": "He played a lot of <i>football</i> in high school and college.",
+          "confirmado_em": "2026-11-27T04:52:56.772533"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "theater": {
+      "termo": "theater",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "theater_02k_9478",
+          "pos": "noun",
+          "definicao": "a building where plays, shows, etc., are performed on a stage",
+          "definicao_pt": "um edifício onde peças de teatro, shows, etc., são apresentados em um palco",
+          "status": "conhecido",
+          "frase_exemplo": "the oldest <i>theater</i> in the city",
+          "confirmado_em": "2026-11-27T04:52:56.772533"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "intend": {
+      "termo": "intend",
+      "status_geral": "desconhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "intend_02k_9485",
+          "pos": "verb",
+          "definicao": "[usually followed by <i>to + verb</i>]<br>to plan or want to do (something) to have (something) in your mind as a purpose or goal",
+          "definicao_pt": "[geralmente seguido por <i>to + verbo</i>]<br>planejar ou querer fazer (algo) ter (algo) em sua mente como um propósito ou meta",
+          "status": "desconhecido",
+          "frase_exemplo": "He <i>intended</i> that his daughter would inherit the business. = (<i>Brit</i>) He <i>intended</i> leaving the business to his daughter.",
+          "confirmado_em": "2026-11-27T04:52:56.772533"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "chicken": {
+      "termo": "chicken",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "chicken_02k_9495",
+          "pos": "noun",
+          "definicao": "a bird that is raised by people for its eggs and meat",
+          "definicao_pt": "um pássaro criado pelas pessoas por causa de seus ovos e carne",
+          "status": "conhecido",
+          "frase_exemplo": "",
+          "confirmado_em": "2026-11-27T04:52:56.772533"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "army": {
+      "termo": "army",
+      "status_geral": "duvida",
+      "acepcoes": [
+        {
+          "sentido_id": "army_02k_9498",
+          "pos": "noun",
+          "definicao": "a large group of soldiers organized to fight battles on land",
+          "definicao_pt": "um grande grupo de soldados organizados para travar batalhas em terra",
+          "status": "duvida",
+          "frase_exemplo": "the <i>armies</i> of Alexander the Great",
+          "confirmado_em": "2026-11-27T04:52:56.772533"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "abuse": {
+      "termo": "abuse",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "abuse_02k_9501",
+          "pos": "noun",
+          "definicao": "harmful treatment of a person or animal",
+          "definicao_pt": "tratamento prejudicial de uma pessoa ou animal",
+          "status": "conhecido",
+          "frase_exemplo": "He subjected his wife to physical and emotional <i>abuse</i>.",
+          "confirmado_em": "2026-11-27T04:52:56.772533"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "shut": {
+      "termo": "shut",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "shut_02k_9506",
+          "pos": "verb",
+          "definicao": "to close (something)",
+          "definicao_pt": "fechar (algo)",
+          "status": "conhecido",
+          "frase_exemplo": "Please <i>shut</i> the door/window/lid/drawer.",
+          "confirmado_em": "2026-11-27T04:52:56.772533"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "map": {
+      "termo": "map",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "map_02k_9509",
+          "pos": "noun",
+          "definicao": "a picture or chart that shows the rivers, mountains, streets, etc., in a particular area",
+          "definicao_pt": "uma imagem ou gráfico que mostra os rios, montanhas, ruas, etc., em uma determinada área",
+          "status": "conhecido",
+          "frase_exemplo": "a <i>map</i> of the country",
+          "confirmado_em": "2026-11-27T04:52:56.772533"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "extra": {
+      "termo": "extra",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "extra_02k_9511",
+          "pos": "adjective",
+          "definicao": "more than is usual or necessary additional",
+          "definicao_pt": "mais do que o habitual ou necessário adicional",
+          "status": "conhecido",
+          "frase_exemplo": "a sandwich with <i>extra</i> mayonnaise",
+          "confirmado_em": "2026-11-27T04:52:56.772533"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "session": {
+      "termo": "session",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "session_02k_9513",
+          "pos": "noun",
+          "definicao": "a period of time that is used to do a particular activity",
+          "definicao_pt": "um período de tempo usado para realizar uma atividade específica",
+          "status": "conhecido",
+          "frase_exemplo": "a practice <i>session</i>",
+          "confirmado_em": "2026-11-27T04:52:56.772533"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "welcome": {
+      "termo": "welcome",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "welcome_02k_9516",
+          "pos": "verb",
+          "definicao": "to greet (someone) in a warm and friendly manner",
+          "definicao_pt": "cumprimentar (alguém) de maneira calorosa e amigável",
+          "status": "conhecido",
+          "frase_exemplo": "She <i>welcomed</i> the students into her home.",
+          "confirmado_em": "2026-11-27T04:52:56.772533"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "danger": {
+      "termo": "danger",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "danger_02k_9518",
+          "pos": "noun",
+          "definicao": "the possibility that you will be hurt or killed",
+          "definicao_pt": "a possibilidade de você ser ferido ou morto",
+          "status": "conhecido",
+          "frase_exemplo": "I was unaware of the <i>danger</i> that lay ahead.",
+          "confirmado_em": "2026-11-27T04:52:56.772533"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "domestic": {
+      "termo": "domestic",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "domestic_02k_9521",
+          "pos": "adjective",
+          "definicao": "[opposite foreign]<br>of, relating to, or made in your own country",
+          "definicao_pt": "[oposto a estrangeiro]<br>de, relacionado ou feito em seu próprio país",
+          "status": "conhecido",
+          "frase_exemplo": "the <i>domestic</i> economy/market",
+          "confirmado_em": "2026-11-27T04:52:56.772533"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "literature": {
+      "termo": "literature",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "literature_02k_9527",
+          "pos": "noun",
+          "definicao": "written works (such as poems, plays, and novels) that are considered to be very good and to have lasting importance",
+          "definicao_pt": "obras escritas (como poemas, peças de teatro e romances) que são consideradas muito boas e de importância duradoura",
+          "status": "conhecido",
+          "frase_exemplo": "She took courses in history and <i>literature</i>.",
+          "confirmado_em": "2026-11-27T04:52:56.772533"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "rain": {
+      "termo": "rain",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "rain_02k_9530",
+          "pos": "noun",
+          "definicao": "water that falls in drops from clouds in the sky",
+          "definicao_pt": "água que cai em gotas das nuvens no céu",
+          "status": "conhecido",
+          "frase_exemplo": "The weatherman forecasts <i>rain</i> for this afternoon.",
+          "confirmado_em": "2026-11-27T10:47:39.171385"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "desire": {
+      "termo": "desire",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "desire_02k_9534",
+          "pos": "noun",
+          "definicao": "the feeling of wanting something",
+          "definicao_pt": "a sensação de querer algo",
+          "status": "conhecido",
+          "frase_exemplo": "<i>Desire</i> is a common theme in music and literature.",
+          "confirmado_em": "2026-11-27T10:47:39.171385"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "assessment": {
+      "termo": "assessment",
+      "status_geral": "desconhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "assessment_02k_9538",
+          "pos": "noun",
+          "definicao": "the act of making a judgment about something the act of assessing something",
+          "definicao_pt": "o ato de fazer um julgamento sobre algo o ato de avaliar algo",
+          "status": "desconhecido",
+          "frase_exemplo": "The book is a careful <i>assessment</i> [=<i>appraisal, evaluation</i>] of the president's achievements.",
+          "confirmado_em": "2026-11-27T10:47:39.171385"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "respect": {
+      "termo": "respect",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "respect_02k_9542",
+          "pos": "noun",
+          "definicao": "a feeling of admiring someone or something that is good, valuable, important, etc.",
+          "definicao_pt": "sentimento de admirar alguém ou algo que é bom, valioso, importante, etc.",
+          "status": "conhecido",
+          "frase_exemplo": "He has earned/gained/won their <i>respect</i>.",
+          "confirmado_em": "2026-11-27T10:47:39.171385"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "paint": {
+      "termo": "paint",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "paint_02k_9546",
+          "pos": "verb",
+          "definicao": "to cover (something) with paint to put paint on (something)",
+          "definicao_pt": "cobrir (algo) com tinta colocar tinta em (algo)",
+          "status": "conhecido",
+          "frase_exemplo": "I need to <i>paint</i> the bookcase.",
+          "confirmado_em": "2026-11-27T10:47:39.171385"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "northern": {
+      "termo": "northern",
+      "status_geral": "desconhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "northern_02k_9550",
+          "pos": "adjective",
+          "definicao": "located in or toward the north",
+          "definicao_pt": "localizado em ou em direção ao norte",
+          "status": "desconhecido",
+          "frase_exemplo": "<i>northern</i> Europe",
+          "confirmado_em": "2026-11-27T10:47:39.171385"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "nod": {
+      "termo": "nod",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "nod_02k_9552",
+          "pos": "verb",
+          "definicao": "to move your head up and down as a way of answering “yes” or of showing agreement, understanding, or approval",
+          "definicao_pt": "mover a cabeça para cima e para baixo como forma de responder “sim” ou de mostrar concordância, compreensão ou aprovação",
+          "status": "conhecido",
+          "frase_exemplo": "She <i>nodded</i> when I asked her if she was ready.",
+          "confirmado_em": "2026-11-27T10:47:39.171385"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "fuel": {
+      "termo": "fuel",
+      "status_geral": "duvida",
+      "acepcoes": [
+        {
+          "sentido_id": "fuel_02k_9556",
+          "pos": "noun",
+          "definicao": "[often used figuratively]<br>a material (such as coal, oil, or gas) that is burned to produce heat or power",
+          "definicao_pt": "[frequentemente usado figurativamente]<br>um material (como carvão, petróleo ou gás) que é queimado para produzir calor ou energia",
+          "status": "duvida",
+          "frase_exemplo": "a gallon of <i>fuel</i>",
+          "confirmado_em": "2026-11-27T10:47:39.171385"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "leaf": {
+      "termo": "leaf",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "leaf_02k_9558",
+          "pos": "noun",
+          "definicao": "one of the flat and typically green parts of a plant that grow from a stem or twig",
+          "definicao_pt": "uma das partes planas e tipicamente verdes de uma planta que cresce a partir de um caule ou galho",
+          "status": "conhecido",
+          "frase_exemplo": "a maple <i>leaf</i>",
+          "confirmado_em": "2026-11-27T10:47:39.171385"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "dry": {
+      "termo": "dry",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "dry_02k_9571",
+          "pos": "adjective",
+          "definicao": "having no or very little water or liquid",
+          "definicao_pt": "tendo pouca ou nenhuma água ou líquido",
+          "status": "conhecido",
+          "frase_exemplo": "a <i>dry</i> riverbed",
+          "confirmado_em": "2026-11-27T10:47:39.171385"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "instruction": {
+      "termo": "instruction",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "instruction_02k_9587",
+          "pos": "noun",
+          "definicao": "[usually plural]<br>a statement that describes how to do something",
+          "definicao_pt": "[geralmente no plural]<br>uma declaração que descreve como fazer algo",
+          "status": "conhecido",
+          "frase_exemplo": "You should read each <i>instruction</i> carefully.",
+          "confirmado_em": "2026-11-27T10:47:39.171385"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "pool": {
+      "termo": "pool",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "pool_02k_9596",
+          "pos": "noun",
+          "definicao": "swimming pool",
+          "definicao_pt": "piscina",
+          "status": "conhecido",
+          "frase_exemplo": "She dove into the <i>pool</i>.",
+          "confirmado_em": "2026-11-27T10:47:39.171385"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "climb": {
+      "termo": "climb",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "climb_02k_9604",
+          "pos": "verb",
+          "definicao": "to move or go up (something) using your feet and often your hands",
+          "definicao_pt": "mover ou subir (algo) usando os pés e muitas vezes as mãos",
+          "status": "conhecido",
+          "frase_exemplo": "<i>climb</i> a ladder/tree",
+          "confirmado_em": "2026-11-27T10:47:39.171385"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "sweet": {
+      "termo": "sweet",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "sweet_02k_9612",
+          "pos": "adjective",
+          "definicao": "containing a lot of sugar",
+          "definicao_pt": "contendo muito açúcar",
+          "status": "conhecido",
+          "frase_exemplo": "<i>sweet</i> dishes/foods",
+          "confirmado_em": "2026-11-27T10:47:39.171385"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "engine": {
+      "termo": "engine",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "engine_02k_9634",
+          "pos": "noun",
+          "definicao": "a machine that changes energy (such as heat from burning fuel) into mechanical motion",
+          "definicao_pt": "uma máquina que transforma energia (como o calor da queima de combustível) em movimento mecânico",
+          "status": "conhecido",
+          "frase_exemplo": "The car has a four-cylinder <i>engine</i>.",
+          "confirmado_em": "2026-11-27T10:47:39.171385"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "salt": {
+      "termo": "salt",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "salt_02k_9645",
+          "pos": "noun",
+          "definicao": "a natural white substance that is used especially to flavor or preserve food",
+          "definicao_pt": "uma substância branca natural usada especialmente para dar sabor ou conservar alimentos",
+          "status": "conhecido",
+          "frase_exemplo": "The soup needs a little more <i>salt</i>.",
+          "confirmado_em": "2026-11-27T10:47:39.171385"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "expand": {
+      "termo": "expand",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "expand_02k_9647",
+          "pos": "verb",
+          "definicao": "to increase in size, range, or amount to become bigger",
+          "definicao_pt": "aumentar em tamanho, alcance ou quantidade para se tornar maior",
+          "status": "conhecido",
+          "frase_exemplo": "The liquid <i>expands</i> and contracts with changes in temperature.",
+          "confirmado_em": "2026-11-27T10:47:39.171385"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "importance": {
+      "termo": "importance",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "importance_02k_9650",
+          "pos": "noun",
+          "definicao": "the quality or state of being important value or significance",
+          "definicao_pt": "a qualidade ou estado de ser um valor ou significado importante",
+          "status": "conhecido",
+          "frase_exemplo": "The teacher lectured the students on the <i>importance</i> of mutual respect.",
+          "confirmado_em": "2026-11-27T10:47:39.171385"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "metal": {
+      "termo": "metal",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "metal_02k_9651",
+          "pos": "noun",
+          "definicao": "[often used before another noun]<br>a substance (such as gold, tin, or copper) that usually has a shiny appearance, is a good conductor of electricity and heat, can be melted, and is usually capable of being shaped",
+          "definicao_pt": "[frequentemente usado antes de outro substantivo]<br>uma substância (como ouro, estanho ou cobre) que geralmente tem uma aparência brilhante, é um bom condutor de eletricidade e calor, pode ser derretida e geralmente é capaz de ser moldada",
+          "status": "conhecido",
+          "frase_exemplo": "scraps/strips/sheets/lumps/pieces of <i>metal</i>",
+          "confirmado_em": "2026-11-27T10:47:39.171385"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "fat": {
+      "termo": "fat",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "fat_02k_9652",
+          "pos": "noun",
+          "definicao": "the soft flesh on the bodies of people and animals that helps keep the body warm and is used to store energy",
+          "definicao_pt": "a carne macia do corpo de pessoas e animais que ajuda a manter o corpo aquecido e é usada para armazenar energia",
+          "status": "conhecido",
+          "frase_exemplo": "people with excess body <i>fat</i>",
+          "confirmado_em": "2026-11-27T10:47:39.171385"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "ticket": {
+      "termo": "ticket",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "ticket_02k_9655",
+          "pos": "noun",
+          "definicao": "a piece of paper that allows you to see a show, participate in an event, travel on a vehicle, etc.",
+          "definicao_pt": "um pedaço de papel que permite ver um show, participar de um evento, viajar em um veículo, etc.",
+          "status": "conhecido",
+          "frase_exemplo": "May I see your <i>tickets</i>, please? = <i>Tickets</i>, please.",
+          "confirmado_em": "2026-11-27T10:47:39.171385"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "software": {
+      "termo": "software",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "software_02k_9665",
+          "pos": "noun",
+          "definicao": "[often used before another noun] [compare hardware]<br>the programs that run on a computer and perform certain functions",
+          "definicao_pt": "[frequentemente usado antes de outro substantivo] [comparar hardware]<br>os programas executados em um computador e que executam determinadas funções",
+          "status": "conhecido",
+          "frase_exemplo": "word-processing <i>software</i>",
+          "confirmado_em": "2026-11-27T10:47:39.171385"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "disappear": {
+      "termo": "disappear",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "disappear_02k_9666",
+          "pos": "verb",
+          "definicao": "to stop being visible to pass out of sight",
+          "definicao_pt": "deixar de ser visível passar de vista",
+          "status": "conhecido",
+          "frase_exemplo": "The moon <i>disappeared</i> [=<i>vanished</i>] behind a cloud.",
+          "confirmado_em": "2026-11-27T10:47:39.171385"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "corporate": {
+      "termo": "corporate",
+      "status_geral": "duvida",
+      "acepcoes": [
+        {
+          "sentido_id": "corporate_02k_9669",
+          "pos": "adjective",
+          "definicao": "involving or associated with a corporation",
+          "definicao_pt": "envolvendo ou associado a uma empresa",
+          "status": "duvida",
+          "frase_exemplo": "We have to change the <i>corporate</i> structure to survive.",
+          "confirmado_em": "2026-11-27T10:47:39.171385"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "strange": {
+      "termo": "strange",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "strange_02k_9673",
+          "pos": "adjective",
+          "definicao": "different from what is usual, normal, or expected odd",
+          "definicao_pt": "diferente do que é habitual, normal ou esperado estranho",
+          "status": "conhecido",
+          "frase_exemplo": "Does his behavior seem <i>strange</i> to you?",
+          "confirmado_em": "2026-11-27T10:47:39.171385"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "reading": {
+      "termo": "reading",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "reading_02k_9676",
+          "pos": "noun",
+          "definicao": "the act of reading something",
+          "definicao_pt": "o ato de ler algo",
+          "status": "conhecido",
+          "frase_exemplo": "She gave the manuscript a careful <i>reading</i>. [=she read the manuscript carefully]",
+          "confirmado_em": "2026-11-27T10:49:13.330251"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "lip": {
+      "termo": "lip",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "lip_02k_9684",
+          "pos": "noun",
+          "definicao": "[see picture at mouth]<br>either one of the two soft parts that surround the mouth",
+          "definicao_pt": "[ver foto na boca]<br>qualquer uma das duas partes moles que circundam a boca",
+          "status": "conhecido",
+          "frase_exemplo": "the lower/upper <i>lip</i>",
+          "confirmado_em": "2026-11-27T10:49:13.330251"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "urban": {
+      "termo": "urban",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "urban_02k_9688",
+          "pos": "adjective",
+          "definicao": "[opposite rural]<br>of or relating to cities and the people who live in them",
+          "definicao_pt": "[oposto a rural]<br>de ou relacionado às cidades e às pessoas que nelas vivem",
+          "status": "conhecido",
+          "frase_exemplo": "<i>urban</i> life/culture",
+          "confirmado_em": "2026-11-27T10:49:13.330251"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "mental": {
+      "termo": "mental",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "mental_02k_9689",
+          "pos": "adjective",
+          "definicao": "of or relating to the mind",
+          "definicao_pt": "de ou relacionado com a mente",
+          "status": "conhecido",
+          "frase_exemplo": "<i>mental</i> abilities",
+          "confirmado_em": "2026-11-27T10:49:13.330251"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "increasingly": {
+      "termo": "increasingly",
+      "status_geral": "desconhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "increasingly_02k_9694",
+          "pos": "adverb",
+          "definicao": "more and more to an increasing degree",
+          "definicao_pt": "cada vez mais em um grau crescente",
+          "status": "desconhecido",
+          "frase_exemplo": "People are becoming <i>increasingly</i> aware of this problem.",
+          "confirmado_em": "2026-11-27T10:49:13.330251"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "lunch": {
+      "termo": "lunch",
+      "status_geral": "desconhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "lunch_02k_9695",
+          "pos": "noun",
+          "definicao": "a light meal eaten in the middle of the day",
+          "definicao_pt": "uma refeição leve feita no meio do dia",
+          "status": "desconhecido",
+          "frase_exemplo": "I like to eat/have a healthy <i>lunch</i> every day.",
+          "confirmado_em": "2026-11-27T10:49:13.330251"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "educational": {
+      "termo": "educational",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "educational_02k_9696",
+          "pos": "adjective",
+          "definicao": "having to do with education",
+          "definicao_pt": "tendo a ver com educação",
+          "status": "conhecido",
+          "frase_exemplo": "<i>educational</i> theorists",
+          "confirmado_em": "2026-11-27T10:49:13.330251"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "somewhere": {
+      "termo": "somewhere",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "somewhere_02k_9698",
+          "pos": "adverb",
+          "definicao": "in, at, or to a place not known, named, or specified",
+          "definicao_pt": "em, em ou para um local não conhecido, nomeado ou especificado",
+          "status": "conhecido",
+          "frase_exemplo": "The boy ran off <i>somewhere</i>.",
+          "confirmado_em": "2026-11-27T10:49:13.330251"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "farmer": {
+      "termo": "farmer",
+      "status_geral": "duvida",
+      "acepcoes": [
+        {
+          "sentido_id": "farmer_02k_9701",
+          "pos": "noun",
+          "definicao": "a person who runs a farm",
+          "definicao_pt": "uma pessoa que administra uma fazenda",
+          "status": "duvida",
+          "frase_exemplo": "My uncle has been a <i>farmer</i> for 60 years.",
+          "confirmado_em": "2026-11-27T10:49:13.330251"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "sugar": {
+      "termo": "sugar",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "sugar_02k_9706",
+          "pos": "noun",
+          "definicao": "a sweet substance usually in the form of white or brown crystals or white powder that comes from plants and is used to make foods sweeter",
+          "definicao_pt": "uma substância doce geralmente na forma de cristais brancos ou marrons ou pó branco que vem de plantas e é usada para tornar os alimentos mais doces",
+          "status": "conhecido",
+          "frase_exemplo": "Would you pass the <i>sugar</i>, please?",
+          "confirmado_em": "2026-11-27T10:49:13.330251"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "planet": {
+      "termo": "planet",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "planet_02k_9711",
+          "pos": "noun",
+          "definicao": "a large, round object in space (such as the Earth) that travels around a star (such as the sun)",
+          "definicao_pt": "um objeto grande e redondo no espaço (como a Terra) que viaja em torno de uma estrela (como o sol)",
+          "status": "conhecido",
+          "frase_exemplo": "",
+          "confirmado_em": "2026-11-27T10:49:13.330251"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "favorite": {
+      "termo": "favorite",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "favorite_02k_9714",
+          "pos": "adjective",
+          "definicao": "most liked",
+          "definicao_pt": "mais gostei",
+          "status": "conhecido",
+          "frase_exemplo": "Red is my <i>favorite</i> color. [=the color I like most]",
+          "confirmado_em": "2026-11-27T10:49:13.330251"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "explore": {
+      "termo": "explore",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "explore_02k_9715",
+          "pos": "verb",
+          "definicao": "to look at (something) in a careful way to learn more about it to study or analyze (something)",
+          "definicao_pt": "olhar (algo) com cuidado para aprender mais sobre isso estudar ou analisar (algo)",
+          "status": "conhecido",
+          "frase_exemplo": "Researchers are <i>exploring</i> how language is acquired by children.",
+          "confirmado_em": "2026-11-27T10:49:13.330251"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "obtain": {
+      "termo": "obtain",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "obtain_02k_9721",
+          "pos": "verb",
+          "definicao": "to gain or get (something) usually by effort",
+          "definicao_pt": "ganhar ou obter (algo) geralmente por esforço",
+          "status": "conhecido",
+          "frase_exemplo": "The information may be difficult to <i>obtain</i>.",
+          "confirmado_em": "2026-11-27T10:49:13.330251"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "complex": {
+      "termo": "complex",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "complex_02k_9727",
+          "pos": "adjective",
+          "definicao": "having parts that connect or go together in complicated ways",
+          "definicao_pt": "ter peças que se conectam ou combinam de maneiras complicadas",
+          "status": "conhecido",
+          "frase_exemplo": "a <i>complex</i> system",
+          "confirmado_em": "2026-11-27T10:49:13.330251"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "surround": {
+      "termo": "surround",
+      "status_geral": "duvida",
+      "acepcoes": [
+        {
+          "sentido_id": "surround_02k_9730",
+          "pos": "verb",
+          "definicao": "[often used as <i>(be) surrounded</i>]<br>to be on every side of (someone or something)",
+          "definicao_pt": "[frequentemente usado como <i>(estar) cercado</i>]<br>estar em todos os lados de (alguém ou algo)",
+          "status": "duvida",
+          "frase_exemplo": "A wall <i>surrounds</i> the old city.",
+          "confirmado_em": "2026-11-27T10:49:13.330251"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "athlete": {
+      "termo": "athlete",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "athlete_02k_9734",
+          "pos": "noun",
+          "definicao": "a person who is trained in or good at sports, games, or exercises that require physical skill and strength",
+          "definicao_pt": "uma pessoa que é treinada ou boa em esportes, jogos ou exercícios que exigem habilidade física e força",
+          "status": "conhecido",
+          "frase_exemplo": "<i>Athletes</i> from around the world will be competing at the Olympics.",
+          "confirmado_em": "2026-11-27T10:49:13.330251"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "invite": {
+      "termo": "invite",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "invite_02k_9735",
+          "pos": "verb",
+          "definicao": "to ask (someone) to go somewhere or do something",
+          "definicao_pt": "pedir a (alguém) para ir a algum lugar ou fazer algo",
+          "status": "conhecido",
+          "frase_exemplo": "He <i>invited</i> a few friends (to come) over to his house after work.",
+          "confirmado_em": "2026-11-27T10:49:13.330251"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "repeat": {
+      "termo": "repeat",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "repeat_02k_9739",
+          "pos": "verb",
+          "definicao": "[sometimes used in speech to emphasize a word or phrase]<br>to say (something) again",
+          "definicao_pt": "[às vezes usado na fala para enfatizar uma palavra ou frase]<br>para dizer (algo) novamente",
+          "status": "conhecido",
+          "frase_exemplo": "Will you <i>repeat</i> the question?",
+          "confirmado_em": "2026-11-27T10:49:13.330251"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "carefully": {
+      "termo": "carefully",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "carefully_02k_9746",
+          "pos": "adverb",
+          "definicao": "[adverb] [inherits meaning from the adjective sense]<br>using care",
+          "definicao_pt": "[advérbio] [herda o significado do sentido do adjetivo]<br>usando cuidado",
+          "status": "conhecido",
+          "frase_exemplo": "He opened the door <i>carefully</i>.",
+          "confirmado_em": "2026-11-27T10:49:13.330251"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "soul": {
+      "termo": "soul",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "soul_02k_9747",
+          "pos": "noun",
+          "definicao": "the spiritual part of a person that is believed to give life to the body and in many religions is believed to live forever",
+          "definicao_pt": "a parte espiritual de uma pessoa que se acredita dar vida ao corpo e em muitas religiões acredita-se que vive para sempre",
+          "status": "conhecido",
+          "frase_exemplo": "salvation of the human <i>soul</i> [=<i>spirit</i>]",
+          "confirmado_em": "2026-11-27T10:49:13.330251"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "scientific": {
+      "termo": "scientific",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "scientific_02k_9755",
+          "pos": "adjective",
+          "definicao": "of or relating to science",
+          "definicao_pt": "de ou relacionado com a ciência",
+          "status": "conhecido",
+          "frase_exemplo": "<i>scientific</i> techniques/knowledge/research",
+          "confirmado_em": "2026-11-27T10:49:13.330251"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "impossible": {
+      "termo": "impossible",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "impossible_02k_9757",
+          "pos": "adjective",
+          "definicao": "unable to be done or to happen not possible",
+          "definicao_pt": "incapaz de ser feito ou de acontecer não é possível",
+          "status": "conhecido",
+          "frase_exemplo": "It's <i>impossible</i> to predict the future.",
+          "confirmado_em": "2026-11-27T10:49:13.330251"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "panel": {
+      "termo": "panel",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "panel_02k_9760",
+          "pos": "noun",
+          "definicao": "a group of people who answer questions, give advice or opinions about something, or take part in a discussion for an audience",
+          "definicao_pt": "um grupo de pessoas que responde a perguntas, dá conselhos ou opiniões sobre algo, ou participa de uma discussão para um público",
+          "status": "conhecido",
+          "frase_exemplo": "The university is hosting a <i>panel</i> on free speech.",
+          "confirmado_em": "2026-11-27T10:49:13.330251"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "meaning": {
+      "termo": "meaning",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "meaning_02k_9768",
+          "pos": "noun",
+          "definicao": "the idea that is represented by a word, phrase, etc.",
+          "definicao_pt": "a ideia que é representada por uma palavra, frase, etc.",
+          "status": "conhecido",
+          "frase_exemplo": "What is the precise/exact <i>meaning</i> of this word in English?",
+          "confirmado_em": "2026-11-27T10:49:13.330251"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "mom": {
+      "termo": "mom",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "mom_02k_9774",
+          "pos": "noun",
+          "definicao": "[often used as a form of address]<br>a person's mother",
+          "definicao_pt": "[frequentemente usado como forma de tratamento]<br>a mãe de uma pessoa",
+          "status": "conhecido",
+          "frase_exemplo": "My <i>mom</i> [=(<i>Brit</i>) <i>mum</i>] wants me to call when I get there.",
+          "confirmado_em": "2026-11-27T10:52:46.382497"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "married": {
+      "termo": "married",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "married_02k_9775",
+          "pos": "adjective",
+          "definicao": "united in marriage",
+          "definicao_pt": "unidos em casamento",
+          "status": "conhecido",
+          "frase_exemplo": "a newly/recently <i>married</i> couple",
+          "confirmado_em": "2026-11-27T10:52:46.382497"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "instrument": {
+      "termo": "instrument",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "instrument_02k_9780",
+          "pos": "noun",
+          "definicao": "a tool or device used for a particular purpose",
+          "definicao_pt": "uma ferramenta ou dispositivo usado para um propósito específico",
+          "status": "conhecido",
+          "frase_exemplo": "<i>instruments</i> of torture",
+          "confirmado_em": "2026-11-27T10:52:46.382497"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "predict": {
+      "termo": "predict",
+      "status_geral": "desconhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "predict_02k_9788",
+          "pos": "verb",
+          "definicao": "to say that (something) will or might happen in the future",
+          "definicao_pt": "dizer que (algo) irá ou poderá acontecer no futuro",
+          "status": "desconhecido",
+          "frase_exemplo": "All the local forecasters are <i>predicting</i> rain for this afternoon.",
+          "confirmado_em": "2026-11-27T10:52:46.382497"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "weather": {
+      "termo": "weather",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "weather_02k_9789",
+          "pos": "noun",
+          "definicao": "[often used figuratively]<br>the state of the air and atmosphere at a particular time and place the temperature and other outside conditions (such as rain, cloudiness, etc.) at a particular time and place",
+          "definicao_pt": "[frequentemente usado figurativamente]<br>o estado do ar e da atmosfera em um determinado momento e local a temperatura e outras condições externas (como chuva, nebulosidade, etc.) em um determinado momento e local",
+          "status": "conhecido",
+          "frase_exemplo": "How's the <i>weather</i>?",
+          "confirmado_em": "2026-11-27T10:52:46.382497"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "presidential": {
+      "termo": "presidential",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "presidential_02k_9792",
+          "pos": "adjective",
+          "definicao": "[adjective] [inherits meaning from the noun sense]<br>the head of the government in some countries",
+          "definicao_pt": "[adjetivo] [herda o significado do sentido do substantivo]<br>o chefe do governo em alguns países",
+          "status": "conhecido",
+          "frase_exemplo": "a <i>presidential</i> candidate/election/government",
+          "confirmado_em": "2026-11-27T10:52:46.382497"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "commitment": {
+      "termo": "commitment",
+      "status_geral": "desconhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "commitment_02k_9793",
+          "pos": "noun",
+          "definicao": "a promise to do or give something",
+          "definicao_pt": "uma promessa de fazer ou dar algo",
+          "status": "desconhecido",
+          "frase_exemplo": "We've got <i>commitments</i> from several charities to donate food and clothing.",
+          "confirmado_em": "2026-11-27T10:52:46.382497"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "emotional": {
+      "termo": "emotional",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "emotional_02k_9796",
+          "pos": "adjective",
+          "definicao": "relating to emotions",
+          "definicao_pt": "relativo às emoções",
+          "status": "conhecido",
+          "frase_exemplo": "an <i>emotional</i> disorder",
+          "confirmado_em": "2026-11-27T10:52:46.382497"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "supreme": {
+      "termo": "supreme",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "supreme_02k_9800",
+          "pos": "adjective",
+          "definicao": "highest in rank or authority",
+          "definicao_pt": "mais alto em posição ou autoridade",
+          "status": "conhecido",
+          "frase_exemplo": "NATO's <i>supreme</i> commander",
+          "confirmado_em": "2026-11-27T10:52:46.382497"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "pocket": {
+      "termo": "pocket",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "pocket_02k_9814",
+          "pos": "noun",
+          "definicao": "a usually small cloth bag that is sewn into a piece of clothing, a larger bag, etc., and that is open at the top or side so that you can put things into it",
+          "definicao_pt": "uma sacola de pano geralmente pequena que é costurada em uma peça de roupa, uma sacola maior, etc., e que é aberta na parte superior ou lateral para que você possa colocar coisas nela",
+          "status": "conhecido",
+          "frase_exemplo": "He keeps his gloves in his coat <i>pocket</i>.",
+          "confirmado_em": "2026-11-27T10:52:46.382497"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "thin": {
+      "termo": "thin",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "thin_02k_9820",
+          "pos": "adjective",
+          "definicao": "having a small distance between the top and bottom or front and back surfaces not thick",
+          "definicao_pt": "tendo uma pequena distância entre as superfícies superior e inferior ou frontal e traseira não espessa",
+          "status": "conhecido",
+          "frase_exemplo": "<i>thin</i> paper/walls",
+          "confirmado_em": "2026-11-27T10:52:46.382497"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "temperature": {
+      "termo": "temperature",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "temperature_02k_9830",
+          "pos": "noun",
+          "definicao": "a measurement that indicates how hot or cold something is a measurement in degrees showing the heat of something (such as air or water)",
+          "definicao_pt": "uma medida que indica quão quente ou frio algo é uma medida em graus que mostra o calor de algo (como ar ou água)",
+          "status": "conhecido",
+          "frase_exemplo": "The water <i>temperature</i> has risen (by) two degrees. [=the water has become two degrees warmer]",
+          "confirmado_em": "2026-11-27T10:52:46.382497"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "poll": {
+      "termo": "poll",
+      "status_geral": "desconhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "poll_02k_9834",
+          "pos": "noun",
+          "definicao": "an activity in which several or many people are asked a question or a series of questions in order to get information about what most people think about something",
+          "definicao_pt": "uma atividade em que várias ou muitas pessoas respondem a uma pergunta ou a uma série de perguntas, a fim de obter informações sobre o que a maioria das pessoas pensa sobre algo",
+          "status": "desconhecido",
+          "frase_exemplo": "The magazine conducted a <i>poll</i> to find out the favorite 100 movies of all time.",
+          "confirmado_em": "2026-11-27T10:52:46.382497"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "surprise": {
+      "termo": "surprise",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "surprise_02k_9838",
+          "pos": "noun",
+          "definicao": "an unexpected event, piece of information, etc.",
+          "definicao_pt": "um evento inesperado, uma informação, etc.",
+          "status": "conhecido",
+          "frase_exemplo": "What a pleasant <i>surprise</i> to see you!",
+          "confirmado_em": "2026-11-27T10:52:46.382497"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "proposal": {
+      "termo": "proposal",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "proposal_02k_9842",
+          "pos": "noun",
+          "definicao": "something (such as a plan or suggestion) that is presented to a person or group of people to consider",
+          "definicao_pt": "algo (como um plano ou sugestão) que é apresentado a uma pessoa ou grupo de pessoas para considerar",
+          "status": "conhecido",
+          "frase_exemplo": "Everyone thought the <i>proposal</i> made sense.",
+          "confirmado_em": "2026-11-27T10:52:46.382497"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "consequence": {
+      "termo": "consequence",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "consequence_02k_9845",
+          "pos": "noun",
+          "definicao": "[If you <b>face/suffer the consequences</b> of something, you deal with the results of something that you have done.]<br>something that happens as a result of a particular action or set of conditions",
+          "definicao_pt": "[Se você <b>enfrenta/sofre as consequências</b> de algo, você lida com os resultados de algo que fez.]<br>algo que acontece como resultado de uma ação específica ou conjunto de condições",
+          "status": "conhecido",
+          "frase_exemplo": "The slightest error can have serious <i>consequences</i>.",
+          "confirmado_em": "2026-11-27T10:52:46.382497"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "breath": {
+      "termo": "breath",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "breath_02k_9851",
+          "pos": "noun",
+          "definicao": "[sometimes used before another noun]<br>the air that you take into your lungs and send out from your lungs when you breathe air that is inhaled and exhaled in breathing",
+          "definicao_pt": "[às vezes usado antes de outro substantivo]<br>o ar que você leva para os pulmões e exala deles quando respira o ar que é inalado e exalado ao respirar",
+          "status": "conhecido",
+          "frase_exemplo": "gum that freshens your <i>breath</i>",
+          "confirmado_em": "2026-11-27T10:52:46.382497"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "balance": {
+      "termo": "balance",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "balance_02k_9878",
+          "pos": "noun",
+          "definicao": "[In figurative use, to <b>knock/throw someone off balance</b> or <b>keep someone off balance</b> is to make someone feel unsure about how to behave or what to expect.]<br>the state of having your weight spread equally so that you do not fall",
+          "definicao_pt": "[No uso figurado, <b>derrubar/desequilibrar alguém</b> ou <b>manter alguém desequilibrado</b> é fazer alguém se sentir inseguro sobre como se comportar ou o que esperar.]<br>o estado de ter seu peso distribuído igualmente para não cair",
+          "status": "conhecido",
+          "frase_exemplo": "He held on to the rail for <i>balance</i>. = He held on to the rail to <b>keep/maintain his balance</b>.",
+          "confirmado_em": "2026-11-27T10:52:46.382497"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "adopt": {
+      "termo": "adopt",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "adopt_02k_9885",
+          "pos": "verb",
+          "definicao": "to take a child of other parents legally as your own child",
+          "definicao_pt": "aceitar legalmente um filho de outros pais como seu próprio filho",
+          "status": "conhecido",
+          "frase_exemplo": "They were unable to have children of their own, so they decided to <i>adopt</i>.",
+          "confirmado_em": "2026-11-27T10:52:46.382497"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "minority": {
+      "termo": "minority",
+      "status_geral": "desconhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "minority_02k_9891",
+          "pos": "noun",
+          "definicao": "a number or amount that is less than half of a total",
+          "definicao_pt": "um número ou quantia que é menos da metade de um total",
+          "status": "desconhecido",
+          "frase_exemplo": "The proposal is opposed by a <i>minority</i> of voters.",
+          "confirmado_em": "2026-11-27T10:52:46.382497"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "straight": {
+      "termo": "straight",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "straight_02k_9897",
+          "pos": "adverb",
+          "definicao": "in a straight or direct way",
+          "definicao_pt": "de maneira direta ou direta",
+          "status": "conhecido",
+          "frase_exemplo": "She looked him <i>straight</i> [=<i>right, directly</i>] in the eye and told him to leave.",
+          "confirmado_em": "2026-11-27T10:52:46.382497"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "connect": {
+      "termo": "connect",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "connect_02k_9904",
+          "pos": "verb",
+          "definicao": "[often used as <i>(be) connected</i>]<br>to join (two or more things) together",
+          "definicao_pt": "[frequentemente usado como <i>(estar) conectado</i>]<br>para unir (duas ou mais coisas)",
+          "status": "conhecido",
+          "frase_exemplo": "Can you <i>connect</i> the hose to the sprinkler?",
+          "confirmado_em": "2026-11-27T10:52:46.382497"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "teaching": {
+      "termo": "teaching",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "teaching_02k_9912",
+          "pos": "noun",
+          "definicao": "the job or profession of a teacher",
+          "definicao_pt": "o trabalho ou profissão de professor",
+          "status": "conhecido",
+          "frase_exemplo": "He went into <i>teaching</i> after college.",
+          "confirmado_em": "2026-11-27T10:52:46.382497"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "belong": {
+      "termo": "belong",
+      "status_geral": "conhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "belong_02k_9915",
+          "pos": "verb",
+          "definicao": "used to say that someone or something should be in a particular place or situation",
+          "definicao_pt": "costumava dizer que alguém ou algo deveria estar em um determinado lugar ou situação",
+          "status": "conhecido",
+          "frase_exemplo": "This book <i>belongs</i> [=<i>goes</i>] on the top shelf.",
+          "confirmado_em": "2026-11-27T10:52:46.382497"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
+    },
+    "aid": {
+      "termo": "aid",
+      "status_geral": "desconhecido",
+      "acepcoes": [
+        {
+          "sentido_id": "aid_02k_9917",
+          "pos": "noun",
+          "definicao": "the act of helping someone help or assistance given to someone",
+          "definicao_pt": "o ato de ajudar alguém ajuda ou assistência dada a alguém",
+          "status": "desconhecido",
+          "frase_exemplo": "The teacher enlisted/sought the <i>aid</i> of several students for the project. [=the teacher asked several students to help with the project]",
+          "confirmado_em": "2026-11-27T10:52:46.382497"
+        }
+      ],
+      "collocations": [],
+      "observacoes": "Classificado via Web Reviewer (Lote)"
     }
   },
   "estatisticas": {
-    "total_termos": 1510,
-    "acepcoes_conhecidas": 1172,
+    "total_termos": 1635,
+    "acepcoes_conhecidas": 1280,
     "acepcoes_em_estudo": 48,
-    "acepcoes_desconhecidas": 249,
-    "acepcoes_duvida": 102
+    "acepcoes_desconhecidas": 261,
+    "acepcoes_duvida": 107
   },
-  "ultima_atualizacao": "2026-11-26T16:34:03.869992"
+  "ultima_atualizacao": "2026-11-27T10:52:51.878360"
 }

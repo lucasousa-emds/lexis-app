@@ -166,3 +166,105 @@ def test_dev_watch_endpoint(base_url):
         data = json.load(response)
     assert {"html", "css", "js"} <= data.keys()
     assert all(isinstance(data[k], int) and data[k] > 0 for k in ("html", "css", "js"))
+
+
+def test_media_miner_epub_and_subtitle_extraction():
+    import base64, io, zipfile
+    import media_miner
+
+    # Synthetic minimal EPUB in memory
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w") as zf:
+        zf.writestr("META-INF/container.xml", '<?xml version="1.0"?><container><rootfiles><rootfile full-path="OEBPS/content.opf"/></rootfiles></container>')
+        zf.writestr("OEBPS/content.opf", '<package><manifest><item id="c1" href="ch1.xhtml"/></manifest><spine><itemref idref="c1"/></spine></package>')
+        zf.writestr("OEBPS/ch1.xhtml", "<html><body><h1>The Boy Who Lived</h1><p>" + ("The wizard picked up his strange cloak and muttered a quiet spell in the corridor. " * 6) + "</p></body></html>")
+    b64 = base64.b64encode(buf.getvalue()).decode("ascii")
+    chapters, mtype = media_miner.extract_media_chapters(file_name="hp.epub", file_b64=b64)
+    assert mtype == "epub"
+    assert len(chapters) == 1
+    assert chapters[0]["title"] == "The Boy Who Lived"
+    assert chapters[0]["word_count"] >= 45
+
+    srt = "1\n00:00:01,000 --> 00:00:03,000\n<i>I never gave up on this dream.</i>\n\n2\n00:00:04,000 --> 00:00:06,000\nWe figured it out together.\n"
+    sub_chaps, stype = media_miner.extract_media_chapters(text=srt, file_name="ep01.srt")
+    assert stype == "subtitle"
+    assert "-->" not in sub_chaps[0]["text"]
+    assert "never gave up" in sub_chaps[0]["text"]
+
+
+def test_media_miner_api_roundtrip(base_url):
+    import urllib.parse
+    sample_text = (
+        "The young wizard picked up his heavy cloak and hurried down the narrow corridor. "
+        "He never gave up looking for the mysterious letter hidden beneath the staircase. "
+        "Every corridor echoed with strange whispers, and the wizard held his lantern steady. "
+        "She figured out the riddle before the corridor grew completely dark."
+    )
+    req = urllib.request.Request(
+        f"{base_url}/api/media-mine",
+        data=json.dumps({"title": "Harry Potter Sample", "media_type": "book", "text": sample_text, "max_words": 40}).encode("utf-8"),
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    with urllib.request.urlopen(req, timeout=10) as resp:
+        assert resp.status == 200
+        mined = json.loads(resp.read().decode("utf-8"))
+    assert mined["success"] is True
+    deck = mined["deck"]
+    assert deck["subdeck"].startswith("media:")
+    assert deck["stats"]["total_tokens"] > 20
+    assert deck["stats"]["deck_size"] > 0
+    assert len(deck["coverage_curve"]) >= 1
+
+    # Verify the mined deck is listed and queryable by /api/words
+    with urllib.request.urlopen(f"{base_url}/api/media-decks", timeout=5) as resp:
+        listed = json.loads(resp.read().decode("utf-8"))
+    assert listed["success"] is True
+    assert any(d["slug"] == deck["slug"] for d in listed["decks"])
+
+    q = urllib.parse.urlencode({"subdeck": deck["subdeck"], "status": "all", "limit": 20})
+    with urllib.request.urlopen(f"{base_url}/api/words?{q}", timeout=5) as resp:
+        words_res = json.loads(resp.read().decode("utf-8"))
+    assert len(words_res["words"]) > 0
+
+    # Clean up via /api/media-delete
+    del_req = urllib.request.Request(
+        f"{base_url}/api/media-delete",
+        data=json.dumps({"slug": deck["slug"]}).encode("utf-8"),
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    with urllib.request.urlopen(del_req, timeout=5) as resp:
+        del_res = json.loads(resp.read().decode("utf-8"))
+    assert del_res["success"] is True
+    assert del_res["removed"] is True
+
+
+def test_media_miner_filters_proper_nouns_matching_dictionary_words():
+    import media_miner
+    # "Sunny" exists in dictionary ("having sunlight") but is used as a character's proper name mid-sentence
+    text = (
+        "On this particular day, Sunny decided to pamper himself in the dark alley. "
+        "Before long, Sunny stared at the ancient lantern while Sunny muttered quietly. "
+        "Eventually, Sunny opened the rusty door and stepped into the silent corridor."
+    )
+    mwld_mock = {
+        "sunny": [{"id": "mw_sunny", "word": "sunny", "pos": "adjective", "definition_en": "having sunlight"}],
+        "lantern": [{"id": "mw_lantern", "word": "lantern", "pos": "noun", "definition_en": "a portable lamp<br>with a handle"}],
+        "corridor": [{"id": "mw_corr", "word": "corridor", "pos": "noun", "definition_en": "a long hallway"}],
+    }
+    deck = media_miner.mine_media_deck(
+        title="Shadow Slave Sample",
+        text=text,
+        media_type="book",
+        mwld_by_word=mwld_mock,
+        structures_by_subdeck={},
+        knowledge_map={},
+        pure_function_words=set(),
+        max_words="auto95",
+    )
+    mined_words = [w["word"].lower() for w in deck["top_words"]]
+    assert "sunny" not in mined_words
+    assert "lantern" in mined_words
+    lantern_item = next(w for w in deck["top_words"] if w["word"] == "lantern")
+    assert "<br>" not in lantern_item["definition_en"]

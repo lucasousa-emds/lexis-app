@@ -110,7 +110,16 @@
       // CEFR Badge do Deck
       if (ds.cefr) {
         const cefrEl = document.getElementById("deck-cefr-text");
-        if (cefrEl) cefrEl.innerText = `${ds.subdeck.toUpperCase()} • ${ds.cefr.code}`;
+        if (cefrEl) {
+          const rawSub = String(ds.subdeck || "");
+          if (rawSub.startsWith("media:")) {
+            const mObj = (typeof mediaDecksCache !== "undefined") ? mediaDecksCache.find(d => d.subdeck === rawSub) : null;
+            const cleanLbl = mObj && typeof cleanMediaDisplayTitle === "function" ? cleanMediaDisplayTitle(mObj.title) : "Obra";
+            cefrEl.innerText = `OBRA · ${cleanLbl.slice(0, 34)}`;
+          } else {
+            cefrEl.innerText = `${rawSub.toUpperCase()} · ${ds.cefr.code}`;
+          }
+        }
       }
       
       // Nível Global Estimado do Usuário
@@ -133,6 +142,7 @@
     function onSubdeckChange() {
       const subdeck = document.getElementById("select-subdeck").value;
       localStorage.setItem("lexi_selected_subdeck", subdeck);
+      if (typeof updateDeckPickerButton === "function") updateDeckPickerButton();
       currentBatchOffset = 0;
       loadWords(0);
     }
@@ -1242,31 +1252,101 @@
     // ==========================================
     // RENDERIZAÇÃO DO MODO GRADE EM LOTE
     // ==========================================
+    let batchRenderToken = 0;
+
+    function stripUiEmojis(str) {
+      return String(str || "").replace(/[\u{1F300}-\u{1FAFF}\u2600-\u27BF\uFE0F]/gu, "").replace(/\s{2,}/g, " ").trim();
+    }
+
+    function shortDeckLabel(subdeck) {
+      const s = String(subdeck || "").trim();
+      if (s.startsWith("media:")) return "OBRA";
+      return s.toUpperCase();
+    }
+
+    async function hydrateBatchTranslations(words, renderToken) {
+      const jobs = [];
+      words.forEach((item, idx) => {
+        if (!item.definition_pt && item.definition_en) {
+          jobs.push({ type: "def", idx, item, text: item.definition_en });
+        }
+        if (!item.example_1_pt && item.example_1) {
+          jobs.push({ type: "ex", idx, item, text: item.example_1 });
+        }
+      });
+      if (!jobs.length) return;
+
+      const concurrency = 4;
+      let cursor = 0;
+      async function worker() {
+        while (cursor < jobs.length) {
+          if (renderToken !== batchRenderToken) return;
+          const job = jobs[cursor++];
+          try {
+            const payload = job.type === "ex"
+              ? { text: job.text, word: job.item.word }
+              : { text: job.text };
+            const res = await fetch("/api/translate", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload)
+            });
+            if (renderToken !== batchRenderToken) return;
+            const data = await res.json();
+            const translated = (data && (data.translation || data.translated)) ? (data.translation || data.translated) : "";
+            if (!translated) continue;
+            if (job.type === "def") {
+              job.item.definition_pt = translated;
+              const el = document.getElementById(`batch-def-pt-${job.idx}`);
+              if (el) {
+                el.classList.remove("pending-tx");
+                el.innerHTML = formatDefinitionHtml(translated);
+              }
+            } else {
+              job.item.example_1_pt = translated;
+              const el = document.getElementById(`batch-ex-pt-${job.idx}`);
+              if (el) {
+                el.classList.remove("pending-tx");
+                el.innerHTML = formatPortugueseSentence(translated, job.item.word, job.item.definition_pt);
+              }
+            }
+          } catch (_) {}
+        }
+      }
+      await Promise.all(Array.from({ length: Math.min(concurrency, jobs.length) }, () => worker()));
+    }
+
     function renderBatchTable(total) {
       const tbody = document.getElementById("batch-table-body");
       tbody.innerHTML = "";
       batchLocalStates = {};
+      const myToken = ++batchRenderToken;
       const searchVal = document.getElementById("input-search").value.trim();
+
+      const markBtn = document.getElementById("btn-mark-batch-remaining");
+      if (markBtn && currentWords) {
+        markBtn.textContent = `Marcar Restantes (${currentWords.length}) Conhecidas`;
+      }
 
       if (!currentWords || currentWords.length === 0) {
         const tr = document.createElement("tr");
         if (searchVal) {
           tr.innerHTML = `
-            <td colspan="5" style="text-align:center; padding: 35px 20px; color: #94a3b8;">
-              <div style="font-size: 15px; font-weight: 600; color: #f1f5f9; margin-bottom: 8px;">Nenhuma ocorrência encontrada para "${searchVal}" em 66.000 frases.</div>
-              <div style="font-size: 13px; color: #64748b; margin-bottom: 14px;">Você pode adicionar este vocábulo do seu dia a dia diretamente aos seus Gaps.</div>
-              <button class="btn-primary" style="padding: 8px 18px; font-size:13px;" onclick="addCustomWord('${searchVal.replace(/'/g, "\\'")}')">➕ Adicionar "${searchVal}" como Gap I+1 no Anki</button>
+            <td colspan="4" style="text-align:center; padding: 35px 20px; color: var(--muted);">
+              <div style="font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 8px;">Nenhuma ocorrência encontrada para "${escapeHtmlSafe(searchVal)}" em 66.000 frases.</div>
+              <div style="font-size: 13px; color: var(--dim); margin-bottom: 14px;">Você pode adicionar este vocábulo diretamente aos seus Gaps.</div>
+              <button type="button" class="btn-batch-action btn-batch-save" onclick="addCustomWord('${searchVal.replace(/'/g, "\\'")}')">+ Adicionar "${escapeHtmlSafe(searchVal)}" como Gap i+1</button>
             </td>
           `;
         } else {
-          tr.innerHTML = `<td colspan="5" style="text-align:center; padding: 25px; color: #94a3b8;">Nenhum termo pendente neste filtro.</td>`;
+          tr.innerHTML = `<td colspan="4" style="text-align:center; padding: 25px; color: var(--muted);">Nenhum termo pendente neste filtro.</td>`;
         }
         tbody.appendChild(tr);
         document.getElementById("batch-pagination-info").innerText = `0 resultados`;
         return;
       }
 
-      currentWords.forEach(item => {
+      currentWords.forEach((item, idx) => {
         batchLocalStates[item.id] = item.status || "pending";
         const tr = document.createElement("tr");
 
@@ -1274,40 +1354,52 @@
         const isUnknown = batchLocalStates[item.id] === "desconhecido";
         const isDoubt = batchLocalStates[item.id] === "duvida";
 
-        const fcBadge = item.false_cognate ? `<span style="background:rgba(245,158,11,0.2);color:#fbbf24;font-size:10px;padding:2px 6px;border-radius:4px;margin-left:6px;" title="${item.false_cognate}">⚠️ Falso Amigo</span>` : '';
-        const themeBadge = `<span style="background:rgba(56,189,248,0.15);color:#7dd3fc;font-size:10px;padding:1px 6px;border-radius:4px;display:inline-block;margin-bottom:4px;">${item.theme || 'Geral'}</span>`;
-        const deckBadge = `<span class="subdeck-badge" style="font-size:9px; padding:1px 5px; margin-left:6px;">${item.subdeck.toUpperCase()}</span>`;
+        const fcBadge = item.false_cognate ? `<span class="badge-false-friend" style="font-size:10px; padding:1px 6px;" title="${escapeHtmlSafe(item.false_cognate)}">Falso Amigo</span>` : '';
+        const cleanTheme = stripUiEmojis(item.theme || "Geral");
+        const themeBadge = `<span class="pos-badge" style="font-size:10px; padding:1px 6px; margin-bottom:5px;">${escapeHtmlSafe(cleanTheme)}</span>`;
+        const deckBadge = `<span class="subdeck-badge" style="font-size:10px; padding:1px 6px;">${escapeHtmlSafe(shortDeckLabel(item.subdeck))}</span>`;
+        const ipaBlock = (item.ipa || item.audio_url)
+          ? `<div class="batch-ipa-row">
+              ${item.ipa ? `<span>/${escapeHtmlSafe(item.ipa)}/</span>` : ''}
+              ${item.audio_url ? `<button type="button" class="pill-btn" style="padding:2px 7px; font-size:10px;" onclick="playAudioUrl('${item.audio_url}')">Ouvir</button>` : ''}
+            </div>`
+          : '';
+
+        const defPtHtml = item.definition_pt
+          ? `<div id="batch-def-pt-${idx}" class="batch-def-pt">${formatDefinitionHtml(item.definition_pt)}</div>`
+          : (item.definition_en ? `<div id="batch-def-pt-${idx}" class="batch-def-pt pending-tx">Traduzindo definição...</div>` : '');
+
+        const exPtHtml = item.example_1_pt
+          ? `<div id="batch-ex-pt-${idx}" class="batch-ex-pt">${formatPortugueseSentence(item.example_1_pt, item.word, item.definition_pt)}</div>`
+          : (item.example_1 ? `<div id="batch-ex-pt-${idx}" class="batch-ex-pt pending-tx">Traduzindo frase...</div>` : '');
 
         tr.innerHTML = `
           <td>
-            <div class="table-word">
-              <span>${item.word}</span>
+            <div class="batch-word-title">${escapeHtmlSafe(item.word)}</div>
+            <div class="batch-word-meta">
               ${deckBadge}
+              <span class="pos-badge" style="font-size:10px; padding:1px 6px;">${escapeHtmlSafe(item.pos || 'term')}</span>
               ${fcBadge}
             </div>
-            <div style="font-size: 11px; color: #93c5fd;">${item.pos}</div>
+            ${ipaBlock}
           </td>
           <td>
-            <div style="font-family: var(--font-mono); font-size: 12px; color: #38bdf8; display: flex; align-items: center; gap: 6px;">
-              <span>${item.ipa ? `/${item.ipa}/` : ''}</span>
-              ${item.audio_url ? `<button class="audio-btn" style="padding:2px 6px;font-size:11px;" onclick="playAudioUrl('${item.audio_url}')">🔊</button>` : ''}
+            <div class="batch-def-en">${formatDefinitionHtml(item.definition_en)}</div>
+            ${defPtHtml}
+          </td>
+          <td>
+            <div style="display:flex; align-items:center; gap:5px; flex-wrap:wrap; margin-bottom:4px;">
+              ${themeBadge}
+              ${item.has_mairo ? `<span class="pos-badge" style="color: var(--purple); font-size: 10px; padding: 1px 6px;">${item.total_sentences} frases</span>` : ''}
             </div>
+            <div class="batch-ex-en">${highlightWordInSentence(item.example_1 || '—', item.word, searchVal)}</div>
+            ${exPtHtml}
           </td>
-          <td>
-            <div style="font-size: 13px; color: #f8fafc; font-weight: 500;">${formatDefinitionHtml(item.definition_en)}</div>
-            <div style="font-size: 12px; color: #10b981; margin-top: 3px;">${formatDefinitionHtml(item.definition_pt || '')}</div>
-          </td>
-          <td>
-            ${themeBadge}
-            ${item.has_mairo ? `<span style="background: rgba(99, 102, 241, 0.2); color: #c7d2fe; border: 1px solid rgba(99, 102, 241, 0.35); padding: 1px 6px; border-radius: 4px; font-size: 10px; font-weight: 600; margin-left: 4px;">🎙️ ${item.total_sentences} frases</span>` : ''}
-            <div style="font-size: 13px; color: #cbd5e1;">${highlightWordInSentence(item.example_1 || '—', item.word, searchVal)}</div>
-            ${item.example_1_pt ? `<div style="font-size: 12px; color: #94a3b8; font-style: italic; margin-top: 3px;">${formatPortugueseSentence(item.example_1_pt, item.word, item.definition_pt)}</div>` : ''}
-          </td>
-          <td style="text-align: center;">
+          <td style="text-align: center; white-space: nowrap;">
             <div class="status-toggle-group">
-              <button class="pill-btn ${isKnown ? 'active-known' : ''}" onclick="setRowStatus('${item.id}', 'conhecido', this)">C</button>
-              <button class="pill-btn ${isUnknown ? 'active-unknown' : ''}" onclick="setRowStatus('${item.id}', 'desconhecido', this)">N</button>
-              <button class="pill-btn ${isDoubt ? 'active-doubt' : ''}" onclick="setRowStatus('${item.id}', 'duvida', this)">D</button>
+              <button type="button" class="pill-btn st-known ${isKnown ? 'active-known' : ''}" title="Conheço" onclick="setRowStatus('${item.id}', 'conhecido', this)"><span class="st-dot"></span>Conheço</button>
+              <button type="button" class="pill-btn st-doubt ${isDoubt ? 'active-doubt' : ''}" title="Dúvida" onclick="setRowStatus('${item.id}', 'duvida', this)"><span class="st-dot"></span>Dúvida</button>
+              <button type="button" class="pill-btn st-unknown ${isUnknown ? 'active-unknown' : ''}" title="Não Sei (Gap)" onclick="setRowStatus('${item.id}', 'desconhecido', this)"><span class="st-dot"></span>Não Sei</button>
             </div>
           </td>
         `;
@@ -1317,6 +1409,9 @@
       const pageNum = Math.floor(currentBatchOffset / batchLimit) + 1;
       const totalPages = Math.ceil(total / batchLimit) || 1;
       document.getElementById("batch-pagination-info").innerText = `Página ${pageNum} de ${totalPages} (${total} termos encontrados)`;
+
+      // Hidrata traduções em português faltantes em background e atualiza a tabela ao vivo
+      hydrateBatchTranslations(currentWords, myToken);
     }
 
     function playAudioUrl(url) {
@@ -1621,13 +1716,18 @@
     // LEXIS SUITE - MODULES & LISTENING STUDIO LOGIC (IMAGE 1 REPLICA)
     // ==========================================
     const moduleNamesMap = {
-      vocab: { name: "Vocabulário", sub: "/ Triagem & Chunks", color: "var(--cyan)" },
-      listening: { name: "Listening Studio", sub: "/ Escuta às Cegas", color: "var(--purple)" },
-      anki: { name: "Anki Hub", sub: "/ Fila & Injeção", color: "var(--amber)" },
-      analytics: { name: "Analytics", sub: "/ Métricas CEFR", color: "var(--blue)" }
+      vocab: { name: "Estudar", sub: "/ Modo Foco e Grade", color: "var(--cyan)" },
+      listening: { name: "Mídia", sub: "/ Livros, Vídeo e Podcast", color: "var(--purple)" },
+      anki: { name: "Anki", sub: "/ Fila e Injeção SRS", color: "var(--amber)" },
+      analytics: { name: "Progresso", sub: "/ Cobertura CEFR e Obras", color: "var(--blue)" }
     };
 
     function switchModule(moduleName) {
+      if (moduleName === 'media') {
+        switchModule('listening');
+        switchListeningSubmode('books');
+        return;
+      }
       const target = document.getElementById('view-module-' + moduleName);
       if (!target) return;
       pauseListeningMedia();
@@ -1646,11 +1746,13 @@
       const crumbSub = document.getElementById('breadcrumb-subview');
       if (crumbMod && info) { crumbMod.textContent = info.name; crumbMod.style.color = info.color; }
       if (crumbSub && info) {
-        const subMap = { video: '/ Vídeo Ditado', audio: '/ Escuta às Cegas', podcast: '/ Imersão Contínua' };
-        crumbSub.textContent = moduleName === 'listening' ? (subMap[selectedListeningSubmode] || '/ Listening') : info.sub;
+        const subMap = { books: '/ Livros e Textos', video: '/ Vídeo Ditado', audio: '/ Escuta às Cegas', podcast: '/ Imersão Contínua' };
+        crumbSub.textContent = moduleName === 'listening' ? (subMap[selectedListeningSubmode] || '/ Mídia') : info.sub;
       }
       if (moduleName === 'listening') {
-        if (selectedListeningSubmode === 'video') {
+        if (selectedListeningSubmode === 'books') {
+          loadMediaDecksList();
+        } else if (selectedListeningSubmode === 'video') {
           initYouTubePlayer();
           renderWordSlots(getCleanTargetTokens(document.getElementById('dictation-input').value));
         } else if (selectedListeningSubmode === 'podcast' && !podcastTracks.length) {
@@ -1660,8 +1762,535 @@
         loadAnkiHubModule();
       } else if (moduleName === 'analytics') {
         loadAnalyticsModule();
+        loadMediaDecksList(true);
       }
     }
+
+    // ==========================================
+    // MODULE 5: MEDIA MINER (LIVROS, SERIES E COBERTURA 95%)
+    // ==========================================
+    let mediaUploadedFileName = "";
+    let mediaUploadedFileB64 = "";
+    let mediaDecksCache = [];
+    let activeMediaDeck = null;
+    let activeMediaPreviewTab = "words";
+
+    function cleanMediaDisplayTitle(rawTitle) {
+      return String(rawTitle || "Obra")
+        .replace(/\([^)]*(z[\s\-]?lib|1lib|anna'?s|epub|pdf|oceanofpdf)[^)]*\)/gi, "")
+        .replace(/\s{2,}/g, " ")
+        .trim() || String(rawTitle || "Obra");
+    }
+
+    const DECK_PICKER_FREQ = [
+      { id: "01k", tag: "01K", cefr: "A1/A2", title: "Top 1.000", desc: "Fundamentos essenciais" },
+      { id: "02k", tag: "02K", cefr: "A2", title: "Top 2.000", desc: "Básico consolidado" },
+      { id: "03k", tag: "03K", cefr: "B1", title: "Top 3.000", desc: "Intermediário operacional" },
+      { id: "04k", tag: "04K", cefr: "B1+", title: "Top 4.000", desc: "Intermediário médio" },
+      { id: "05k", tag: "05K", cefr: "B2", title: "Top 5.000", desc: "Intermediário superior" },
+      { id: "06k", tag: "06K", cefr: "B2+", title: "Top 6.000", desc: "Avançado operacional" },
+      { id: "07k", tag: "07K", cefr: "C1", title: "Top 7.000", desc: "Avançado culto" },
+      { id: "08k", tag: "08K", cefr: "C1", title: "Top 8.000", desc: "Domínio formal" },
+      { id: "09k", tag: "09K", cefr: "C1+", title: "Top 9.000", desc: "Acadêmico e técnico" },
+      { id: "10k", tag: "10K", cefr: "C1/C2", title: "Top 10.000", desc: "Quase nativo" },
+      { id: "all", tag: "66K", cefr: "GLOBAL", title: "Todos os Decks", desc: "Acervo completo MWLD" }
+    ];
+
+    const DECK_PICKER_CHUNKS = [
+      { id: "pv-top150", tag: "PV 150", cefr: "A2–B2", title: "Top 150 Phrasal Verbs", desc: "Os verbos frasais mais usados na fala real" },
+      { id: "pv-all", tag: "PV ALL", cefr: "B1–C2", title: "Phrasal Verbs · Completo", desc: "Acervo completo com 5.300+ combinações" },
+      { id: "collocations", tag: "OXFORD", cefr: "B1–C1", title: "Collocations · Oxford", desc: "6.400+ combinações naturais de palavras" },
+      { id: "idioms", tag: "IDIOMS", cefr: "B2–C2", title: "Idioms e Expressões", desc: "1.500+ expressões idiomáticas cotidianas" }
+    ];
+
+    let deckPickerCat = "freq";
+    let deckProgressBySubdeck = {};
+
+    function updateDeckPickerButton() {
+      const sel = document.getElementById("select-subdeck");
+      const tagEl = document.getElementById("deck-picker-tag");
+      const titleEl = document.getElementById("deck-picker-title");
+      if (!sel || !tagEl || !titleEl) return;
+      const val = sel.value || "01k";
+
+      const f = DECK_PICKER_FREQ.find(x => x.id === val);
+      if (f) {
+        tagEl.textContent = f.tag;
+        titleEl.textContent = `${f.title} · ${f.cefr}`;
+        return;
+      }
+      const c = DECK_PICKER_CHUNKS.find(x => x.id === val);
+      if (c) {
+        tagEl.textContent = c.tag;
+        titleEl.textContent = c.title;
+        return;
+      }
+      const m = mediaDecksCache.find(d => d.subdeck === val);
+      if (m) {
+        tagEl.textContent = "OBRA";
+        titleEl.textContent = cleanMediaDisplayTitle(m.title);
+        return;
+      }
+      tagEl.textContent = val.toUpperCase().slice(0, 6);
+      titleEl.textContent = sel.options[sel.selectedIndex]?.textContent || val;
+    }
+
+    function toggleDeckPicker(forceOpen) {
+      const pop = document.getElementById("deck-picker-popover");
+      const btn = document.getElementById("btn-deck-picker");
+      if (!pop || !btn) return;
+      const isOpen = pop.style.display !== "none";
+      const next = typeof forceOpen === "boolean" ? forceOpen : !isOpen;
+      pop.style.display = next ? "block" : "none";
+      btn.setAttribute("aria-expanded", String(next));
+      if (next) {
+        const cur = document.getElementById("select-subdeck")?.value || "01k";
+        if (cur.startsWith("media:")) deckPickerCat = "media";
+        else if (DECK_PICKER_CHUNKS.some(x => x.id === cur)) deckPickerCat = "chunks";
+        else deckPickerCat = "freq";
+        switchDeckPickerCat(deckPickerCat);
+        if (!Object.keys(deckProgressBySubdeck).length) {
+          fetch("/api/analytics").then(r => r.json()).then(d => {
+            if (!d || !d.success) return;
+            [...(d.cefr_bands || []), ...(d.structures_bands || [])].forEach(b => {
+              deckProgressBySubdeck[b.subdeck] = b.percent || 0;
+            });
+            renderDeckPickerBody();
+          }).catch(() => {});
+        }
+      }
+    }
+
+    function switchDeckPickerCat(cat) {
+      deckPickerCat = cat || "freq";
+      document.querySelectorAll(".dp-cat-btn").forEach(b => {
+        b.classList.toggle("active", b.dataset.dpCat === deckPickerCat);
+      });
+      renderDeckPickerBody();
+    }
+
+    function selectDeckFromPicker(subdeckId) {
+      const sel = document.getElementById("select-subdeck");
+      if (sel) {
+        sel.value = subdeckId;
+      }
+      updateDeckPickerButton();
+      toggleDeckPicker(false);
+      onSubdeckChange();
+    }
+
+    function renderDeckPickerBody() {
+      const body = document.getElementById("deck-picker-body");
+      if (!body) return;
+      const cur = document.getElementById("select-subdeck")?.value || "01k";
+      const q = (document.getElementById("deck-picker-search")?.value || "").trim().toLowerCase();
+
+      if (deckPickerCat === "freq") {
+        const list = DECK_PICKER_FREQ.filter(x => !q || `${x.tag} ${x.cefr} ${x.title} ${x.desc}`.toLowerCase().includes(q));
+        body.innerHTML = `<div class="dp-grid-2">` + list.map(x => {
+          const pct = deckProgressBySubdeck[x.id];
+          const pctTxt = typeof pct === "number" ? `${pct}%` : x.cefr;
+          return `<button type="button" class="dp-item ${cur === x.id ? 'selected' : ''}" onclick="selectDeckFromPicker('${x.id}')">
+            <div class="dp-item-top">
+              <strong>${x.tag} <span style="color: var(--cyan); font-weight: 600; font-size: 11px;">${x.cefr}</span></strong>
+              <span class="tnum" style="font-family: var(--font-mono); font-size: 11px; color: var(--muted);">${pctTxt}</span>
+            </div>
+            <div class="dp-item-sub">${x.desc}</div>
+            ${typeof pct === "number" ? `<div class="ana-track" style="height: 4px; margin-top: 2px;"><span style="width: ${pct}%; background: var(--color-known);"></span></div>` : ""}
+          </button>`;
+        }).join("") + `</div>`;
+        return;
+      }
+
+      if (deckPickerCat === "chunks") {
+        const list = DECK_PICKER_CHUNKS.filter(x => !q || `${x.tag} ${x.cefr} ${x.title} ${x.desc}`.toLowerCase().includes(q));
+        body.innerHTML = `<div class="dp-list-1">` + list.map(x => {
+          const pct = deckProgressBySubdeck[x.id];
+          return `<button type="button" class="dp-item ${cur === x.id ? 'selected' : ''}" onclick="selectDeckFromPicker('${x.id}')">
+            <div class="dp-item-top">
+              <strong>${x.title}</strong>
+              <span class="tnum" style="font-size: 11px; color: var(--cyan); font-weight: 600;">${typeof pct === "number" ? pct + "%" : x.cefr}</span>
+            </div>
+            <div class="dp-item-sub">${x.desc}</div>
+          </button>`;
+        }).join("") + `</div>`;
+        return;
+      }
+
+      const obras = (mediaDecksCache || []).filter(d => !q || `${d.title} ${d.chapter_label}`.toLowerCase().includes(q));
+      const itemsHtml = obras.length
+        ? obras.map(d => {
+            const cleanTitle = cleanMediaDisplayTitle(d.title);
+            const liveCov = d.live ? d.live.live_coverage_pct : (d.stats ? d.stats.current_coverage_pct : 0);
+            return `<button type="button" class="dp-item ${cur === d.subdeck ? 'selected' : ''}" onclick="selectDeckFromPicker('${escapeHtmlSafe(d.subdeck)}')">
+              <div class="dp-item-top">
+                <strong style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtmlSafe(cleanTitle)}</strong>
+                <span class="tnum" style="font-size: 11px; color: var(--color-known); font-weight: 700; flex-shrink: 0;">${liveCov}% cob.</span>
+              </div>
+              <div class="dp-item-sub">${escapeHtmlSafe(d.chapter_label)} · ${d.stats ? d.stats.deck_size : 0} termos</div>
+              <div class="ana-track" style="height: 4px; margin-top: 2px;"><span style="width: ${Math.min(100, liveCov)}%; background: var(--color-known);"></span></div>
+            </button>`;
+          }).join("")
+        : `<div style="font-size: 12px; color: var(--muted); padding: 14px; text-align: center;">Nenhuma obra minerada ainda.</div>`;
+      body.innerHTML = `<div class="dp-list-1">${itemsHtml}
+        <button type="button" class="dictation-btn" style="justify-content: center; color: var(--color-known); margin-top: 4px;" onclick="toggleDeckPicker(false); switchModule('media');">+ Minerar Novo Livro, Série ou Texto</button>
+      </div>`;
+    }
+
+    document.addEventListener("click", (ev) => {
+      const wrap = document.getElementById("deck-picker-wrap");
+      const pop = document.getElementById("deck-picker-popover");
+      if (wrap && pop && pop.style.display !== "none" && !wrap.contains(ev.target)) {
+        toggleDeckPicker(false);
+      }
+    });
+
+    document.addEventListener("keydown", (ev) => {
+      if (ev.key === "Escape") toggleDeckPicker(false);
+    });
+
+    function syncMediaDecksToSelect(decks) {
+      const grp = document.getElementById("optgroup-media-decks");
+      if (!grp) return;
+      grp.innerHTML = "";
+      (decks || []).forEach((d) => {
+        const opt = document.createElement("option");
+        opt.value = d.subdeck;
+        const cov = (d.live && d.live.live_coverage_pct != null) ? d.live.live_coverage_pct : (d.stats ? d.stats.current_coverage_pct : 0);
+        opt.textContent = `${cleanMediaDisplayTitle(d.title)} · ${d.chapter_label} (${cov}% cob.)`;
+        grp.appendChild(opt);
+      });
+      const badge = document.getElementById("dp-media-badge");
+      if (badge) {
+        badge.textContent = String((decks || []).length);
+        badge.style.display = (decks || []).length ? "inline-block" : "none";
+      }
+      updateDeckPickerButton();
+    }
+
+    async function onMediaFileSelected(event) {
+      const file = event && event.target && event.target.files ? event.target.files[0] : null;
+      if (!file) return;
+      mediaUploadedFileName = file.name;
+      const lbl = document.getElementById("media-file-label");
+      const titleInput = document.getElementById("media-title-input");
+      const typeSel = document.getElementById("media-type-select");
+      if (lbl) lbl.textContent = `${file.name} (${Math.max(1, Math.round(file.size / 1024))} KB)`;
+      if (titleInput && !titleInput.value.trim()) {
+        titleInput.value = file.name.replace(/\.[^.]+$/, "").replace(/[_\-]+/g, " ").trim();
+      }
+      const lower = file.name.toLowerCase();
+      if (typeSel) {
+        if (lower.endsWith(".epub")) typeSel.value = "book";
+        else if (lower.endsWith(".srt") || lower.endsWith(".vtt")) typeSel.value = "subtitle";
+        else typeSel.value = "article";
+      }
+
+      const reader = new FileReader();
+      reader.onload = async () => {
+        mediaUploadedFileB64 = String(reader.result || "");
+        const st = document.getElementById("media-mine-status");
+        if (st) st.textContent = "Lendo estrutura e capítulos do arquivo...";
+        try {
+          const res = await fetch("/api/media-chapters", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ file_name: mediaUploadedFileName, file_b64: mediaUploadedFileB64 })
+          });
+          const data = await res.json();
+          const wrap = document.getElementById("media-chapter-wrap");
+          const sel = document.getElementById("media-chapter-select");
+          if (data.success && data.chapters && data.chapters.length > 1 && wrap && sel) {
+            sel.innerHTML = `<option value="all">Obra Completa (${data.chapters.length} capítulos)</option>` +
+              data.chapters.map(c => `<option value="${c.index}">Cap. ${c.index} · ${escapeHtmlSafe(c.title)} (${c.word_count.toLocaleString("pt-BR")} palavras)</option>`).join("");
+            wrap.style.display = "block";
+            if (st) st.textContent = `${data.chapters.length} capítulos detectados. Escolha um capítulo ou a obra inteira e clique em Analisar.`;
+          } else {
+            if (wrap) wrap.style.display = "none";
+            if (st) st.textContent = data.success ? "Arquivo pronto para mineração lexical." : (data.error || "Erro ao ler arquivo.");
+          }
+        } catch (_) {
+          if (st) st.textContent = "Arquivo carregado. Clique em Analisar e Gerar Deck.";
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+
+    async function runMediaMine() {
+      const btn = document.getElementById("btn-mine-media");
+      const st = document.getElementById("media-mine-status");
+      const title = (document.getElementById("media-title-input")?.value || "").trim();
+      const mediaType = document.getElementById("media-type-select")?.value || "book";
+      const maxWords = document.getElementById("media-max-words")?.value || "auto95";
+      const text = (document.getElementById("media-text-input")?.value || "").trim();
+      const chapWrap = document.getElementById("media-chapter-wrap");
+      const chapIdx = (chapWrap && chapWrap.style.display !== "none")
+        ? (document.getElementById("media-chapter-select")?.value || "all")
+        : "all";
+
+      if (!text && !mediaUploadedFileB64) {
+        showToast("Envie um arquivo (.epub/.srt/.txt) ou cole um texto em inglês primeiro.", false);
+        return;
+      }
+
+      if (btn) { btn.disabled = true; btn.textContent = "Minerando obra..."; }
+      if (st) st.textContent = "Analisando frequência, expressões (Phrasal Verbs / Idioms) e cobertura 95%...";
+      try {
+        const res = await fetch("/api/media-mine", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            title,
+            media_type: mediaType,
+            max_words: maxWords,
+            chapter_index: chapIdx,
+            text,
+            file_name: mediaUploadedFileName,
+            file_b64: mediaUploadedFileB64
+          })
+        });
+        const data = await res.json();
+        if (!data.success || !data.deck) {
+          showToast(data.error || "Falha ao minerar mídia.", false);
+          if (st) st.textContent = data.error || "Falha na análise.";
+          return;
+        }
+        activeMediaDeck = data.deck;
+        renderMediaDeckDetail(data.deck);
+        await loadMediaDecksList(true);
+        showToast(`Deck '${data.deck.title}' gerado (${data.deck.stats.deck_size} termos).`);
+        if (st) st.textContent = `Pronto! Cobertura atual ${data.deck.stats.current_coverage_pct}% -> ${data.deck.stats.projected_coverage_pct}% pós-deck.`;
+      } catch (_) {
+        showToast("Erro de rede ao minerar mídia.", false);
+      } finally {
+        if (btn) { btn.disabled = false; btn.textContent = "Analisar e Gerar Deck"; }
+      }
+    }
+
+    async function loadMediaDecksList(silent = false) {
+      try {
+        const res = await fetch("/api/media-decks");
+        const data = await res.json();
+        if (!data || !data.success) return;
+        mediaDecksCache = data.decks || [];
+        syncMediaDecksToSelect(mediaDecksCache);
+
+        const countEl = document.getElementById("media-library-count");
+        if (countEl) countEl.textContent = `${mediaDecksCache.length} obra(s)`;
+
+        const listEl = document.getElementById("media-decks-list");
+        if (!listEl) return;
+        if (!mediaDecksCache.length) {
+          listEl.innerHTML = `<div style="font-size: 12px; color: var(--muted); padding: 14px; border: 1px dashed var(--line); border-radius: 10px; text-align: center;">Nenhuma mídia minerada ainda. Envie um livro (.epub) ou cole um trecho ao lado.</div>`;
+          return;
+        }
+
+        listEl.innerHTML = mediaDecksCache.map((d) => {
+          const isAct = activeMediaDeck && activeMediaDeck.slug === d.slug;
+          const liveCov = d.live ? d.live.live_coverage_pct : (d.stats ? d.stats.current_coverage_pct : 0);
+          const pctEval = d.live ? d.live.percent : 0;
+          return `<div class="media-deck-item ${isAct ? 'active' : ''}">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;">
+              <div style="cursor: pointer;" onclick="selectMediaDeckBySlug('${escapeHtmlSafe(d.slug)}')">
+                <strong style="font-size: 13px; color: var(--text);">${escapeHtmlSafe(d.title)}</strong>
+                <div style="font-size: 11px; color: var(--muted);">${escapeHtmlSafe(d.chapter_label)} · ${d.stats.deck_size} termos</div>
+              </div>
+              <span class="cefr-badge tnum">${liveCov}% cob.</span>
+            </div>
+            <div class="ana-track"><span style="width: ${pctEval}%; background: var(--color-known);"></span></div>
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 6px; flex-wrap: wrap;">
+              <div style="display: flex; gap: 6px;">
+                <button type="button" class="pill-btn" onclick="openMediaDeckInFocus('${escapeHtmlSafe(d.subdeck)}')">Modo Foco</button>
+                <button type="button" class="pill-btn" onclick="openMediaDeckInPodcast('${escapeHtmlSafe(d.subdeck)}')" style="color: var(--purple);">Podcast</button>
+                <button type="button" class="pill-btn" onclick="selectMediaDeckBySlug('${escapeHtmlSafe(d.slug)}')">Detalhes</button>
+              </div>
+              <button type="button" class="pill-btn" onclick="deleteMediaDeckBySlug('${escapeHtmlSafe(d.slug)}')" style="color: var(--color-unknown);">Excluir</button>
+            </div>
+          </div>`;
+        }).join("");
+
+        if (!activeMediaDeck && mediaDecksCache.length && !silent) {
+          activeMediaDeck = mediaDecksCache[0];
+          renderMediaDeckDetail(activeMediaDeck);
+        }
+
+        // Atualiza card de Obras dentro da aba Progresso (Analytics)
+        const anaObras = document.getElementById("ana-media-obras");
+        if (anaObras) {
+          if (!mediaDecksCache.length) {
+            anaObras.innerHTML = `<div style="font-size: 12px; color: var(--muted);">Nenhuma obra minerada ainda. Adicione um livro ou legenda na aba <strong>Mídia</strong>.</div>`;
+          } else {
+            anaObras.innerHTML = mediaDecksCache.slice(0, 6).map((d) => {
+              const liveCov = d.live ? d.live.live_coverage_pct : (d.stats ? d.stats.current_coverage_pct : 0);
+              return `<div class="ana-band-row" onclick="openMediaDeckInFocus('${escapeHtmlSafe(d.subdeck)}')">
+                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px; margin-bottom: 5px; gap: 8px;">
+                  <strong style="color: var(--text);">${escapeHtmlSafe(d.title)} <span style="color: var(--muted); font-weight: 400; font-size: 11px;">· ${escapeHtmlSafe(d.chapter_label)}</span></strong>
+                  <span class="tnum" style="font-family: var(--font-mono); font-size: 11px; color: var(--color-known); font-weight: 700;">${liveCov}% cob.</span>
+                </div>
+                <div class="ana-track"><span style="width: ${Math.min(100, liveCov)}%; background: var(--color-known);"></span></div>
+              </div>`;
+            }).join("");
+          }
+        }
+      } catch (_) {}
+    }
+
+    function selectMediaDeckBySlug(slug) {
+      const found = mediaDecksCache.find(d => d.slug === slug);
+      if (found) {
+        activeMediaDeck = found;
+        renderMediaDeckDetail(found);
+        loadMediaDecksList(true);
+      }
+    }
+
+    function renderMediaCoverageCurveSvg(curve) {
+      if (!curve || curve.length < 2) return "";
+      const w = 620, h = 150, padL = 40, padR = 16, padT = 16, padB = 26;
+      const plotW = w - padL - padR, plotH = h - padT - padB;
+      const maxW = Math.max(1, curve[curve.length - 1].words_learned || 1);
+      const xFor = (n) => padL + (n / maxW) * plotW;
+      const yFor = (p) => padT + plotH - (Math.min(100, Math.max(0, p)) / 100) * plotH;
+      const y95 = yFor(95);
+      const pts = curve.map(c => `${xFor(c.words_learned).toFixed(1)},${yFor(c.coverage_pct).toFixed(1)}`).join(" ");
+      const area = `${padL},${(padT + plotH).toFixed(1)} ${pts} ${xFor(maxW).toFixed(1)},${(padT + plotH).toFixed(1)}`;
+      const dots = curve.map(c => `<circle cx="${xFor(c.words_learned).toFixed(1)}" cy="${yFor(c.coverage_pct).toFixed(1)}" r="3.5" fill="var(--color-known)"><title>+${c.words_learned} palavras -> ${c.coverage_pct}% de cobertura</title></circle>`).join("");
+      return `<div class="ana-svg-stage" style="padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface);">
+        <div style="width: 100%; display: flex; justify-content: space-between; font-size: 11px; color: var(--muted);">
+          <span>Curva de Cobertura Lexical da Obra (Meta 95% de leitura fluida)</span>
+          <span>Eixo X: palavras-chave estudadas · Eixo Y: compreensão do texto</span>
+        </div>
+        <svg viewBox="0 0 ${w} ${h}" style="max-height: 155px;">
+          <line x1="${padL}" y1="${y95.toFixed(1)}" x2="${w - padR}" y2="${y95.toFixed(1)}" stroke="var(--color-known)" stroke-width="1.2" stroke-dasharray="4 3"/>
+          <text x="${w - padR}" y="${(y95 - 4).toFixed(1)}" text-anchor="end" fill="var(--color-known)" font-size="9.5" font-weight="700">95% Zona Fluida</text>
+          <text x="${padL - 6}" y="${yFor(100).toFixed(1)}" text-anchor="end" dominant-baseline="middle" fill="var(--dim)" font-size="9.5">100%</text>
+          <text x="${padL - 6}" y="${yFor(50).toFixed(1)}" text-anchor="end" dominant-baseline="middle" fill="var(--dim)" font-size="9.5">50%</text>
+          <polygon points="${area}" fill="color-mix(in oklab, var(--cyan) 16%, transparent)"/>
+          <polyline points="${pts}" fill="none" stroke="var(--cyan)" stroke-width="2.2"/>
+          ${dots}
+        </svg>
+      </div>`;
+    }
+
+    function switchMediaPreviewTab(tab) {
+      activeMediaPreviewTab = tab === "expressions" ? "expressions" : "words";
+      document.getElementById("btn-media-tab-words")?.classList.toggle("active", activeMediaPreviewTab === "words");
+      document.getElementById("btn-media-tab-expr")?.classList.toggle("active", activeMediaPreviewTab === "expressions");
+      if (activeMediaDeck) renderMediaPreviewList(activeMediaDeck);
+    }
+
+    function renderMediaPreviewList(deck) {
+      const box = document.getElementById("media-preview-list");
+      if (!box) return;
+      const items = activeMediaPreviewTab === "expressions" ? (deck.top_expressions || []) : (deck.top_words || []);
+      if (!items.length) {
+        box.innerHTML = `<div style="font-size: 12px; color: var(--muted); padding: 12px;">Nenhum item nesta categoria para esta obra.</div>`;
+        return;
+      }
+      box.innerHTML = items.slice(0, 25).map((it) => `
+        <div class="media-term-row">
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <div>
+              <strong style="font-size: 14px; color: var(--text);">${escapeHtmlSafe(it.word)}</strong>
+              <span class="pos-badge" style="margin-left: 6px;">${escapeHtmlSafe(it.kind || it.pos || 'term')}</span>
+              ${it.ipa ? `<span class="ipa-badge" style="margin-left: 6px; font-size: 12px;">/${escapeHtmlSafe(it.ipa)}/</span>` : ""}
+            </div>
+            <span class="cefr-badge tnum">${it.freq}x na obra</span>
+          </div>
+          ${it.definition_en ? `<div style="font-size: 12px; color: var(--muted);">${escapeHtmlSafe(it.definition_en)}</div>` : ""}
+          ${it.quote ? `<div style="font-size: 12.5px; color: var(--text); border-left: 2px solid var(--cyan); padding-left: 8px; margin-top: 2px;">"${escapeHtmlSafe(it.quote)}"</div>` : ""}
+        </div>
+      `).join("");
+    }
+
+    function renderMediaDeckDetail(deck) {
+      const sec = document.getElementById("media-result-section");
+      if (!sec || !deck) return;
+      sec.style.display = "block";
+      const st = deck.stats || {};
+      const liveCov = (deck.live && deck.live.live_coverage_pct != null) ? deck.live.live_coverage_pct : (st.current_coverage_pct || 0);
+      document.getElementById("media-res-badge").textContent = (deck.media_type || "MIDIA").toUpperCase();
+      document.getElementById("media-res-title").textContent = deck.title || "Obra";
+      document.getElementById("media-res-subtitle").textContent = `${deck.chapter_label || "Texto Completo"} · Criado em ${(deck.created_at || "").replace("T", " ")}`;
+      document.getElementById("media-kpi-cov").textContent = `${liveCov}%`;
+      document.getElementById("media-kpi-tokens").textContent = `${(st.total_tokens || 0).toLocaleString("pt-BR")} palavras analisadas`;
+      document.getElementById("media-kpi-95").textContent = st.words_to_95_pct || 0;
+      document.getElementById("media-kpi-proj").textContent = `${st.projected_coverage_pct || liveCov}%`;
+      document.getElementById("media-kpi-decksize").textContent = `${st.deck_size || 0} termos prontos no deck`;
+      document.getElementById("media-kpi-expr").textContent = st.expressions_found || 0;
+      const curveBox = document.getElementById("media-coverage-curve-box");
+      if (curveBox) curveBox.innerHTML = renderMediaCoverageCurveSvg(deck.coverage_curve || []);
+      renderMediaPreviewList(deck);
+    }
+
+    function openMediaDeckInFocus(subdeckId) {
+      if (!subdeckId) return;
+      const sel = document.getElementById("select-subdeck");
+      if (sel) {
+        if (!Array.from(sel.options).some(o => o.value === subdeckId)) {
+          const grp = document.getElementById("optgroup-media-decks") || sel;
+          const opt = document.createElement("option");
+          opt.value = subdeckId;
+          opt.textContent = subdeckId.replace("media:", "Mídia · ");
+          grp.appendChild(opt);
+        }
+        sel.value = subdeckId;
+      }
+      switchModule("vocab");
+      switchView("focus");
+      onSubdeckChange();
+    }
+
+    function openActiveMediaInFocus() {
+      if (activeMediaDeck) openMediaDeckInFocus(activeMediaDeck.subdeck);
+    }
+
+    function openMediaDeckInPodcast(subdeckId) {
+      if (!subdeckId) return;
+      const sel = document.getElementById("select-subdeck");
+      if (sel) {
+        if (!Array.from(sel.options).some(o => o.value === subdeckId)) {
+          const grp = document.getElementById("optgroup-media-decks") || sel;
+          const opt = document.createElement("option");
+          opt.value = subdeckId;
+          opt.textContent = subdeckId.replace("media:", "Mídia · ");
+          grp.appendChild(opt);
+        }
+        sel.value = subdeckId;
+      }
+      switchModule("listening");
+      switchListeningSubmode("podcast");
+      const srcEl = document.getElementById("podcast-source-select");
+      if (srcEl) srcEl.value = "subdeck";
+      loadImmersionPlaylist(true);
+    }
+
+    function openActiveMediaInPodcast() {
+      if (activeMediaDeck) openMediaDeckInPodcast(activeMediaDeck.subdeck);
+    }
+
+    async function deleteMediaDeckBySlug(slug) {
+      try {
+        const res = await fetch("/api/media-delete", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ slug })
+        });
+        const data = await res.json();
+        if (data.success) {
+          if (activeMediaDeck && activeMediaDeck.slug === slug) {
+            activeMediaDeck = null;
+            const sec = document.getElementById("media-result-section");
+            if (sec) sec.style.display = "none";
+          }
+          showToast("Deck de mídia removido.");
+          loadMediaDecksList(true);
+        }
+      } catch (_) {}
+    }
+
+    // Popula decks de mídia salvos no seletor de Vocabulário logo ao iniciar
+    setTimeout(() => { loadMediaDecksList(true); }, 350);
 
     // Listening uses real local media; no synthesized placeholder sound.
     const LISTENING_STORAGE = 'lexis_listening_v2';
@@ -1817,30 +2446,37 @@
       VideoController.setSpeed(speeds[(speeds.indexOf(currentDictationSpeed) + 1) % speeds.length]);
     }
     function switchListeningSubmode(submode) {
-      if (!['video', 'audio', 'podcast'].includes(submode)) return;
+      if (!['books', 'video', 'audio', 'podcast'].includes(submode)) return;
       pauseListeningMedia();
       selectedListeningSubmode = submode;
+      const booksContainer = document.getElementById('submode-books-container');
+      if (booksContainer) booksContainer.style.display = submode === 'books' ? 'block' : 'none';
       document.getElementById('submode-video-container').style.display = submode === 'video' ? 'block' : 'none';
+      const videoNotices = document.querySelectorAll('.video-dictation-notice');
+      videoNotices.forEach(el => { el.style.display = submode === 'video' ? '' : 'none'; });
       document.getElementById('submode-audio-container').style.display = submode === 'audio' ? 'grid' : 'none';
       const podContainer = document.getElementById('submode-podcast-container');
       if (podContainer) podContainer.style.display = submode === 'podcast' ? 'grid' : 'none';
-      for (const mode of ['video', 'audio', 'podcast']) {
+      for (const mode of ['books', 'video', 'audio', 'podcast']) {
         const btn = document.getElementById('btn-mode-' + mode);
         if (!btn) continue;
         btn.classList.toggle('active', mode === submode);
         btn.setAttribute('aria-pressed', String(mode === submode));
       }
       const titles = {
+        books: 'Livros, Séries e Textos (Meta 95%)',
         video: 'Vídeo Ditado Interativo',
         audio: 'Escuta às Cegas',
         podcast: 'Playlist Contínua de Imersão'
       };
       const crumbs = {
+        books: '/ Livros e Textos',
         video: '/ Vídeo Ditado',
         audio: '/ Escuta às Cegas',
         podcast: '/ Imersão Contínua'
       };
       const descs = {
+        books: 'Envie um livro (.epub), legenda (.srt/.vtt) ou cole um capítulo. O Lexis cruza com seu mapa e gera o deck para leitura fluida.',
         video: 'Ouça o trecho, escreva sua hipótese e compare. Use pistas quando precisar.',
         audio: 'Escolha um áudio real e, se quiser, importe a transcrição para treinar por trechos.',
         podcast: 'Podcast pessoal contínuo com repetição reflexiva (1x -> Pausa -> 2x) e controle na tela de bloqueio.'
@@ -1848,7 +2484,9 @@
       document.querySelector('.listening-title-row h2').textContent = titles[submode];
       if (isListeningVisible()) document.getElementById('breadcrumb-subview').textContent = crumbs[submode];
       document.getElementById('listening-submode-desc').textContent = descs[submode];
-      if (submode === 'podcast' && !podcastTracks.length) {
+      if (submode === 'books') {
+        loadMediaDecksList();
+      } else if (submode === 'podcast' && !podcastTracks.length) {
         loadImmersionPlaylist();
       }
     }
@@ -2755,11 +3393,11 @@
           } else {
             tbody.innerHTML = data.top_ready.map(item => {
               const safeAudio = item.audio_url ? item.audio_url.replace(/'/g, "\\'") : '';
-              return `<tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-                <td style="padding: 9px 6px;"><span style="font-size: 11px; padding: 2px 7px; border-radius: 6px; background: rgba(101, 225, 216, 0.12); color: var(--cyan); font-weight: 700;">${escapeHtmlSafe((item.subdeck || '').toUpperCase())}</span></td>
+              return `<tr style="border-bottom: 1px solid var(--line);">
+                <td style="padding: 9px 6px;"><span class="subdeck-badge">${escapeHtmlSafe((item.subdeck || '').toUpperCase())}</span></td>
                 <td style="padding: 9px 6px; font-weight: 700; color: var(--text);">${escapeHtmlSafe(item.termo_display)} <small style="color: var(--muted); font-weight: 400;">${escapeHtmlSafe(item.pos)}</small></td>
-                <td style="padding: 9px 6px; color: #cbd5e1; font-size: 12px;">${escapeHtmlSafe(item.frase)}<div style="color: var(--muted); font-size: 11px; margin-top: 2px;">${escapeHtmlSafe(item.definicao_pt || item.definicao)}</div></td>
-                <td style="padding: 9px 6px; text-align: right;">${safeAudio ? `<button type="button" class="dictation-btn" style="padding: 3px 8px; font-size: 11px;" onclick="playHubAudioUrl('${safeAudio}')">▶</button>` : '<span style="color: var(--muted); font-size: 11px;">--</span>'}</td>
+                <td style="padding: 9px 6px; color: var(--text); font-size: 12px;">${escapeHtmlSafe(item.frase)}<div style="color: var(--muted); font-size: 11px; margin-top: 2px;">${escapeHtmlSafe(item.definicao_pt || item.definicao)}</div></td>
+                <td style="padding: 9px 6px; text-align: right;">${safeAudio ? `<button type="button" class="dictation-btn" style="padding: 3px 8px; font-size: 11px;" onclick="playHubAudioUrl('${safeAudio}')">Ouvir</button>` : '<span style="color: var(--muted); font-size: 11px;">--</span>'}</td>
               </tr>`;
             }).join('');
           }
