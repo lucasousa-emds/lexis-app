@@ -435,12 +435,26 @@
 
       // Tradução em português
       const ptEl = document.getElementById("focus-example-pt");
+      const mobTxEl = document.getElementById("focus-mobile-translation");
+      const updateMobileMeaning = (ptSentenceHtml, defPtRaw) => {
+        if (!mobTxEl) return;
+        const m = String(ptSentenceHtml || "").match(/<span class="highlight-target">([^<]+)<\/span>/i);
+        if (m && m[1]) {
+          mobTxEl.textContent = m[1].trim();
+        } else {
+          const cleanDef = String(defPtRaw || "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+          mobTxEl.textContent = cleanDef ? (cleanDef.length > 78 ? cleanDef.slice(0, 75) + "..." : cleanDef) : "";
+        }
+      };
       if (ptEl) {
         const cleanEn = chosen.en.replace(/<[^>]+>/g, '').trim().toLowerCase();
         if (chosen.pt && chosen.pt.trim().toLowerCase() !== cleanEn) {
-          ptEl.innerHTML = formatPortugueseSentence(chosen.pt, item.word, item.definition_pt);
+          const formattedPt = formatPortugueseSentence(chosen.pt, item.word, item.definition_pt);
+          ptEl.innerHTML = formattedPt;
+          updateMobileMeaning(formattedPt, item.definition_pt);
         } else {
           ptEl.innerText = "Traduzindo frase contextual...";
+          updateMobileMeaning("", item.definition_pt);
           fetchSentenceTranslation(item, safeIdx);
         }
       }

@@ -972,6 +972,14 @@ main {
   gap: 12px;
 }
 
+.mobile-context-meaning {
+  display: none;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-known);
+  line-height: 1.35;
+}
+
 /* Modern Web Guidance: clamp() with max <= 2.5 * min */
 .word-text {
   font-family: var(--font-heading);
@@ -2441,9 +2449,170 @@ html[data-theme="light"] .media-term-row {
   .module-shell {
     padding: 0 12px;
   }
-  .focus-card {
-    padding: 16px;
+  main {
+    margin-bottom: 92px;
   }
+  .toolbar {
+    padding: 9px 10px;
+    gap: 8px;
+  }
+  .toolbar-left,
+  .toolbar-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .deck-picker-trigger {
+    max-width: calc(100vw - 170px);
+  }
+  .kpi-chip {
+    padding: 4px 7px;
+    font-size: 11px;
+  }
+  .kpi-chip .kpi-label {
+    display: none;
+  }
+  .view-mode-tabs {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .view-mode-tabs .tab-btn {
+    justify-content: center;
+    padding: 6px 6px;
+  }
+  .dashboard-progress-card {
+    padding: 8px 12px;
+  }
+  .dashboard-progress-card .user-level-badge {
+    display: none;
+  }
+
+  /* Mobile Focus Card: clean, essential info only (word + context translation + sentence) */
+  .focus-card {
+    padding: 15px 14px;
+    gap: 11px;
+    border-radius: 16px;
+  }
+  .focus-card .theme-badge,
+  .focus-card .source-badge,
+  .focus-card .sense-container,
+  .focus-card .hotkey-hint,
+  .focus-card .aux-hotkey,
+  .focus-card #btn-curate-example {
+    display: none !important;
+  }
+  .focus-card .mobile-context-meaning {
+    display: block;
+  }
+  .focus-card .word-text {
+    font-size: 1.95rem;
+  }
+  .focus-card .example-container {
+    padding: 12px;
+  }
+  .focus-card .example-sentence {
+    font-size: 15px;
+    line-height: 1.45;
+  }
+  .focus-card .btn-action {
+    min-height: 50px;
+    padding: 10px 6px;
+    font-size: 12.5px;
+  }
+
+  /* Mobile Grade: stack each table row into a full-width readable card */
+  .batch-header-bar {
+    padding: 12px;
+    gap: 8px;
+  }
+  .batch-buttons {
+    width: 100%;
+  }
+  .batch-buttons .btn-batch-action {
+    flex: 1;
+    justify-content: center;
+    font-size: 11.5px;
+    padding: 8px 10px;
+  }
+  .table-container {
+    background: transparent;
+    border: none;
+    overflow-x: visible;
+  }
+  .batch-table,
+  .batch-table tbody,
+  .batch-table tr,
+  .batch-table td {
+    display: block;
+    width: 100%;
+  }
+  .batch-table thead {
+    display: none;
+  }
+  .batch-table tbody tr {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 13px;
+    padding: 13px;
+    margin-bottom: 10px;
+  }
+  .batch-table tbody td {
+    padding: 0;
+    border: none;
+    text-align: left !important;
+    white-space: normal !important;
+  }
+  .batch-table tbody td:nth-child(1) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+  .batch-table .batch-word-title {
+    font-size: 17px;
+  }
+  .batch-table .batch-word-meta {
+    margin-top: 0;
+  }
+  .batch-table .batch-ipa-row {
+    margin-top: 0;
+  }
+  /* Hide long English dictionary definition on mobile; keep short PT translation */
+  .batch-table .batch-def-en {
+    display: none;
+  }
+  .batch-table .batch-def-pt {
+    margin-top: 0;
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .batch-table tbody td:nth-child(3) > div:first-child {
+    display: none !important;
+  }
+  .batch-table .batch-ex-en {
+    font-size: 14px;
+    line-height: 1.45;
+  }
+  .batch-table .batch-ex-pt {
+    font-size: 12.5px;
+    margin-top: 5px;
+    margin-bottom: 12px;
+  }
+  .batch-table .status-toggle-group {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: 100%;
+    gap: 7px;
+  }
+  .batch-table .status-toggle-group .pill-btn {
+    height: 36px;
+    padding: 0 6px;
+    font-size: 12px;
+  }
+
   .kpi-grid-4 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -2451,12 +2620,6 @@ html[data-theme="light"] .media-term-row {
   .anki-split-grid,
   .analytics-split-grid {
     grid-template-columns: 1fr;
-  }
-  .kpi-chip .kpi-label {
-    display: none;
-  }
-  .btn-action {
-    min-height: 52px;
   }
   .dictation-actions-row .dictation-btn {
     min-height: 42px;
