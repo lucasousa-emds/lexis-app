@@ -409,7 +409,7 @@
       // Atualizar tema e indicador de origem da frase de forma elegante e independente
       const themeEl = document.getElementById("focus-theme");
       if (themeEl) {
-        const cleanTheme = chosen.theme || item.theme || "Conversação";
+        const cleanTheme = stripUiEmojis(chosen.theme || item.theme || "Conversação");
         themeEl.innerText = cleanTheme;
         themeEl.title = cleanTheme;
       }
@@ -3854,12 +3854,12 @@
         if (key === "1" || key === "c" || e.key === "ArrowRight") {
           e.preventDefault();
           evaluateCurrent("conhecido");
-        } else if (key === "2" || key === "n" || e.key === "ArrowLeft") {
-          e.preventDefault();
-          evaluateCurrent("desconhecido");
-        } else if (key === "3" || key === "d" || e.key === "ArrowDown") {
+        } else if (key === "2" || key === "d" || e.key === "ArrowDown") {
           e.preventDefault();
           evaluateCurrent("duvida");
+        } else if (key === "3" || key === "n" || e.key === "ArrowLeft") {
+          e.preventDefault();
+          evaluateCurrent("desconhecido");
         } else if (key === "z" || key === "u" || key === "backspace" || (e.ctrlKey && key === "z")) {
           e.preventDefault();
           undoLastEvaluation();
